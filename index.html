@@ -45,30 +45,29 @@
 
     <div id="results"></div>
 
-   <script>
-    // REMPLACE CES DEUX VALEURS
-    const CX_ID = "71e2ce8bd66eb466a"; 
+<script>
+    // 1. REMPLACE BIEN CET ID (Trouve le sur cse.google.com)
+    const CX_ID = "TON_ID_CX_ICI"; 
 
     async function lancerScan() {
         const resultsDiv = document.getElementById('results');
         const key = document.getElementById('api_key').value.trim();
         const marque = document.getElementById('marque').value;
 
-        if (!key) { afficherErreur("Entre ta clé API d'abord !"); return; }
+        if (!key) { alert("Colle ta clé API !"); return; }
         
-        resultsDiv.innerHTML = "<p style='color:#d4ff3f'>Connexion sécurisée à Google Cloud...</p>";
+        resultsDiv.innerHTML = "<p style='color:#d4ff3f'>Scan en cours...</p>";
 
         try {
-            // Requête propre
             const url = `https://www.googleapis.com/customsearch/v1?key=${key}&cx=${CX_ID}&q=site:vinted.fr ${marque}`;
             
             const response = await fetch(url);
             const data = await response.json();
 
-            // Si Google renvoie une erreur spécifique
             if (data.error) {
-                if (data.error.status === "PERMISSION_DENIED") {
-                    throw new Error("La clé est bloquée. Vérifie les 'Restrictions API' dans Google Console.");
+                // Si c'est un problème de clé
+                if (data.error.message.includes("API key")) {
+                    throw new Error("Clé API invalide ou mal configurée (Vérifie Google Cloud)");
                 }
                 throw new Error(data.error.message);
             }
@@ -82,7 +81,7 @@
                     <div style="background:#151515; padding:15px; margin-bottom:10px; border-radius:12px; border-left:4px solid #d4ff3f; text-align:left;">
                         <a href="${item.link}" target="_blank" style="color:white; text-decoration:none;">
                             <strong>${item.title}</strong><br>
-                            <span style="color:#d4ff3f; font-size:12px;">Cliquer pour voir l'offre →</span>
+                            <span style="color:#d4ff3f; font-size:12px;">Voir l'offre →</span>
                         </a>
                     </div>
                 `).join('');
@@ -96,9 +95,8 @@
         document.getElementById('results').innerHTML = `
             <div style="background:#1a1a1a; padding:20px; border-radius:15px; border: 1px solid #333;">
                 <span style="font-size:40px;">⚠️</span>
-                <h3 style="color:white;">Erreur de Configuration</h3>
-                <p style="color:#ff5f5f; font-family:monospace; font-size:12px;">${msg}</p>
-                <p style="color:#666; font-size:10px; margin-top:15px;">Vérifie l'activation du service 'Custom Search API' sur Google Cloud.</p>
+                <h3 style="color:white;">Erreur</h3>
+                <p style="color:#ff5f5f; font-size:12px;">${msg}</p>
             </div>
         `;
     }
