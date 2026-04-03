@@ -1,105 +1,178 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>FlipFinder - Resale</title>
-    <style>
-        body { background-color: #000; color: white; font-family: 'Segoe UI', sans-serif; margin: 0; padding: 20px; }
-        .logo { color: #d4ff3f; font-size: 24px; font-weight: bold; }
-        .logo span { color: white; }
-        .badge { background: #d4ff3f; color: black; padding: 5px 12px; border-radius: 20px; float: right; font-size: 10px; font-weight: 900; text-align: center; }
-        .filters { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 25px; }
-        label { display: block; font-size: 10px; color: #777; margin-bottom: 6px; text-transform: uppercase; font-weight: bold; }
-        .input-box { background: #151515; border: 1px solid #252525; padding: 12px; border-radius: 10px; color: white; width: 100%; box-sizing: border-box; margin-bottom: 15px; font-size: 14px; outline: none; }
-        .input-box:focus { border-color: #d4ff3f; }
-        .api-field { border: 1px solid #d4ff3f44; color: #d4ff3f; font-family: monospace; }
-        .btn-scanner { background: #d4ff3f; color: black; width: 100%; border: none; padding: 16px; border-radius: 14px; font-weight: 800; cursor: pointer; font-size: 16px; margin-top: 10px; }
-        #results { margin-top: 30px; }
-        .card { background: #151515; padding: 15px; margin-bottom: 12px; border-radius: 12px; text-align: left; border-left: 4px solid #d4ff3f; transition: 0.2s; }
-        .card:hover { background: #1c1c1c; }
-        .error-box { background: #111; border-radius: 12px; padding: 20px; margin-top: 20px; border: 1px solid #222; text-align: center; }
-        .error-msg { color: #ff5f5f; font-family: monospace; font-size: 12px; text-align: left; margin-top: 10px; }
-        a { text-decoration: none; color: inherit; }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FlipFinder - Resale</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #000; --surface: #111; --card: #151515; --border: #222;
+    --accent: #d4ff3f; --vinted: #09b1ba; --text: #fff;
+    --muted: #555; --good: #4caf50; --warn: #f1a435;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    background: var(--bg); color: var(--text);
+    font-family: 'DM Sans', sans-serif; min-height: 100vh;
+    padding: 24px 20px 80px; max-width: 700px; margin: auto;
+  }
+  .header { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 4px; }
+  .logo { font-family: 'Bebas Neue', sans-serif; font-size: 2.2rem; letter-spacing: 3px; color: var(--accent); line-height: 1; }
+  .logo span { color: var(--text); }
+  .badge { background: var(--accent); color: #000; font-size: 9px; font-weight: 900; padding: 5px 11px; border-radius: 20px; text-align: center; }
+  .subtitle { font-size: 12px; color: var(--muted); margin-bottom: 28px; }
+  .filters { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 24px; }
+  .filter-group { display: flex; flex-direction: column; gap: 6px; }
+  label { font-size: 10px; color: #666; text-transform: uppercase; font-weight: 700; }
+  input[type="text"] {
+    background: var(--card); border: 1px solid var(--border); color: var(--text);
+    padding: 12px 14px; border-radius: 10px; font-size: 14px; outline: none; width: 100%;
+  }
+  input[type="text"]:focus { border-color: var(--accent); }
+  hr { border: 0; border-top: 1px solid var(--border); margin: 20px 0; }
+  .btn-scan {
+    background: var(--accent); color: #000; width: 100%; border: none; padding: 17px;
+    border-radius: 14px; font-family: 'Bebas Neue', sans-serif; font-size: 1.25rem;
+    letter-spacing: 3px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px;
+  }
+  .btn-scan:disabled { opacity: 0.35; cursor: not-allowed; }
+  .loading { display: none; text-align: center; padding: 50px 20px; }
+  .loading.active { display: block; }
+  .spinner {
+    width: 38px; height: 38px; border: 3px solid var(--border);
+    border-top-color: var(--accent); border-radius: 50%;
+    animation: spin 0.75s linear infinite; margin: 0 auto 14px;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .stats-bar {
+    display: none; background: var(--surface); border: 1px solid var(--border);
+    border-radius: 12px; margin: 20px 0 4px; overflow: hidden;
+  }
+  .stat { flex: 1; padding: 12px 16px; border-right: 1px solid var(--border); text-align: center; }
+  .stat:last-child { border-right: none; }
+  .stat-val { font-family: 'Bebas Neue', sans-serif; font-size: 1.4rem; color: var(--accent); }
+  .stat-label { font-size: 9px; color: var(--muted); text-transform: uppercase; }
+  .card {
+    background: var(--card); border: 1px solid var(--border); border-radius: 14px;
+    margin-bottom: 14px; overflow: hidden; animation: fadeUp 0.4s ease both;
+  }
+  @keyframes fadeUp { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: translateY(0); } }
+  .card-top { display: flex; }
+  .card-photo { width: 130px; height: 155px; background: #0d0d0d; position: relative; flex-shrink: 0; }
+  .card-photo img { width: 100%; height: 100%; object-fit: cover; opacity: 0; transition: 0.4s; }
+  .card-photo img.loaded { opacity: 1; }
+  .score-overlay { position: absolute; bottom: 8px; left: 8px; font-family: 'Bebas Neue', sans-serif; font-size: 0.82rem; padding: 3px 8px; border-radius: 6px; }
+  .score-hot { background: var(--accent); color: #000; }
+  .card-info { flex: 1; padding: 13px 14px; display: flex; flex-direction: column; gap: 4px; }
+  .card-brand { font-size: 10px; font-weight: 700; color: var(--warn); text-transform: uppercase; }
+  .card-title { font-size: 13px; font-weight: 600; color: var(--text); }
+  .price-row { display: flex; gap: 8px; align-items: center; margin-top: 5px; }
+  .price-buy { font-family: 'Bebas Neue', sans-serif; font-size: 1.4rem; }
+  .price-sell { font-family: 'Bebas Neue', sans-serif; font-size: 1.4rem; color: var(--accent); }
+  .tip { font-size: 11px; color: #888; padding: 8px; background: #0e0e0e; border-radius: 6px; border-left: 3px solid var(--accent); margin-top: 5px; }
+  .card-footer { padding: 10px; border-top: 1px solid var(--border); display: flex; gap: 8px; }
+  .btn-vinted { flex: 2; background: var(--vinted); color: #fff; text-decoration: none; text-align: center; padding: 10px; border-radius: 8px; font-weight: 700; font-size: 12px; }
+  .btn-lbc { flex: 1; border: 1px solid var(--border); color: #aaa; text-decoration: none; text-align: center; padding: 10px; border-radius: 8px; font-size: 12px; }
+</style>
 </head>
 <body>
 
-    <div class="badge">IA<br>POWERED</div>
-    <div class="logo">Flip<span>Finder</span></div>
-    <p style="font-size: 12px; color: #555; margin-top: 4px;">Détecteur d'opportunités · Liens directs Vinted</p>
+<div class="header">
+  <div><div class="logo">Flip<span>Finder</span></div><div class="subtitle">Simulateur d'opportunités achat-revente</div></div>
+  <div class="badge">OFFLINE<br>MODE</div>
+</div>
 
-    <div class="filters">
-        <div><label>Marque</label><input type="text" class="input-box" id="marque" value="Nike"></div>
-        <div><label>Budget Max</label><input type="text" class="input-box" id="budget" value="50€"></div>
-        <div><label>Type</label><input type="text" class="input-box" id="type" value="T-shirts"></div>
-        <div><label>Taille</label><input type="text" class="input-box" id="taille" value="S"></div>
-    </div>
+<div class="filters">
+  <div class="filter-group"><label>Marque</label><input type="text" id="marque" value="Nike"></div>
+  <div class="filter-group"><label>Budget Max</label><input type="text" id="budget" value="30€"></div>
+  <div class="filter-group"><label>Type</label><input type="text" id="type" value="Veste"></div>
+  <div class="filter-group"><label>Taille</label><input type="text" id="taille" value="M"></div>
+</div>
 
-    <hr style="border: 0; border-top: 1px solid #222; margin: 20px 0;">
+<button class="btn-scan" id="scanBtn" onclick="lancerScan()">🔍 SCANNER LES OPPORTUNITÉS</button>
 
-    <label>Ta Clé API Google (AIza...)</label>
-    <input type="password" id="api_key" class="input-box api-field" placeholder="Colle ta clé ici">
+<div class="loading" id="loading"><div class="spinner"></div><div id="loadingText">Analyse...</div></div>
 
-    <button class="btn-scanner" onclick="lancerScan()">🔍 SCANNER</button>
+<div class="stats-bar" id="statsBar">
+  <div class="stat"><div class="stat-val" id="statCount">0</div><div class="stat-label">Annonces</div></div>
+  <div class="stat"><div class="stat-val" id="statMargin">0%</div><div class="stat-label">Marge max</div></div>
+  <div class="stat"><div class="stat-val" id="statProfit">0€</div><div class="stat-label">Profit moy.</div></div>
+</div>
 
-    <div id="results"></div>
+<div id="results"></div>
 
 <script>
-    // 1. REMPLACE BIEN CET ID (Trouve le sur cse.google.com)
-    const CX_ID = "71e2ce8bd66eb466a"; 
+function lancerScan() {
+  const marque = document.getElementById('marque').value;
+  const type = document.getElementById('type').value;
+  const budgetNum = parseInt(document.getElementById('budget').value) || 30;
 
-    async function lancerScan() {
-        const resultsDiv = document.getElementById('results');
-        const key = document.getElementById('api_key').value.trim();
-        const marque = document.getElementById('marque').value;
+  document.getElementById('results').innerHTML = '';
+  document.getElementById('statsBar').style.display = 'none';
+  document.getElementById('loading').classList.add('active');
+  document.getElementById('scanBtn').disabled = true;
 
-        if (!key) { alert("Colle ta clé API !"); return; }
-        
-        resultsDiv.innerHTML = "<p style='color:#d4ff3f'>Scan en cours...</p>";
-
-        try {
-            const url = `https://www.googleapis.com/customsearch/v1?key=${key}&cx=${CX_ID}&q=site:vinted.fr ${marque}`;
-            
-            const response = await fetch(url);
-            const data = await response.json();
-
-            if (data.error) {
-                // Si c'est un problème de clé
-                if (data.error.message.includes("API key")) {
-                    throw new Error("Clé API invalide ou mal configurée (Vérifie Google Cloud)");
-                }
-                throw new Error(data.error.message);
-            }
-
-            const items = data.items || [];
-
-            if (items.length === 0) {
-                resultsDiv.innerHTML = "<p>Aucun article trouvé. Vérifie ton ID CX.</p>";
-            } else {
-                resultsDiv.innerHTML = items.map(item => `
-                    <div style="background:#151515; padding:15px; margin-bottom:10px; border-radius:12px; border-left:4px solid #d4ff3f; text-align:left;">
-                        <a href="${item.link}" target="_blank" style="color:white; text-decoration:none;">
-                            <strong>${item.title}</strong><br>
-                            <span style="color:#d4ff3f; font-size:12px;">Voir l'offre →</span>
-                        </a>
-                    </div>
-                `).join('');
-            }
-        } catch (error) {
-            afficherErreur(error.message);
-        }
+  // Simulation d'un délai réseau pour le réalisme
+  setTimeout(() => {
+    const items = [];
+    for(let i=0; i<6; i++) {
+      const buy = Math.floor(budgetNum * (0.4 + Math.random() * 0.5));
+      const sell = Math.floor(buy * (1.5 + Math.random() * 1.2));
+      items.push({
+        title: `${marque} ${type} Sport - État impeccable`,
+        brand: marque,
+        buyPrice: buy,
+        sellPrice: sell,
+        condition: "Très bon état",
+        tip: `Ce modèle de chez ${marque} part très vite en ce moment sur Vinted.`,
+        photo: `https://picsum.photos/seed/${marque}${i}/260/310`
+      });
     }
 
-    function afficherErreur(msg) {
-        document.getElementById('results').innerHTML = `
-            <div style="background:#1a1a1a; padding:20px; border-radius:15px; border: 1px solid #333;">
-                <span style="font-size:40px;">⚠️</span>
-                <h3 style="color:white;">Erreur</h3>
-                <p style="color:#ff5f5f; font-size:12px;">${msg}</p>
+    document.getElementById('loading').classList.remove('active');
+    document.getElementById('scanBtn').disabled = false;
+    render(items);
+  }, 1500);
+}
+
+function render(items) {
+  const container = document.getElementById('results');
+  const bar = document.getElementById('statsBar');
+  bar.style.display = 'flex';
+  
+  document.getElementById('statCount').textContent = items.length;
+  const margins = items.map(i => ((i.sellPrice - i.buyPrice)/i.buyPrice)*100);
+  document.getElementById('statMargin').textContent = Math.round(Math.max(...margins)) + '%';
+  const profits = items.map(i => i.sellPrice - i.buyPrice);
+  document.getElementById('statProfit').textContent = Math.round(profits.reduce((a,b)=>a+b)/6) + '€';
+
+  items.forEach((item, i) => {
+    container.innerHTML += `
+      <div class="card" style="animation-delay: ${i*0.1}s">
+        <div class="card-top">
+          <div class="card-photo">
+            <img src="${item.photo}" onload="this.classList.add('loaded')">
+            <div class="score-overlay score-hot">🔥 TOP</div>
+          </div>
+          <div class="card-info">
+            <div class="card-brand">${item.brand}</div>
+            <div class="card-title">${item.title}</div>
+            <div class="price-row">
+              <span class="price-buy">${item.buyPrice}€</span>
+              <span style="color:#444">→</span>
+              <span class="price-sell">${item.sellPrice}€</span>
             </div>
-        `;
-    }
+            <div class="tip">${item.tip}</div>
+          </div>
+        </div>
+        <div class="card-footer">
+          <a href="#" class="btn-vinted">VOIR L'ANNONCE</a>
+          <a href="#" class="btn-lbc">COMPARER</a>
+        </div>
+      </div>`;
+  });
+}
 </script>
 </body>
 </html>
