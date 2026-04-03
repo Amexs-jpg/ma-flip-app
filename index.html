@@ -3,14 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>FlipFinder Pro - Market Logic</title>
+    <title>FlipFinder Pro - Multi-Platform</title>
     <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/lucide@latest"></script>
     <style>
         :root {
             --bg: #050505; --surface: #111; --card: #181818; --border: #282828;
             --accent: #d4ff3f; --vinted: #09b1ba; --text: #ffffff;
-            --muted: #888; --good: #4caf50;
+            --muted: #888;
         }
         * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
         body {
@@ -38,18 +38,17 @@
             background: var(--accent); color: #000; width: 100%; border: none; padding: 18px;
             border-radius: 16px; font-family: 'Bebas Neue', sans-serif; font-size: 1.3rem;
             letter-spacing: 2px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 12px;
-            transition: transform 0.1s;
         }
-        .btn-scan:active { transform: scale(0.98); }
-        .btn-scan:disabled { opacity: 0.3; cursor: not-allowed; }
+        .btn-scan:disabled { opacity: 0.3; }
+
         .stats-bar {
             display: none; background: var(--surface); border: 1px solid var(--border);
             border-radius: 16px; margin: 24px 0; overflow: hidden;
         }
         .stat { flex: 1; padding: 16px; border-right: 1px solid var(--border); text-align: center; }
-        .stat:last-child { border-right: none; }
         .stat-val { font-family: 'Bebas Neue', sans-serif; font-size: 1.6rem; color: var(--accent); }
         .stat-label { font-size: 9px; color: var(--muted); text-transform: uppercase; }
+
         .card {
             background: var(--card); border: 1px solid var(--border); border-radius: 18px;
             margin-bottom: 16px; overflow: hidden; animation: slideUp 0.4s ease both;
@@ -70,13 +69,29 @@
             background: rgba(76, 175, 80, 0.1); color: #4caf50; 
             padding: 4px 8px; border-radius: 6px; font-size: 11px; font-weight: 700; margin-top: 8px;
         }
+
+        /* Menu Déroulant Amélioré */
         .card-footer { padding: 12px; background: rgba(255,255,255,0.02); display: flex; gap: 10px; }
         .btn-action { 
             flex: 1; padding: 12px; border-radius: 10px; font-size: 12px; font-weight: 700; 
             text-decoration: none; text-align: center; display: flex; align-items: center; justify-content: center; gap: 6px;
         }
         .btn-vinted { background: var(--vinted); color: white; }
-        .btn-lbc { border: 1px solid var(--border); color: var(--muted); }
+        
+        .compare-dropdown {
+            flex: 1; position: relative;
+        }
+        .select-compare {
+            width: 100%; height: 100%; padding: 12px; border-radius: 10px;
+            background: transparent; border: 1px solid var(--border); color: var(--muted);
+            font-size: 12px; font-weight: 700; cursor: pointer; appearance: none;
+            text-align: center; outline: none;
+        }
+        .dropdown-icon {
+            position: absolute; right: 10px; top: 50%; transform: translateY(-50%);
+            pointer-events: none; color: var(--muted);
+        }
+
         .loading { display: none; text-align: center; padding: 40px; }
         .loading.active { display: block; }
         .spinner {
@@ -84,13 +99,14 @@
             border-top-color: var(--accent); border-radius: 50%;
             animation: spin 0.8s linear infinite; margin: 0 auto 12px;
         }
+        @keyframes spin { to { transform: rotate(360deg); } }
     </style>
 </head>
 <body>
 
 <div class="header">
     <div class="logo">Flip<span>Finder</span></div>
-    <div class="badge">V2.2 MARKET-AI</div>
+    <div class="badge">V2.3 PLATFORMS</div>
 </div>
 
 <div class="filters">
@@ -113,12 +129,12 @@
 </div>
 
 <button class="btn-scan" id="scanBtn" onclick="lancerScan()">
-    <i data-lucide="zap" size="18"></i> ANALYSER LES OPPORTUNITÉS
+    <i data-lucide="zap" size="18"></i> ANALYSER LE MARCHÉ
 </button>
 
 <div class="loading" id="loading">
     <div class="spinner"></div>
-    <p style="color: var(--muted); font-size: 12px;" id="loadingText">Calcul de la cote du marché...</p>
+    <p style="color: var(--muted); font-size: 12px;">Comparaison inter-plateformes...</p>
 </div>
 
 <div class="stats-bar" id="statsBar">
@@ -132,14 +148,11 @@
 <script>
 lucide.createIcons();
 
-// DICTIONNAIRE DE LOGIQUE DE MARCHÉ
 const marketData = {
-    "nike": { multiplier: 2.2, suffixes: ["Air Max", "Dunk Low", "Tech Fleece", "Jordan Retro"], demand: "Très Haute" },
-    "adidas": { multiplier: 1.8, suffixes: ["Yeezy", "Gazelle", "Samba", "Ultraboost"], demand: "Haute" },
-    "ralph lauren": { multiplier: 2.5, suffixes: ["Polo Slim", "Chemise Oxford", "Veste zippée"], demand: "Stable" },
-    "carhartt": { multiplier: 2.1, suffixes: ["Detroit Jacket", "Double Knee", "Bonnet A18"], demand: "Tendance" },
-    "lacoste": { multiplier: 2.3, suffixes: ["Survêtement", "Polo Classique", "Sacoche"], demand: "Haute" },
-    "default": { multiplier: 1.6, suffixes: ["Vintage", "Casual", "Sport Edition"], demand: "Variable" }
+    "nike": { multiplier: 2.1, suffixes: ["Jordan 1 Low", "Dunk High", "Air Force 1", "Air Max 95"] },
+    "adidas": { multiplier: 1.7, suffixes: ["Samba OG", "Campus 00s", "Gazelle", "Forum Low"] },
+    "ralph lauren": { multiplier: 2.4, suffixes: ["Polo Bear", "Chemise Slim Fit", "Pull Coton"], },
+    "default": { multiplier: 1.6, suffixes: ["Vintage Edition", "Collection Sport", "Premium Line"] }
 };
 
 function lancerScan() {
@@ -153,30 +166,23 @@ function lancerScan() {
     document.getElementById('loading').classList.add('active');
     document.getElementById('scanBtn').disabled = true;
 
-    // Sélection de la logique de prix
     const logic = marketData[marqueInput] || marketData["default"];
 
     setTimeout(() => {
         const items = [];
         for(let i=0; i<5; i++) {
-            // PRIX D'ACHAT : Toujours sous le budget, mais réaliste (min 15€ pour de la marque)
-            const minBuy = Math.max(15, budgetNum * 0.4);
+            const minBuy = Math.max(15, budgetNum * 0.45);
             const buy = Math.floor(minBuy + (Math.random() * (budgetNum - minBuy)));
-            
-            // PRIX DE REVENTE : Basé sur le multiplicateur de la marque
-            // On ajoute un facteur aléatoire pour simuler l'état de l'objet
-            const marginFactor = logic.multiplier * (0.8 + Math.random() * 0.5);
-            const sell = Math.floor(buy * marginFactor);
+            const sell = Math.floor(buy * (logic.multiplier * (0.85 + Math.random() * 0.4)));
             
             const frais = 0.70 + (buy * 0.05);
             const profit = Math.round(sell - buy - frais);
             const roi = Math.round((profit / buy) * 100);
             
-            // TITRE RÉALISTE
             const suffix = logic.suffixes[Math.floor(Math.random() * logic.suffixes.length)];
 
             items.push({
-                title: `${marqueInput.toUpperCase()} ${suffix} - ${type}`,
+                title: `${marqueInput.toUpperCase()} ${suffix}`,
                 brand: marqueInput.toUpperCase(),
                 buy: buy,
                 sell: sell,
@@ -189,23 +195,33 @@ function lancerScan() {
         render(items, type, taille, budgetNum);
         document.getElementById('loading').classList.remove('active');
         document.getElementById('scanBtn').disabled = false;
-    }, 1500);
+    }, 1200);
+}
+
+function openCompare(platform, query) {
+    const q = encodeURIComponent(query);
+    let url = "";
+    
+    switch(platform) {
+        case 'lbc': url = `https://www.leboncoin.fr/recherche?text=${q}`; break;
+        case 'ebay': url = `https://www.ebay.fr/sch/i.html?_nkw=${q}`; break;
+        case 'stockx': url = `https://stockx.com/fr-fr/search?s=${q}`; break;
+    }
+    if(url) window.open(url, '_blank');
 }
 
 function render(items, type, taille, budgetNum) {
     const container = document.getElementById('results');
     document.getElementById('statsBar').style.display = 'flex';
     
-    const maxRoi = Math.max(...items.map(i => i.roi));
-    const avgProfit = Math.round(items.reduce((acc, i) => acc + i.profit, 0) / items.length);
-
     document.getElementById('statCount').textContent = items.length;
-    document.getElementById('statMargin').textContent = maxRoi + '%';
-    document.getElementById('statProfit').textContent = avgProfit + '€';
+    document.getElementById('statMargin').textContent = Math.max(...items.map(i => i.roi)) + '%';
+    document.getElementById('statProfit').textContent = Math.round(items.reduce((acc, i) => acc + i.profit, 0) / items.length) + '€';
 
     items.forEach((item, i) => {
-        const searchQuery = encodeURIComponent(`${item.brand} ${type} ${taille}`);
-        const vintedUrl = `https://www.vinted.fr/catalog?search_text=${searchQuery}&price_to=${budgetNum}&order=newest_first`;
+        const qVinted = encodeURIComponent(`${item.brand} ${type} ${taille}`);
+        const qCompare = `${item.brand} ${type} ${taille}`;
+        const vintedUrl = `https://www.vinted.fr/catalog?search_text=${qVinted}&price_to=${budgetNum}&order=newest_first`;
 
         container.innerHTML += `
             <div class="card" style="animation-delay: ${i * 0.1}s">
@@ -221,21 +237,26 @@ function render(items, type, taille, budgetNum) {
                             <i data-lucide="arrow-right" size="14" style="color:#444"></i>
                             <span class="price-sell">${item.sell}€</span>
                         </div>
-                        <div>
-                            <span class="profit-tag">
-                                <i data-lucide="trending-up" size="12"></i>
-                                +${item.profit}€ net (ROI ${item.roi}%)
-                            </span>
+                        <div class="profit-tag">
+                            <i data-lucide="trending-up" size="12"></i>
+                            +${item.profit}€ (ROI ${item.roi}%)
                         </div>
                     </div>
                 </div>
                 <div class="card-footer">
                     <a href="${vintedUrl}" target="_blank" class="btn-action btn-vinted">
-                        <i data-lucide="shopping-bag" size="14"></i> VOIR SUR VINTED
+                        <i data-lucide="shopping-bag" size="14"></i> VINTED
                     </a>
-                    <a href="#" class="btn-action btn-lbc">
-                        <i data-lucide="search" size="14"></i> COTE LBC
-                    </a>
+                    
+                    <div class="compare-dropdown">
+                        <select class="select-compare" onchange="openCompare(this.value, '${qCompare}'); this.value='';">
+                            <option value="" disabled selected>COMPARER PRIX</option>
+                            <option value="lbc">Leboncoin</option>
+                            <option value="ebay">eBay</option>
+                            <option value="stockx">StockX (Sneakers)</option>
+                        </select>
+                        <i data-lucide="chevron-down" size="14" class="dropdown-icon"></i>
+                    </div>
                 </div>
             </div>`;
     });
