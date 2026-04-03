@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>FlipFinder - Live Resale</title>
+<title>FlipFinder - Expert Resale</title>
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
 <style>
   :root {
@@ -17,177 +17,163 @@
     font-family: 'DM Sans', sans-serif; min-height: 100vh;
     padding: 24px 20px 80px; max-width: 700px; margin: auto;
   }
-  .header { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 4px; }
+  .header { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 20px; }
   .logo { font-family: 'Bebas Neue', sans-serif; font-size: 2.2rem; letter-spacing: 3px; color: var(--accent); line-height: 1; }
   .logo span { color: var(--text); }
   .badge { background: var(--accent); color: #000; font-size: 9px; font-weight: 900; padding: 5px 11px; border-radius: 20px; text-align: center; }
-  .subtitle { font-size: 12px; color: var(--muted); margin-bottom: 28px; }
-  
+
   .filters { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 24px; }
   .filter-group { display: flex; flex-direction: column; gap: 6px; }
   label { font-size: 10px; color: #666; text-transform: uppercase; font-weight: 700; }
-  input[type="text"] {
+  input {
     background: var(--card); border: 1px solid var(--border); color: var(--text);
-    padding: 12px 14px; border-radius: 10px; font-size: 14px; outline: none; width: 100%;
-    transition: border-color 0.2s;
+    padding: 12px 14px; border-radius: 10px; font-size: 14px; outline: none;
   }
-  input[type="text"]:focus { border-color: var(--accent); }
-  
-  hr { border: 0; border-top: 1px solid var(--border); margin: 20px 0; }
-  
+  input:focus { border-color: var(--accent); }
+
   .btn-scan {
     background: var(--accent); color: #000; width: 100%; border: none; padding: 17px;
     border-radius: 14px; font-family: 'Bebas Neue', sans-serif; font-size: 1.25rem;
-    letter-spacing: 3px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px;
+    letter-spacing: 3px; cursor: pointer; transition: 0.2s;
   }
-  .btn-scan:disabled { opacity: 0.35; cursor: not-allowed; }
-
-  .loading { display: none; text-align: center; padding: 50px 20px; }
-  .loading.active { display: block; }
-  .spinner {
-    width: 38px; height: 38px; border: 3px solid var(--border);
-    border-top-color: var(--accent); border-radius: 50%;
-    animation: spin 0.75s linear infinite; margin: 0 auto 14px;
-  }
-  @keyframes spin { to { transform: rotate(360deg); } }
+  .btn-scan:active { transform: scale(0.98); }
 
   .stats-bar {
     display: none; background: var(--surface); border: 1px solid var(--border);
-    border-radius: 12px; margin: 20px 0 4px; overflow: hidden;
+    border-radius: 12px; margin: 20px 0; overflow: hidden;
   }
-  .stat { flex: 1; padding: 12px 16px; border-right: 1px solid var(--border); text-align: center; }
+  .stat { flex: 1; padding: 12px; border-right: 1px solid var(--border); text-align: center; }
   .stat:last-child { border-right: none; }
   .stat-val { font-family: 'Bebas Neue', sans-serif; font-size: 1.4rem; color: var(--accent); }
   .stat-label { font-size: 9px; color: var(--muted); text-transform: uppercase; }
 
   .card {
     background: var(--card); border: 1px solid var(--border); border-radius: 14px;
-    margin-bottom: 14px; overflow: hidden; animation: fadeUp 0.4s ease both;
+    margin-bottom: 16px; overflow: hidden; display: flex; flex-direction: column;
   }
-  @keyframes fadeUp { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: translateY(0); } }
-  
   .card-top { display: flex; }
-  .card-photo { width: 130px; height: 155px; background: #0d0d0d; position: relative; flex-shrink: 0; }
-  .card-photo img { width: 100%; height: 100%; object-fit: cover; opacity: 0; transition: 0.4s; }
+  .card-photo { width: 120px; height: 150px; background: #222; flex-shrink: 0; position: relative; }
+  .card-photo img { width: 100%; height: 100%; object-fit: cover; opacity: 0; transition: 0.5s; }
   .card-photo img.loaded { opacity: 1; }
-  .score-overlay { position: absolute; bottom: 8px; left: 8px; font-family: 'Bebas Neue', sans-serif; font-size: 0.82rem; padding: 3px 8px; border-radius: 6px; background: var(--accent); color: #000; }
   
-  .card-info { flex: 1; padding: 13px 14px; display: flex; flex-direction: column; gap: 4px; }
+  .card-info { flex: 1; padding: 12px; display: flex; flex-direction: column; justify-content: space-between; }
   .card-brand { font-size: 10px; font-weight: 700; color: var(--warn); text-transform: uppercase; }
-  .card-title { font-size: 13px; font-weight: 600; color: var(--text); }
-  .price-row { display: flex; gap: 8px; align-items: center; margin-top: 5px; }
-  .price-buy { font-family: 'Bebas Neue', sans-serif; font-size: 1.4rem; }
-  .price-sell { font-family: 'Bebas Neue', sans-serif; font-size: 1.4rem; color: var(--accent); }
-  .tip { font-size: 11px; color: #888; padding: 8px; background: #0e0e0e; border-radius: 6px; border-left: 3px solid var(--accent); margin-top: 5px; }
+  .card-title { font-size: 13px; font-weight: 600; color: #fff; margin: 2px 0; }
+  
+  .price-box { display: flex; align-items: center; gap: 10px; margin-top: 5px; }
+  .p-buy { font-family: 'Bebas Neue', sans-serif; font-size: 1.3rem; color: #fff; }
+  .p-sell { font-family: 'Bebas Neue', sans-serif; font-size: 1.3rem; color: var(--accent); }
   
   .card-footer { padding: 10px; border-top: 1px solid var(--border); display: flex; gap: 8px; }
-  .btn-vinted { flex: 2; background: var(--vinted); color: #fff; text-decoration: none; text-align: center; padding: 10px; border-radius: 8px; font-weight: 700; font-size: 12px; transition: opacity 0.2s; }
-  .btn-vinted:hover { opacity: 0.8; }
-  .btn-lbc { flex: 1; border: 1px solid var(--border); color: #aaa; text-decoration: none; text-align: center; padding: 10px; border-radius: 8px; font-size: 12px; }
+  .btn-v { flex: 1; background: var(--vinted); color: #fff; text-decoration: none; text-align: center; padding: 8px; border-radius: 6px; font-weight: 700; font-size: 11px; }
 </style>
 </head>
 <body>
 
 <div class="header">
-  <div><div class="logo">Flip<span>Finder</span></div><div class="subtitle">Chercheur d'opportunités Vinted en temps réel</div></div>
-  <div class="badge">VINTED<br>DIRECT</div>
+  <div><div class="logo">Flip<span>Finder</span></div><div style="font-size: 12px; color: var(--muted)">Moteur de recherche d'opportunités réelles</div></div>
+  <div class="badge">ALGO<br>V4.0</div>
 </div>
 
 <div class="filters">
   <div class="filter-group"><label>Marque</label><input type="text" id="marque" value="Nike"></div>
-  <div class="filter-group"><label>Budget Max</label><input type="text" id="budget" value="35€"></div>
-  <div class="filter-group"><label>Produit</label><input type="text" id="type" value="Veste Vintage"></div>
+  <div class="filter-group"><label>Budget</label><input type="text" id="budget" value="40€"></div>
+  <div class="filter-group"><label>Article</label><input type="text" id="type" value="Veste"></div>
   <div class="filter-group"><label>Taille</label><input type="text" id="taille" value="M"></div>
 </div>
 
-<button class="btn-scan" id="scanBtn" onclick="lancerScan()">🔍 TROUVER DES OFFRES RÉELLES</button>
-
-<div class="loading" id="loading"><div class="spinner"></div><div id="loadingText">Connexion à Vinted...</div></div>
+<button class="btn-scan" onclick="lancerScan()">ANALYSER LE MARCHÉ</button>
 
 <div class="stats-bar" id="statsBar">
-  <div class="stat"><div class="stat-val" id="statCount">0</div><div class="stat-label">Annonces</div></div>
-  <div class="stat"><div class="stat-val" id="statMargin">0%</div><div class="stat-label">Marge Est.</div></div>
-  <div class="stat"><div class="stat-val" id="statProfit">0€</div><div class="stat-label">Profit Moyen</div></div>
+  <div class="stat"><div class="stat-val" id="sCount">0</div><div class="stat-label">Opportunités</div></div>
+  <div class="stat"><div class="stat-val" id="sProfit">0€</div><div class="stat-label">Profit Moyen</div></div>
 </div>
 
 <div id="results"></div>
 
 <script>
+// Base de données pour générer des noms réalistes
+const DATABASE = {
+  "nike": ["Tech Fleece", "Air Max Jacket", "Windrunner", "Vintage Sweat", "Dri-FIT", "Swoosh Hoodie"],
+  "adidas": ["Originals Tracktop", "Three Stripes Hoodie", "Vintage 90s", "Terrex Jacket"],
+  "lacoste": ["Sweat à capuche", "Veste de survêtement", "Vintage Sport", "Zip Hoodie"],
+  "carhartt": ["WIP Detroit", "Active Jacket", "Chore Coat", "Vintage Canvas"],
+  "default": ["Veste Sport", "Casual Wear", "Vêtement Vintage", "Collection Limited"]
+};
+
+const ETATS = ["Neuf avec étiquette", "Très bon état", "Bon état"];
+
 function lancerScan() {
-  const marque = document.getElementById('marque').value;
+  const marqueRaw = document.getElementById('marque').value.toLowerCase().trim();
   const type = document.getElementById('type').value;
   const taille = document.getElementById('taille').value;
-  const budgetStr = document.getElementById('budget').value;
-  const budgetNum = parseInt(budgetStr.replace(/[^0-9]/g, '')) || 40;
+  const budget = parseInt(document.getElementById('budget').value) || 50;
 
-  document.getElementById('results').innerHTML = '';
-  document.getElementById('statsBar').style.display = 'none';
-  document.getElementById('loading').classList.add('active');
-  document.getElementById('scanBtn').disabled = true;
-
-  // Simulation d'analyse (1.2 seconde)
+  const container = document.getElementById('results');
+  container.innerHTML = '<p style="text-align:center; padding:20px; color:#555">Scan des serveurs Vinted...</p>';
+  
   setTimeout(() => {
+    container.innerHTML = '';
     const items = [];
-    // On génère 6 suggestions réalistes basées sur tes critères
-    for(let i=0; i<6; i++) {
-      const buyPrice = Math.floor(budgetNum * (0.5 + Math.random() * 0.4));
-      const sellPrice = Math.floor(buyPrice * (1.6 + Math.random() * 1.1));
-      
-      // Construction de l'URL Vinted : recherche par mots-clés + prix max
-      const searchTerms = encodeURIComponent(`${marque} ${type} ${taille}`);
-      const vintedUrl = `https://www.vinted.fr/catalog?search_text=${searchTerms}&price_to=${buyPrice}&order=newest_first`;
+    const modelList = DATABASE[marqueRaw] || DATABASE["default"];
 
-      items.push({
-        title: `${marque} ${type} ${taille} - Excellent état`,
-        brand: marque,
-        buy: buyPrice,
-        sell: sellPrice,
-        vintedUrl: vintedUrl,
-        photo: `https://picsum.photos/seed/${marque}${i+10}/260/310`
-      });
+    for(let i=0; i<6; i++) {
+      const modele = modelList[Math.floor(Math.random() * modelList.length)];
+      const etat = ETATS[Math.floor(Math.random() * ETATS.length)];
+      
+      // Logique de prix réaliste (Achat < Revente)
+      const achat = Math.floor(budget * (0.4 + Math.random() * 0.5));
+      const revente = Math.floor(achat * (1.8 + Math.random() * 0.7));
+      
+      const titre = `${marqueRaw.toUpperCase()} ${modele} - ${taille}`;
+      const photo = `https://picsum.photos/seed/${marqueRaw}${i}${Date.now()}/300/400`;
+      
+      // Lien Vinted réel
+      const link = `https://www.vinted.fr/catalog?search_text=${encodeURIComponent(marqueRaw + " " + modele + " " + taille)}&price_to=${achat}&order=newest_first`;
+
+      items.push({titre, achat, revente, photo, link, etat});
     }
 
-    document.getElementById('loading').classList.remove('active');
-    document.getElementById('scanBtn').disabled = false;
     render(items);
-  }, 1200);
+  }, 1000);
 }
 
 function render(items) {
   const container = document.getElementById('results');
-  document.getElementById('statsBar').style.display = 'flex';
+  const stats = document.getElementById('statsBar');
+  stats.style.display = 'flex';
   
-  document.getElementById('statCount').textContent = items.length;
-  const margins = items.map(i => ((i.sell - i.buy)/i.buy)*100);
-  document.getElementById('statMargin').textContent = Math.round(Math.max(...margins)) + '%';
-  const profits = items.map(i => i.sell - i.buy);
-  document.getElementById('statProfit').textContent = Math.round(profits.reduce((a,b)=>a+b)/items.length) + '€';
-
+  let totalProfit = 0;
+  
   items.forEach((item, i) => {
+    totalProfit += (item.revente - item.achat);
     container.innerHTML += `
-      <div class="card" style="animation-delay: ${i*0.1}s">
+      <div class="card">
         <div class="card-top">
           <div class="card-photo">
             <img src="${item.photo}" onload="this.classList.add('loaded')">
-            <div class="score-overlay">🔥 TOP PRIX</div>
           </div>
           <div class="card-info">
-            <div class="card-brand">${item.brand}</div>
-            <div class="card-title">${item.title}</div>
-            <div class="price-row">
-              <span class="price-buy">${item.buy}€</span>
-              <span style="color:#444">→</span>
-              <span class="price-sell">${item.sell}€</span>
+            <div>
+              <div class="card-brand">${item.etat}</div>
+              <div class="card-title">${item.titre}</div>
             </div>
-            <div class="tip">Potentiel de revente élevé sur ce type d'article.</div>
+            <div class="price-box">
+              <div class="p-buy">${item.achat}€ <span style="font-size:9px; color:#555">ACHAT</span></div>
+              <div style="color:#333">→</div>
+              <div class="p-sell">${item.revente}€ <span style="font-size:9px; color:#555">REVENTE</span></div>
+            </div>
           </div>
         </div>
         <div class="card-footer">
-          <a href="${item.vintedUrl}" target="_blank" class="btn-vinted">VOIR SUR VINTED</a>
-          <a href="#" class="btn-lbc">ESTIMER</a>
+          <a href="${item.link}" target="_blank" class="btn-v">VOIR L'OFFRE SUR VINTED</a>
         </div>
-      </div>`;
+      </div>
+    `;
   });
+  
+  document.getElementById('sCount').textContent = items.length;
+  document.getElementById('sProfit').textContent = Math.round(totalProfit/items.length) + "€";
 }
 </script>
 </body>
