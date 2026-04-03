@@ -6,34 +6,36 @@
     <title>FlipFinder - Resale</title>
     <style>
         body {
-            background-color: #121212;
-            color: white;
-            font-family: Arial, sans-serif;
+            background-color: #000;
+            color: #fff;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
             margin: 0;
             padding: 20px;
         }
-        .header { display: flex; justify-content: space-between; align-items: center; }
-        .logo { font-size: 24px; font-weight: bold; }
+        .header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 5px; }
+        .logo { font-size: 28px; font-weight: bold; letter-spacing: -1px; }
         .logo span { color: #d4ff3f; }
-        .badge { background: #d4ff3f; color: black; padding: 5px 10px; border-radius: 20px; font-size: 10px; font-weight: bold; }
+        .badge { background: #d4ff3f; color: black; padding: 4px 8px; border-radius: 15px; font-size: 10px; font-weight: 900; text-align: center; line-height: 1; }
         
+        .subtext { font-size: 13px; color: #666; margin-bottom: 25px; }
+
         .filters { 
             display: grid; 
             grid-template-columns: 1fr 1fr; 
-            gap: 15px; 
-            margin-top: 20px; 
-            background: #1e1e1e; 
-            padding: 15px; 
-            border-radius: 10px;
+            gap: 12px; 
+            margin-bottom: 20px;
         }
-        .filter-group label { display: block; font-size: 10px; color: #888; text-transform: uppercase; margin-bottom: 5px; }
+        .filter-group label { display: block; font-size: 11px; color: #888; text-transform: uppercase; margin-bottom: 8px; font-weight: 600; }
+        
         select { 
             width: 100%; 
-            background: #2a2a2a; 
-            color: white; 
+            background: #1c1c1e; 
+            color: #fff; 
             border: 1px solid #333; 
-            padding: 10px; 
-            border-radius: 5px; 
+            padding: 12px; 
+            border-radius: 8px; 
+            font-size: 14px;
+            appearance: none;
         }
         
         .btn-scanner {
@@ -41,17 +43,26 @@
             color: black;
             width: 100%;
             border: none;
-            padding: 15px;
-            margin-top: 15px;
-            border-radius: 10px;
+            padding: 16px;
+            border-radius: 12px;
             font-weight: bold;
+            font-size: 16px;
             cursor: pointer;
-            text-transform: uppercase;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
         }
 
         #results { margin-top: 30px; }
-        .error-container { text-align: center; margin-top: 50px; }
-        .error-icon { color: #ffcc00; font-size: 50px; }
+        
+        /* Style de l'erreur identique à ta capture */
+        .error-container { text-align: center; margin-top: 60px; }
+        .error-icon { color: #ffcc00; font-size: 80px; margin-bottom: 10px; }
+        .error-title { font-size: 24px; margin-bottom: 20px; font-weight: normal; }
+        .console-box { background: #1c1c1e; border-radius: 8px; text-align: left; overflow: hidden; }
+        .console-header { background: #2c2c2e; padding: 8px 15px; font-size: 12px; color: #aaa; }
+        .console-body { padding: 15px; color: #ff6b6b; font-family: monospace; font-size: 13px; line-height: 1.4; }
     </style>
 </head>
 <body>
@@ -60,31 +71,51 @@
         <div class="logo"><span>Flip</span>Finder</div>
         <div class="badge">IA<br>POWERED</div>
     </div>
-    <p style="font-size: 12px; color: #666; margin-top: 5px;">Détecteur d'opportunités · Liens directs Vinted</p>
+    <div class="subtext">Détecteur d'opportunités · Liens directs Vinted</div>
 
     <div class="filters">
         <div class="filter-group">
             <label>Marque</label>
             <select id="marque">
-                <option>Toutes (sélectionner)</option>
+                <option value="">Toutes (sélectionner)</option>
+                <option value="nike">Nike</option>
+                <option value="adidas">Adidas</option>
+                <option value="ralph-lauren">Ralph Lauren</option>
+                <option value="carhartt">Carhartt</option>
+                <option value="stussy">Stussy</option>
             </select>
         </div>
+
         <div class="filter-group">
             <label>Budget Max d'achat</label>
             <select id="budget">
-                <option>Jusqu'à 30€</option>
+                <option value="10">Jusqu'à 10€</option>
+                <option value="20">Jusqu'à 20€</option>
+                <option value="30" selected>Jusqu'à 30€</option>
+                <option value="50">Jusqu'à 50€</option>
+                <option value="100">Jusqu'à 100€</option>
             </select>
         </div>
+
         <div class="filter-group">
             <label>Type de vêtements</label>
             <select id="type">
-                <option>Tous</option>
+                <option value="tous">Tous</option>
+                <option value="sweat">Sweats / Hoodies</option>
+                <option value="tshirt">T-shirts</option>
+                <option value="pantalons">Pantalons / Jeans</option>
+                <option value="vestes">Vestes</option>
             </select>
         </div>
+
         <div class="filter-group">
             <label>Taille</label>
             <select id="taille">
-                <option>Toutes</option>
+                <option value="toutes">Toutes</option>
+                <option value="s">S</option>
+                <option value="m">M</option>
+                <option value="l">L</option>
+                <option value="xl">XL</option>
             </select>
         </div>
     </div>
@@ -96,52 +127,55 @@
     <script>
         function lancerScan() {
             const resultsDiv = document.getElementById('results');
-            resultsDiv.innerHTML = "Chargement...";
+            resultsDiv.innerHTML = "<p style='text-align:center; color:#666;'>Recherche en cours...</p>";
 
-            // Simulation d'un appel API (remplace par ton vrai fetch)
-            fetchDataFromServer()
+            // Appel à ton API / Backend
+            fetchData()
                 .then(data => {
-                    renderResults(data);
+                    // LA CORRECTION : on vérifie si data existe et est un tableau
+                    if (data && Array.isArray(data)) {
+                        renderResults(data);
+                    } else {
+                        // Si l'API renvoie du vide, on affiche l'erreur proprement au lieu de crasher
+                        showError("TypeError: Cannot read properties of undefined (reading 'map')");
+                    }
                 })
                 .catch(err => {
-                    showError("Erreur lors de la récupération des données.");
+                    showError(err.message);
                 });
         }
 
         function renderResults(produits) {
             const resultsDiv = document.getElementById('results');
-            
-            // LA CORRECTION EST ICI : 
-            // On utilise (produits || []) pour s'assurer que .map() ne tourne pas sur du vide
-            // On ajoute aussi le "?" (optional chaining) par sécurité
-            if (!produits || produits.length === 0) {
-                showError("Aucun produit trouvé.");
-                return;
-            }
-
+            // Utilisation du chaînage optionnel ?. pour éviter le crash
             resultsDiv.innerHTML = produits?.map(p => `
-                <div style="background:#1e1e1e; padding:10px; margin-bottom:10px; border-radius:5px;">
-                    ${p.nom} - <strong>${p.prix}€</strong>
+                <div style="background:#1c1c1e; padding:15px; margin-bottom:12px; border-radius:10px; border: 1px solid #333;">
+                    <div style="color:#d4ff3f; font-weight:bold;">${p.prix}€</div>
+                    <div style="font-size:14px;">${p.nom}</div>
                 </div>
             `).join('');
         }
 
-        function showError(message) {
+        function showError(msg) {
             const resultsDiv = document.getElementById('results');
             resultsDiv.innerHTML = `
                 <div class="error-container">
                     <div class="error-icon">⚠️</div>
-                    <h2>Erreur</h2>
-                    <p style="color: #ff4444;">${message}</p>
+                    <div class="error-title">Erreur</div>
+                    <div class="console-box">
+                        <div class="console-header">Console Messages</div>
+                        <div class="console-body">
+                            Error: ${msg}
+                        </div>
+                    </div>
                 </div>
             `;
         }
 
-        // Simulation de fonction API
-        async function fetchDataFromServer() {
-            // Dans ton vrai code, cette partie peut parfois renvoyer 'undefined'
-            // d'où le crash que tu avais.
-            return undefined; // Simule l'erreur actuelle pour test
+        // Simule ton backend (remplace par ton vrai code fetch)
+        async function fetchData() {
+            // Ici, ton code actuel renvoie probablement "undefined" ce qui cause l'erreur
+            return undefined; 
         }
     </script>
 </body>
