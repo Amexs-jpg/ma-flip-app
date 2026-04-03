@@ -3,14 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>FlipFinder Pro - Resale Analytics</title>
+    <title>FlipFinder Pro - Market Logic</title>
     <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/lucide@latest"></script>
     <style>
         :root {
             --bg: #050505; --surface: #111; --card: #181818; --border: #282828;
             --accent: #d4ff3f; --vinted: #09b1ba; --text: #ffffff;
-            --muted: #888; --good: #4caf50; --warn: #f1a435;
+            --muted: #888; --good: #4caf50;
         }
         * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
         body {
@@ -84,14 +84,13 @@
             border-top-color: var(--accent); border-radius: 50%;
             animation: spin 0.8s linear infinite; margin: 0 auto 12px;
         }
-        @keyframes spin { to { transform: rotate(360deg); } }
     </style>
 </head>
 <body>
 
 <div class="header">
     <div class="logo">Flip<span>Finder</span></div>
-    <div class="badge">V2.1 PRO</div>
+    <div class="badge">V2.2 MARKET-AI</div>
 </div>
 
 <div class="filters">
@@ -101,25 +100,25 @@
     </div>
     <div class="filter-group">
         <label><i data-lucide="wallet" size="12"></i> Budget Max</label>
-        <input type="text" id="budget" value="40€">
+        <input type="text" id="budget" value="60€">
     </div>
     <div class="filter-group">
         <label><i data-lucide="shirt" size="12"></i> Type</label>
-        <input type="text" id="type" value="Veste">
+        <input type="text" id="type" value="Sneakers">
     </div>
     <div class="filter-group">
         <label><i data-lucide="maximize" size="12"></i> Taille</label>
-        <input type="text" id="taille" value="M">
+        <input type="text" id="taille" value="42">
     </div>
 </div>
 
 <button class="btn-scan" id="scanBtn" onclick="lancerScan()">
-    <i data-lucide="zap" size="18"></i> ANALYSER LE MARCHÉ
+    <i data-lucide="zap" size="18"></i> ANALYSER LES OPPORTUNITÉS
 </button>
 
 <div class="loading" id="loading">
     <div class="spinner"></div>
-    <p style="color: var(--muted); font-size: 12px;">Filtrage des annonces par budget...</p>
+    <p style="color: var(--muted); font-size: 12px;" id="loadingText">Calcul de la cote du marché...</p>
 </div>
 
 <div class="stats-bar" id="statsBar">
@@ -133,47 +132,64 @@
 <script>
 lucide.createIcons();
 
+// DICTIONNAIRE DE LOGIQUE DE MARCHÉ
+const marketData = {
+    "nike": { multiplier: 2.2, suffixes: ["Air Max", "Dunk Low", "Tech Fleece", "Jordan Retro"], demand: "Très Haute" },
+    "adidas": { multiplier: 1.8, suffixes: ["Yeezy", "Gazelle", "Samba", "Ultraboost"], demand: "Haute" },
+    "ralph lauren": { multiplier: 2.5, suffixes: ["Polo Slim", "Chemise Oxford", "Veste zippée"], demand: "Stable" },
+    "carhartt": { multiplier: 2.1, suffixes: ["Detroit Jacket", "Double Knee", "Bonnet A18"], demand: "Tendance" },
+    "lacoste": { multiplier: 2.3, suffixes: ["Survêtement", "Polo Classique", "Sacoche"], demand: "Haute" },
+    "default": { multiplier: 1.6, suffixes: ["Vintage", "Casual", "Sport Edition"], demand: "Variable" }
+};
+
 function lancerScan() {
-    const marque = document.getElementById('marque').value;
+    const marqueInput = document.getElementById('marque').value.toLowerCase();
     const type = document.getElementById('type').value;
     const taille = document.getElementById('taille').value;
-    const budgetRaw = document.getElementById('budget').value;
-    
-    // NETTOYAGE DU BUDGET
-    const budgetNum = parseInt(budgetRaw.replace(/[^0-9]/g, '')) || 30;
+    const budgetNum = parseInt(document.getElementById('budget').value.replace(/[^0-9]/g, '')) || 40;
 
     document.getElementById('results').innerHTML = '';
     document.getElementById('statsBar').style.display = 'none';
     document.getElementById('loading').classList.add('active');
     document.getElementById('scanBtn').disabled = true;
 
+    // Sélection de la logique de prix
+    const logic = marketData[marqueInput] || marketData["default"];
+
     setTimeout(() => {
         const items = [];
         for(let i=0; i<5; i++) {
-            // RESPECT DU BUDGET : Le prix d'achat est forcément inférieur au budget saisi
-            // On génère un prix entre 50% et 95% du budget max
-            const buy = Math.floor(budgetNum * (0.5 + Math.random() * 0.45));
-            const sell = Math.floor(buy * (1.8 + Math.random() * 0.6));
+            // PRIX D'ACHAT : Toujours sous le budget, mais réaliste (min 15€ pour de la marque)
+            const minBuy = Math.max(15, budgetNum * 0.4);
+            const buy = Math.floor(minBuy + (Math.random() * (budgetNum - minBuy)));
+            
+            // PRIX DE REVENTE : Basé sur le multiplicateur de la marque
+            // On ajoute un facteur aléatoire pour simuler l'état de l'objet
+            const marginFactor = logic.multiplier * (0.8 + Math.random() * 0.5);
+            const sell = Math.floor(buy * marginFactor);
             
             const frais = 0.70 + (buy * 0.05);
             const profit = Math.round(sell - buy - frais);
             const roi = Math.round((profit / buy) * 100);
+            
+            // TITRE RÉALISTE
+            const suffix = logic.suffixes[Math.floor(Math.random() * logic.suffixes.length)];
 
             items.push({
-                title: `${marque} ${type} Style`,
-                brand: marque,
+                title: `${marqueInput.toUpperCase()} ${suffix} - ${type}`,
+                brand: marqueInput.toUpperCase(),
                 buy: buy,
                 sell: sell,
                 profit: profit,
                 roi: roi,
-                photo: `https://picsum.photos/seed/${marque}${i}${Date.now()}/220/280`
+                photo: `https://picsum.photos/seed/${marqueInput}${i}${Date.now()}/220/280`
             });
         }
 
         render(items, type, taille, budgetNum);
         document.getElementById('loading').classList.remove('active');
         document.getElementById('scanBtn').disabled = false;
-    }, 1200);
+    }, 1500);
 }
 
 function render(items, type, taille, budgetNum) {
@@ -188,8 +204,6 @@ function render(items, type, taille, budgetNum) {
     document.getElementById('statProfit').textContent = avgProfit + '€';
 
     items.forEach((item, i) => {
-        // CONSTRUCTION DE L'URL AVEC FILTRE DE PRIX RÉEL
-        // On ajoute &price_to=${budgetNum} pour filtrer sur Vinted
         const searchQuery = encodeURIComponent(`${item.brand} ${type} ${taille}`);
         const vintedUrl = `https://www.vinted.fr/catalog?search_text=${searchQuery}&price_to=${budgetNum}&order=newest_first`;
 
@@ -204,6 +218,7 @@ function render(items, type, taille, budgetNum) {
                         <div class="card-title">${item.title}</div>
                         <div class="price-container">
                             <span class="price-buy">${item.buy}€</span>
+                            <i data-lucide="arrow-right" size="14" style="color:#444"></i>
                             <span class="price-sell">${item.sell}€</span>
                         </div>
                         <div>
@@ -219,7 +234,7 @@ function render(items, type, taille, budgetNum) {
                         <i data-lucide="shopping-bag" size="14"></i> VOIR SUR VINTED
                     </a>
                     <a href="#" class="btn-action btn-lbc">
-                        <i data-lucide="bar-chart-2" size="14"></i> ANALYSER
+                        <i data-lucide="search" size="14"></i> COTE LBC
                     </a>
                 </div>
             </div>`;
