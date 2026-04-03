@@ -10,7 +10,7 @@
         :root {
             --bg: #050505; --surface: #111; --card: #181818; --border: #282828;
             --accent: #d4ff3f; --vinted: #09b1ba; --text: #ffffff;
-            --muted: #888; --good: #4caf50; --warn: #f1a435; --danger: #ff4d4d;
+            --muted: #888; --good: #4caf50; --warn: #f1a435;
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
@@ -21,7 +21,7 @@
             padding: 24px 20px 80px; max-width: 600px; margin: auto;
         }
 
-        /* Header */
+        /* Header & Logo */
         .header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 24px; }
         .logo { font-family: 'Bebas Neue', sans-serif; font-size: 2.4rem; letter-spacing: 2px; color: var(--accent); }
         .logo span { color: var(--text); }
@@ -31,37 +31,37 @@
             border-radius: 20px; border: 1px solid var(--accent);
         }
 
-        /* Filters */
+        /* Système de Filtres */
         .filters { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 24px; }
         .filter-group { display: flex; flex-direction: column; gap: 6px; }
-        label { font-size: 10px; color: var(--muted); text-transform: uppercase; font-weight: 700; letter-spacing: 1px; }
+        label { font-size: 10px; color: var(--muted); text-transform: uppercase; font-weight: 700; display: flex; align-items: center; gap: 4px; }
         input {
             background: var(--card); border: 1px solid var(--border); color: var(--text);
             padding: 14px; border-radius: 12px; font-size: 14px; outline: none; transition: 0.2s;
         }
         input:focus { border-color: var(--accent); background: #1c1c1c; }
 
-        /* Button */
+        /* Bouton Scan */
         .btn-scan {
             background: var(--accent); color: #000; width: 100%; border: none; padding: 18px;
             border-radius: 16px; font-family: 'Bebas Neue', sans-serif; font-size: 1.3rem;
             letter-spacing: 2px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 12px;
-            transition: transform 0.1s, opacity 0.2s;
+            transition: transform 0.1s;
         }
         .btn-scan:active { transform: scale(0.98); }
         .btn-scan:disabled { opacity: 0.3; cursor: not-allowed; }
 
-        /* Stats Bar */
+        /* Barre de Statistiques */
         .stats-bar {
             display: none; background: var(--surface); border: 1px solid var(--border);
-            border-radius: 16px; margin: 24px 0; overflow: hidden; animation: fadeIn 0.5s ease;
+            border-radius: 16px; margin: 24px 0; overflow: hidden;
         }
         .stat { flex: 1; padding: 16px; border-right: 1px solid var(--border); text-align: center; }
         .stat:last-child { border-right: none; }
-        .stat-val { font-family: 'Bebas Neue', sans-serif; font-size: 1.6rem; color: var(--accent); line-height: 1.2; }
-        .stat-label { font-size: 9px; color: var(--muted); text-transform: uppercase; font-weight: 600; }
+        .stat-val { font-family: 'Bebas Neue', sans-serif; font-size: 1.6rem; color: var(--accent); }
+        .stat-label { font-size: 9px; color: var(--muted); text-transform: uppercase; }
 
-        /* Cards */
+        /* Cartes de résultats */
         .card {
             background: var(--card); border: 1px solid var(--border); border-radius: 18px;
             margin-bottom: 16px; overflow: hidden; animation: slideUp 0.4s ease both;
@@ -69,43 +69,41 @@
         @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
         
         .card-top { display: flex; padding: 12px; gap: 14px; }
-        .card-photo { width: 110px; height: 140px; background: #111; border-radius: 12px; overflow: hidden; position: relative; flex-shrink: 0; }
+        .card-photo { width: 110px; height: 140px; background: #111; border-radius: 12px; overflow: hidden; flex-shrink: 0; }
         .card-photo img { width: 100%; height: 100%; object-fit: cover; opacity: 0; transition: 0.5s; }
         .card-photo img.loaded { opacity: 1; }
         
         .card-info { flex: 1; display: flex; flex-direction: column; justify-content: center; }
-        .card-brand { font-size: 11px; font-weight: 800; color: var(--accent); text-transform: uppercase; margin-bottom: 2px; }
-        .card-title { font-size: 14px; font-weight: 500; color: #eee; margin-bottom: 8px; }
+        .card-brand { font-size: 11px; font-weight: 800; color: var(--accent); text-transform: uppercase; }
+        .card-title { font-size: 14px; font-weight: 500; color: #eee; margin: 4px 0; }
         
-        .price-container { display: flex; align-items: baseline; gap: 10px; }
-        .price-buy { font-family: 'Bebas Neue', sans-serif; font-size: 1.5rem; color: #777; text-decoration: line-through; }
+        .price-container { display: flex; align-items: baseline; gap: 8px; margin-top: 4px; }
+        .price-buy { font-family: 'Bebas Neue', sans-serif; font-size: 1.3rem; color: #666; text-decoration: line-through; }
         .price-sell { font-family: 'Bebas Neue', sans-serif; font-size: 1.8rem; color: var(--text); }
         
         .profit-tag { 
             display: inline-flex; align-items: center; gap: 4px;
-            background: rgba(76, 175, 80, 0.15); color: #4caf50; 
-            padding: 4px 8px; border-radius: 6px; font-size: 11px; font-weight: 700; margin-top: 6px;
+            background: rgba(76, 175, 80, 0.1); color: #4caf50; 
+            padding: 4px 8px; border-radius: 6px; font-size: 11px; font-weight: 700; margin-top: 8px;
         }
 
         .card-footer { padding: 12px; background: rgba(255,255,255,0.02); display: flex; gap: 10px; }
         .btn-action { 
             flex: 1; padding: 12px; border-radius: 10px; font-size: 12px; font-weight: 700; 
-            text-decoration: none; text-align: center; transition: 0.2s;
-            display: flex; align-items: center; justify-content: center; gap: 6px;
+            text-decoration: none; text-align: center; display: flex; align-items: center; justify-content: center; gap: 6px;
         }
         .btn-vinted { background: var(--vinted); color: white; }
-        .btn-lbc { background: transparent; border: 1px solid var(--border); color: var(--muted); }
+        .btn-lbc { border: 1px solid var(--border); color: var(--muted); }
 
-        /* Loading */
+        /* Chargement */
         .loading { display: none; text-align: center; padding: 40px; }
         .loading.active { display: block; }
         .spinner {
-            width: 40px; height: 40px; border: 3px solid var(--border);
+            width: 30px; height: 30px; border: 3px solid var(--border);
             border-top-color: var(--accent); border-radius: 50%;
-            animation: spin 0.8s linear infinite; margin: 0 auto 16px;
+            animation: spin 0.8s linear infinite; margin: 0 auto 12px;
         }
         @keyframes spin { to { transform: rotate(360deg); } }
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
     </style>
 </head>
 <body>
@@ -117,101 +115,93 @@
 
 <div class="filters">
     <div class="filter-group">
-        <label><i data-lucide="tag" size="10"></i> Marque</label>
-        <input type="text" id="marque" placeholder="Ex: Nike, Adidas..." value="Nike">
+        <label><i data-lucide="tag" size="12"></i> Marque</label>
+        <input type="text" id="marque" value="Nike">
     </div>
     <div class="filter-group">
-        <label><i data-lucide="wallet" size="10"></i> Budget Max</label>
-        <input type="text" id="budget" placeholder="Ex: 50" value="40€">
+        <label><i data-lucide="wallet" size="12"></i> Budget Max</label>
+        <input type="text" id="budget" value="40€">
     </div>
     <div class="filter-group">
-        <label><i data-lucide="shirt" size="10"></i> Type</label>
+        <label><i data-lucide="shirt" size="12"></i> Type</label>
         <input type="text" id="type" value="Veste">
     </div>
     <div class="filter-group">
-        <label><i data-lucide="maximize" size="10"></i> Taille</label>
+        <label><i data-lucide="maximize" size="12"></i> Taille</label>
         <input type="text" id="taille" value="M">
     </div>
 </div>
 
 <button class="btn-scan" id="scanBtn" onclick="lancerScan()">
-    <i data-lucide="search"></i> ANALYSER LE MARCHÉ
+    <i data-lucide="zap" size="18"></i> ANALYSER LE MARCHÉ
 </button>
 
 <div class="loading" id="loading">
     <div class="spinner"></div>
-    <p style="color: var(--muted); font-size: 13px;">Extraction des données en cours...</p>
+    <p style="color: var(--muted); font-size: 12px;">Recherche des meilleures opportunités...</p>
 </div>
 
 <div class="stats-bar" id="statsBar">
-    <div class="stat">
-        <div class="stat-val" id="statCount">0</div>
-        <div class="stat-label">Pépites</div>
-    </div>
-    <div class="stat">
-        <div class="stat-val" id="statMargin">0%</div>
-        <div class="stat-label">ROI Max</div>
-    </div>
-    <div class="stat">
-        <div class="stat-val" id="statProfit">0€</div>
-        <div class="stat-label">Profit Net</div>
-    </div>
+    <div class="stat"><div class="stat-val" id="statCount">0</div><div class="stat-label">Pépites</div></div>
+    <div class="stat"><div class="stat-val" id="statMargin">0%</div><div class="stat-label">ROI Max</div></div>
+    <div class="stat"><div class="stat-val" id="statProfit">0€</div><div class="stat-label">Profit Moyen</div></div>
 </div>
 
 <div id="results"></div>
 
 <script>
-// Initialisation des icônes
+// Initialisation des icônes au chargement
 lucide.createIcons();
 
 function lancerScan() {
-    // Nettoyage de l'input budget (enlève le € si présent)
-    let budgetRaw = document.getElementById('budget').value;
-    const budgetNum = parseInt(budgetRaw.replace(/[^0-9]/g, '')) || 30;
-    const marque = document.getElementById('marque').value || "Article";
+    // Récupération et nettoyage des données
+    const marque = document.getElementById('marque').value;
     const type = document.getElementById('type').value;
+    const taille = document.getElementById('taille').value;
+    const budgetRaw = document.getElementById('budget').value;
+    const budgetNum = parseInt(budgetRaw.replace(/[^0-9]/g, '')) || 30;
 
-    // Reset UI
+    // Reset de l'interface
     document.getElementById('results').innerHTML = '';
     document.getElementById('statsBar').style.display = 'none';
     document.getElementById('loading').classList.add('active');
     document.getElementById('scanBtn').disabled = true;
 
+    // Simulation de recherche
     setTimeout(() => {
         const items = [];
         for(let i=0; i<5; i++) {
-            const buyPrice = Math.floor(budgetNum * (0.4 + Math.random() * 0.4));
-            const sellPrice = Math.floor(buyPrice * (1.8 + Math.random() * 0.8));
+            const buy = Math.floor(budgetNum * (0.4 + Math.random() * 0.4));
+            const sell = Math.floor(buy * (1.9 + Math.random() * 0.7));
             
-            // Calcul des frais (Vinted : 0.70€ + 5%)
-            const fraisVinted = 0.70 + (buyPrice * 0.05);
-            const profitNet = Math.round(sellPrice - buyPrice - fraisVinted);
-            const roi = Math.round((profitNet / buyPrice) * 100);
+            // Calcul du profit net (Frais Vinted inclus : 0.70€ + 5% du prix d'achat)
+            const frais = 0.70 + (buy * 0.05);
+            const profit = Math.round(sell - buy - frais);
+            const roi = Math.round((profit / buy) * 100);
 
             items.push({
-                title: `${marque} ${type} Vintage Edition`,
+                title: `${marque} ${type} Vintage`,
                 brand: marque,
-                buy: buyPrice,
-                sell: sellPrice,
-                profit: profitNet,
+                buy: buy,
+                sell: sell,
+                profit: profit,
                 roi: roi,
                 photo: `https://picsum.photos/seed/${marque}${i}${Date.now()}/220/280`
             });
         }
 
-        render(items);
+        render(items, type, taille);
         document.getElementById('loading').classList.remove('active');
         document.getElementById('scanBtn').disabled = false;
-        lucide.createIcons(); // Re-render les icônes dans les cartes
     }, 1200);
 }
 
-function render(items) {
+function render(items, type, taille) {
     const container = document.getElementById('results');
     const bar = document.getElementById('statsBar');
     bar.style.display = 'flex';
     
-    // Calcul des stats globales
+    // Stats globales
     const maxRoi = Math.max(...items.map(i => i.roi));
     const avgProfit = Math.round(items.reduce((acc, i) => acc + i.profit, 0) / items.length);
 
@@ -220,6 +210,10 @@ function render(items) {
     document.getElementById('statProfit').textContent = avgProfit + '€';
 
     items.forEach((item, i) => {
+        // CONSTRUCTION DE L'URL VINTED RÉELLE
+        const searchQuery = encodeURIComponent(`${item.brand} ${type} ${taille}`);
+        const vintedUrl = `https://www.vinted.fr/catalog?search_text=${searchQuery}&order=newest_first`;
+
         container.innerHTML += `
             <div class="card" style="animation-delay: ${i * 0.1}s">
                 <div class="card-top">
@@ -242,15 +236,18 @@ function render(items) {
                     </div>
                 </div>
                 <div class="card-footer">
-                    <a href="#" class="btn-action btn-vinted">
-                        <i data-lucide="external-link" size="14"></i> ACHETER
+                    <a href="${vintedUrl}" target="_blank" class="btn-action btn-vinted">
+                        <i data-lucide="shopping-bag" size="14"></i> VOIR SUR VINTED
                     </a>
                     <a href="#" class="btn-action btn-lbc">
-                        <i data-lucide="bar-chart-3" size="14"></i> ANALYSER
+                        <i data-lucide="bar-chart-2" size="14"></i> ANALYSER
                     </a>
                 </div>
             </div>`;
     });
+    
+    // Activation des icônes Lucide pour les nouveaux éléments
+    lucide.createIcons();
 }
 </script>
 </body>
