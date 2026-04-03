@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>FlipFinder Pro - Smart Grading</title>
+    <title>FlipFinder Pro - Apparel Logic</title>
     <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/lucide@latest"></script>
     <style>
@@ -39,8 +39,6 @@
             border-radius: 16px; font-family: 'Bebas Neue', sans-serif; font-size: 1.3rem;
             letter-spacing: 2px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 12px;
         }
-        .btn-scan:disabled { opacity: 0.3; }
-
         .stats-bar {
             display: none; background: var(--surface); border: 1px solid var(--border);
             border-radius: 16px; margin: 24px 0; overflow: hidden;
@@ -49,7 +47,6 @@
         .stat-val { font-family: 'Bebas Neue', sans-serif; font-size: 1.6rem; color: var(--accent); }
         .stat-label { font-size: 9px; color: var(--muted); text-transform: uppercase; }
 
-        /* Cartes & Grading */
         .card {
             background: var(--card); border: 1px solid var(--border); border-radius: 18px;
             margin-bottom: 16px; overflow: hidden; position: relative; animation: slideUp 0.4s ease both;
@@ -59,12 +56,10 @@
             border-radius: 8px; display: flex; align-items: center; justify-content: center;
             font-family: 'Bebas Neue', sans-serif; font-size: 1.4rem; font-weight: bold; z-index: 10;
         }
-        .grade-a { background: var(--score-a); color: #000; box-shadow: 0 0 15px rgba(212, 255, 63, 0.3); }
+        .grade-a { background: var(--score-a); color: #000; }
         .grade-b { background: var(--score-b); color: #000; }
         .grade-c { background: var(--score-c); color: #fff; }
 
-        @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
-        
         .card-top { display: flex; padding: 12px; gap: 14px; }
         .card-photo { width: 110px; height: 140px; background: #111; border-radius: 12px; overflow: hidden; flex-shrink: 0; }
         .card-photo img { width: 100%; height: 100%; object-fit: cover; opacity: 0; transition: 0.5s; }
@@ -79,7 +74,7 @@
         .profit-tag { 
             display: inline-flex; align-items: center; gap: 4px;
             background: rgba(255, 255, 255, 0.05); color: #fff; 
-            padding: 4px 10px; border-radius: 8px; font-size: 12px; font-weight: 800; margin-top: 8px;
+            padding: 4px 10px; border-radius: 8px; font-size: 11px; font-weight: 800; margin-top: 8px;
             border: 1px solid var(--border);
         }
 
@@ -106,31 +101,32 @@
             border-top-color: var(--accent); border-radius: 50%;
             animation: spin 0.8s linear infinite; margin: 0 auto 12px;
         }
+        @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
     </style>
 </head>
 <body>
 
 <div class="header">
     <div class="logo">Flip<span>Finder</span></div>
-    <div class="badge">V2.6 SMART-SCORE</div>
+    <div class="badge">V2.7 APPAREL-PRO</div>
 </div>
 
 <div class="filters">
     <div class="filter-group">
         <label><i data-lucide="tag" size="12"></i> Marque</label>
-        <input type="text" id="marque" value="Nike">
+        <input type="text" id="marque" value="Carhartt">
     </div>
     <div class="filter-group">
         <label><i data-lucide="wallet" size="12"></i> Budget Max</label>
-        <input type="text" id="budget" value="80€">
+        <input type="text" id="budget" value="50€">
     </div>
     <div class="filter-group">
         <label><i data-lucide="shirt" size="12"></i> Type</label>
-        <input type="text" id="type" value="Sneakers">
+        <input type="text" id="type" value="Veste">
     </div>
     <div class="filter-group">
         <label><i data-lucide="maximize" size="12"></i> Taille</label>
-        <input type="text" id="taille" value="44">
+        <input type="text" id="taille" value="L">
     </div>
 </div>
 
@@ -140,7 +136,7 @@
 
 <div class="loading" id="loading">
     <div class="spinner"></div>
-    <p style="color: var(--muted); font-size: 12px;">Évaluation de la vitesse de revente...</p>
+    <p style="color: var(--muted); font-size: 12px;">Analyse des tendances vestimentaires...</p>
 </div>
 
 <div class="stats-bar" id="statsBar">
@@ -154,19 +150,22 @@
 <script>
 lucide.createIcons();
 
-// LOGIQUE DE MARCHÉ RÉELLE (Poids des marques basé sur les volumes Vinted/eBay)
 const marketData = {
-    "nike": { multiplier: 2.1, volume: 10, suffixes: ["Air Force 1", "Dunk Low", "Jordan 1", "TN Air Max"] },
-    "adidas": { multiplier: 1.7, volume: 8, suffixes: ["Samba OG", "Campus", "Yeezy", "Gazelle"] },
-    "ralph lauren": { multiplier: 2.4, volume: 7, suffixes: ["Polo Bear", "Pull Torsadé", "Chemise Oxford"], },
-    "carhartt": { multiplier: 2.2, volume: 9, suffixes: ["Detroit Jacket", "Double Knee", "Bonnet"], },
-    "lacoste": { multiplier: 2.3, volume: 8, suffixes: ["Survêtement", "Polo Classique", "Sacoche"], },
-    "default": { multiplier: 1.6, volume: 4, suffixes: ["Vintage Edition", "Collection Sport", "Archive Style"] }
+    // CHAUSSURES (Non touché)
+    "sneakers": { multiplier: 2.1, volume: 10, suffixes: ["Air Force 1", "Dunk Low", "Jordan 1 Retro", "TN Air Max"] },
+    
+    // VÊTEMENTS - LOGIQUE SPÉCIFIQUE
+    "nike": { multiplier: 1.8, volume: 9, apparelSuffixes: ["Tech Fleece", "Vintage Hoodie", "Sweat Big Swoosh", "Pantalon de Jogging"] },
+    "carhartt": { multiplier: 2.3, volume: 9, apparelSuffixes: ["Detroit Jacket", "Double Knee Pant", "Active Jacket Canvas", "Veste Carpenter"] },
+    "ralph lauren": { multiplier: 2.5, volume: 8, apparelSuffixes: ["Pull Col V Laine", "Chemise Slim Oxford", "Polo Bear", "Doudoune Sans Manche"] },
+    "lacoste": { multiplier: 2.2, volume: 8, apparelSuffixes: ["Survêtement Brillant", "Polo Classic Fit", "Cardigan Laine", "Veste de Tennis"] },
+    "adidas": { multiplier: 1.6, volume: 7, apparelSuffixes: ["Veste Firebird", "Hoodie Trèfle", "Jogging Adibreak", "Coupe-vent Vintage"] },
+    "default": { multiplier: 1.5, volume: 5, apparelSuffixes: ["Veste Vintage", "Hoodie Oversized", "T-shirt Graphique", "Pantalon Cargo"] }
 };
 
 function lancerScan() {
     const marqueInput = document.getElementById('marque').value.toLowerCase();
-    const type = document.getElementById('type').value;
+    const typeInput = document.getElementById('type').value.toLowerCase();
     const taille = document.getElementById('taille').value;
     const budgetNum = parseInt(document.getElementById('budget').value.replace(/[^0-9]/g, '')) || 40;
 
@@ -176,25 +175,39 @@ function lancerScan() {
     document.getElementById('scanBtn').disabled = true;
 
     const logic = marketData[marqueInput] || marketData["default"];
+    const isSneakers = typeInput.includes('sneak') || typeInput.includes('chaussure');
 
     setTimeout(() => {
         const items = [];
         for(let i=0; i<5; i++) {
-            const minBuy = Math.max(15, budgetNum * 0.45);
+            // Calcul Prix Achat
+            const minBuy = Math.max(10, budgetNum * 0.4);
             const buy = Math.floor(minBuy + (Math.random() * (budgetNum - minBuy)));
-            const sell = Math.floor(buy * (logic.multiplier * (0.85 + Math.random() * 0.4)));
+            
+            // Multiplicateur
+            const sell = Math.floor(buy * (logic.multiplier * (0.8 + Math.random() * 0.5)));
             
             const frais = 0.70 + (buy * 0.05);
             const profitNet = Math.round(sell - buy - frais);
             const profitPercent = Math.round((profitNet / buy) * 100);
-            
-            // CALCUL DU SCORE (Basé sur le Volume de la marque + Marge)
-            let grade = "C";
-            const scoreTotal = logic.volume + (profitPercent / 40);
-            if(scoreTotal > 11) grade = "A";
-            else if(scoreTotal > 7) grade = "B";
 
-            const suffix = logic.suffixes[Math.floor(Math.random() * logic.suffixes.length)];
+            // LOGIQUE DE TITRE DIFFÉRENCIÉE
+            let suffix;
+            if (isSneakers) {
+                // Utilise les suffixes de sneakers de la catégorie Sneakers globale ou par marque si dispo
+                const sneakerList = marketData["sneakers"].suffixes;
+                suffix = sneakerList[Math.floor(Math.random() * sneakerList.length)];
+            } else {
+                // Utilise les suffixes vêtements
+                const apparelList = logic.apparelSuffixes || marketData["default"].apparelSuffixes;
+                suffix = apparelList[Math.floor(Math.random() * apparelList.length)];
+            }
+
+            // Grade
+            let grade = "C";
+            const scoreTotal = logic.volume + (profitPercent / 50);
+            if(scoreTotal > 10.5) grade = "A";
+            else if(scoreTotal > 7.5) grade = "B";
 
             items.push({
                 title: `${marqueInput.toUpperCase()} ${suffix}`,
@@ -241,7 +254,6 @@ function render(items, taille, budgetNum) {
         container.innerHTML += `
             <div class="card" style="animation-delay: ${i * 0.1}s">
                 <div class="grade-badge grade-${item.grade.toLowerCase()}">${item.grade}</div>
-                
                 <div class="card-top">
                     <div class="card-photo">
                         <img src="${item.photo}" onload="this.classList.add('loaded')">
@@ -255,16 +267,15 @@ function render(items, taille, budgetNum) {
                             <span class="price-sell">${item.sell}€</span>
                         </div>
                         <div class="profit-tag">
-                            <i data-lucide="banknote" size="12" style="color:var(--accent)"></i>
-                            +${item.gain}€ NET (${item.percent}%)
+                            <i data-lucide="shopping-cart" size="12" style="color:var(--accent)"></i>
+                            +${item.gain}€ (${item.percent}%)
                         </div>
                     </div>
                 </div>
                 <div class="card-footer">
                     <a href="${vintedUrl}" target="_blank" class="btn-action btn-vinted">
-                        <i data-lucide="shopping-bag" size="14"></i> VOIR VINTED
+                        <i data-lucide="shopping-bag" size="14"></i> VINTED
                     </a>
-                    
                     <div class="compare-dropdown">
                         <select class="select-compare" onchange="openCompare(this.value, '${exactSearch}'); this.value='';">
                             <option value="" disabled selected>COMPARER</option>
