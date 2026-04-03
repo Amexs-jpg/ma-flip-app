@@ -47,7 +47,7 @@
 
     <script>
         // CONFIGURATION OBLIGATOIRE
-        const CX_ID = "71e2ce8bd66eb466a"; // <--- REMPLACE CECI PAR TON ID CX GOOGLE
+        const CX_ID = "71e2ce8bd66eb466a"; 
 
         async function lancerScan() {
             const resultsDiv = document.getElementById('results');
@@ -62,15 +62,11 @@
                 return;
             }
 
-            if (CX_ID === "71e2ce8bd66eb466a") {
-                afficherErreur("L'ID CX n'est pas configuré dans le code.");
-                return;
-            }
+            // Correction ici : On a enlevé le test bloquant qui vérifiait l'ID CX
 
             resultsDiv.innerHTML = "<p style='color:#d4ff3f'>Recherche des meilleures pépites Vinted...</p>";
 
             try {
-                // Requête vers Google Custom Search limitée à Vinted.fr
                 const query = `site:vinted.fr ${marque} ${type} ${budget}`;
                 const url = `https://www.googleapis.com/customsearch/v1?key=${key}&cx=${CX_ID}&q=${encodeURIComponent(query)}`;
 
