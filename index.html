@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>FlipFinder Pro - Coherence Engine</title>
+    <title>FlipFinder Pro - Hot-List V3.5</title>
     <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/lucide@latest"></script>
     <style>
@@ -46,9 +46,8 @@
 
         .card { background: var(--card); border: 1px solid var(--border); border-radius: 22px; margin-bottom: 16px; overflow: hidden; position: relative; animation: slideUp 0.4s ease both; }
         .grade-badge { position: absolute; top: 12px; right: 12px; width: 34px; height: 34px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-family: 'Bebas Neue', sans-serif; font-size: 1.4rem; z-index: 10; font-weight: bold; }
-        .grade-a { background: var(--score-a); color: #000; box-shadow: 0 0 20px rgba(212,255,63,0.2); }
+        .grade-a { background: var(--score-a); color: #000; box-shadow: 0 0 20px rgba(212,255,63,0.3); }
         .grade-b { background: var(--score-b); color: #000; }
-        .grade-c { background: var(--score-c); color: #fff; }
 
         .card-top { display: flex; padding: 15px; gap: 16px; }
         .card-photo { width: 105px; height: 135px; background: #111; border-radius: 14px; overflow: hidden; flex-shrink: 0; }
@@ -87,7 +86,7 @@
 
 <div class="header">
     <div class="logo">Flip<span>Finder</span></div>
-    <div class="badge">V3.4 COHERENCE-PLUS</div>
+    <div class="badge">V3.5 BEST-SELLERS ONLY</div>
 </div>
 
 <div class="filters">
@@ -97,20 +96,20 @@
     </div>
     <div class="filter-group">
         <label><i data-lucide="wallet" size="12"></i> Budget Max</label>
-        <input type="text" id="budget" value="65€">
+        <input type="text" id="budget" value="70€">
     </div>
     <div class="filter-group" style="grid-column: span 2;">
-        <label><i data-lucide="layers" size="12"></i> Catégorie Ciblée</label>
+        <label><i data-lucide="layers" size="12"></i> Catégorie</label>
         <select id="typeSelect">
-            <option value="outerwear">Vestes & Blousons (Detroit, Santa Fe...)</option>
-            <option value="tops">Hauts (Hoodies, Pulls, Sweats...)</option>
-            <option value="bottoms">Pantalons (Double Knee, Cargo...)</option>
-            <option value="sneakers">Sneakers (Jordan, Dunk, NB...)</option>
+            <option value="outerwear">Vestes & Blousons (Best-sellers)</option>
+            <option value="tops">Hauts & Pulls (Plus demandés)</option>
+            <option value="bottoms">Pantalons & Jeans (Hot-list)</option>
+            <option value="sneakers">Sneakers (Cotes Vinted)</option>
         </select>
     </div>
     <div class="filter-group">
         <label><i data-lucide="maximize" size="12"></i> Taille</label>
-        <input type="text" id="taille" value="L">
+        <input type="text" id="taille" value="XL">
     </div>
     <div class="filter-group">
         <label><i data-lucide="sparkles" size="12"></i> État</label>
@@ -122,10 +121,10 @@
 </div>
 
 <button class="btn-scan" id="scanBtn" onclick="lancerScan()">
-    <i data-lucide="zap" size="18"></i> SNIPER LES OFFRES COHÉRENTES
+    <i data-lucide="zap" size="18"></i> SCANNER LES BEST-SELLERS
 </button>
 
-<div class="loading" id="loading">Synchronisation des bases de données...</div>
+<div class="loading" id="loading">Analyse des articles à forte rotation...</div>
 
 <div class="stats-bar" id="statsBar">
     <div class="stat"><div class="stat-val" id="statCount">0</div><div class="stat-label">Pépites</div></div>
@@ -137,123 +136,88 @@
 <script>
 lucide.createIcons();
 
-// MATRICE DE COHÉRENCE (MARQUE x CATÉGORIE)
-const coherenceData = {
+// FOCUS BEST-SELLERS PAR CATÉGORIE
+const hotDatabase = {
     "CARHARTT": {
-        "outerwear": [{n:"Detroit Jacket", m:2.8}, {n:"Santa Fe Jacket", m:2.5}, {n:"Active Jacket", m:1.9}],
-        "tops": [{n:"Hoodie Chase Logo", m:1.7}, {n:"Sweat Pocket Tee", m:1.5}],
-        "bottoms": [{n:"Double Knee Pant", m:2.4}, {n:"Single Knee Pant", m:1.9}, {n:"Cargo Pant", m:1.8}]
+        "outerwear": [{n:"Detroit Jacket", m:2.9, hot:true}, {n:"Santa Fe Jacket", m:2.6, hot:true}, {n:"Active Jacket Polaire", m:2.0, hot:true}],
+        "tops": [{n:"Hoodie Chase Brodé", m:1.8, hot:false}, {n:"Sweat à capuche Logo Central", m:2.2, hot:true}],
+        "bottoms": [{n:"Double Knee Pant", m:2.5, hot:true}, {n:"Carpenter Baggy Pant", m:2.1, hot:true}]
     },
     "NIKE": {
-        "outerwear": [{n:"Veste Nocta Tech", m:2.1}, {n:"Bomber Vintage 90s", m:2.3}],
-        "tops": [{n:"Hoodie Swoosh Central", m:2.5}, {n:"Sweat Vintage Brodé", m:2.2}],
-        "bottoms": [{n:"Tech Fleece Pant", m:1.6}, {n:"Track Pant Vintage", m:1.7}],
-        "sneakers": [{n:"Air Force 1 Low", m:1.5}, {n:"Dunk Low Retro", m:1.7}, {n:"TN Air Max Plus", m:1.8}]
-    },
-    "RALPH LAUREN": {
-        "outerwear": [{n:"Doudoune Sans Manche", m:1.9}, {n:"Veste Harrington", m:2.1}],
-        "tops": [{n:"Pull Cable Knit Laine", m:2.4}, {n:"Chemise Oxford Slim", m:1.6}, {n:"Pull Bear Collector", m:3.2}],
-        "bottoms": [{n:"Short Chino Classic", m:1.5}]
-    },
-    "STUSSY": {
-        "outerwear": [{n:"8 Ball Fleece Jacket", m:2.6}],
-        "tops": [{n:"T-shirt World Tour", m:1.9}, {n:"Hoodie Dice Logo", m:2.1}],
-        "bottoms": [{n:"Big Ol Jeans", m:2.2}]
+        "outerwear": [{n:"Veste Nocta", m:2.1, hot:true}, {n:"Windrunner Vintage", m:1.9, hot:false}],
+        "tops": [{n:"Hoodie Swoosh Central", m:2.7, hot:true}, {n:"Sweat Vintage Big Logo", m:2.4, hot:true}],
+        "sneakers": [{n:"Dunk Low Retro", m:1.6, hot:true}, {n:"Jordan 1 Retro High", m:2.0, hot:true}, {n:"TN Air Max Plus", m:1.8, hot:true}]
     },
     "DEFAULT": {
-        "outerwear": [{n:"Veste Vintage", m:1.8}],
-        "tops": [{n:"Hoodie Oversized", m:1.6}],
-        "bottoms": [{n:"Baggy Jeans", m:1.8}],
-        "sneakers": [{n:"Sneakers Retro", m:1.6}]
+        "outerwear": [{n:"Veste Bomber Vintage", m:1.8, hot:true}],
+        "tops": [{n:"Hoodie Oversized Heavy", m:1.7, hot:true}],
+        "bottoms": [{n:"Baggy Denim 90s", m:1.9, hot:true}]
     }
 };
 
 function lancerScan() {
-    const marqueInput = document.getElementById('marque').value.toUpperCase().trim();
-    const catKey = document.getElementById('typeSelect').value;
+    const marque = document.getElementById('marque').value.toUpperCase().trim();
+    const cat = document.getElementById('typeSelect').value;
     const budget = parseInt(document.getElementById('budget').value) || 50;
     const taille = document.getElementById('taille').value;
 
     document.getElementById('results').innerHTML = '';
     document.getElementById('loading').classList.add('active');
-    document.getElementById('scanBtn').disabled = true;
 
-    // Sélection de la base de données cohérente
-    const brandData = coherenceData[marqueInput] || coherenceData["DEFAULT"];
-    const models = brandData[catKey] || coherenceData["DEFAULT"][catKey] || [{n:"Article "+catKey, m:1.5}];
+    const db = hotDatabase[marque] || hotDatabase["DEFAULT"];
+    const models = db[cat] || hotDatabase["DEFAULT"][cat] || [{n:"Item Hype", m:1.6, hot:true}];
 
     setTimeout(() => {
-        const items = models.map((model, i) => {
+        const items = models.map((m, i) => {
             const buy = Math.floor(budget * (0.6 + Math.random() * 0.4));
-            const sell = Math.floor(buy * model.m);
-            const fees = 0.70 + (buy * 0.05);
-            const profit = Math.round(sell - buy - fees);
-            
+            const sell = Math.floor(buy * m.m);
+            const profit = Math.round(sell - buy - (0.7 + buy * 0.05));
             return {
-                title: `${marqueInput} ${model.n}`,
-                tag: catKey.toUpperCase(),
-                buy: buy,
-                sell: sell,
-                profit: profit,
-                grade: model.m > 2.2 ? 'A' : 'B',
-                photo: `https://picsum.photos/seed/${model.n}${i}/220/280`
+                title: `${marque} ${m.n}`,
+                buy, sell, profit, grade: m.hot ? 'A' : 'B',
+                photo: `https://picsum.photos/seed/${m.n}${i}/220/280`
             };
         });
 
         render(items, taille, budget);
         document.getElementById('loading').classList.remove('active');
-        document.getElementById('scanBtn').disabled = false;
         document.getElementById('statsBar').style.display = 'flex';
         document.getElementById('statCount').textContent = items.length;
-        document.getElementById('statProfit').textContent = Math.round(items.reduce((acc, i) => acc + i.profit, 0) / items.length) + "€";
-    }, 900);
+        document.getElementById('statProfit').textContent = Math.round(items.reduce((a, b) => a + b.profit, 0) / items.length) + "€";
+    }, 800);
 }
 
-function openCompare(platform, query) {
-    const q = encodeURIComponent(query);
-    let url = "";
-    switch(platform) {
-        case 'lbc': url = `https://www.leboncoin.fr/recherche?text=${q}`; break;
-        case 'ebay': url = `https://www.ebay.fr/sch/i.html?_nkw=${q}`; break;
-        case 'stockx': url = `https://stockx.com/fr-fr/search?s=${q}`; break;
-    }
-    if(url) window.open(url, '_blank');
+function openCompare(site, q) {
+    const url = site === 'lbc' ? `https://www.leboncoin.fr/recherche?text=${encodeURIComponent(q)}` :
+                site === 'ebay' ? `https://www.ebay.fr/sch/i.html?_nkw=${encodeURIComponent(q)}` :
+                `https://stockx.com/fr-fr/search?s=${encodeURIComponent(q)}`;
+    window.open(url, '_blank');
 }
 
 function render(items, taille, budget) {
     const container = document.getElementById('results');
     items.forEach((item, i) => {
-        const exactSearch = `${item.title} ${taille}`;
-        const searchUrl = `https://www.vinted.fr/catalog?search_text=${encodeURIComponent(exactSearch)}&price_to=${budget}&order=newest_first`;
-        
+        const q = `${item.title} ${taille}`;
+        const vinted = `https://www.vinted.fr/catalog?search_text=${encodeURIComponent(q)}&price_to=${budget}&order=newest_first`;
         container.innerHTML += `
-            <div class="card" style="animation-delay: ${i * 0.1}s">
+            <div class="card">
                 <div class="grade-badge grade-${item.grade.toLowerCase()}">${item.grade}</div>
                 <div class="card-top">
                     <div class="card-photo"><img src="${item.photo}" onload="this.classList.add('loaded')"></div>
                     <div class="card-info">
-                        <div class="card-tag">${item.tag}</div>
+                        <div class="card-tag">TOP VENTE</div>
                         <div class="card-title">${item.title}</div>
-                        <div class="price-box">
-                            <span class="buy-price">${item.buy}€</span>
-                            <i data-lucide="arrow-right" size="14" style="color:#444"></i>
-                            <span class="sell-price">${item.sell}€</span>
-                        </div>
-                        <div class="profit-tag">
-                            <i data-lucide="trending-up" size="12"></i> GAIN : +${item.profit}€ NET
-                        </div>
+                        <div class="price-box"><span class="buy-price">${item.buy}€</span> <i data-lucide="arrow-right" size="14"></i> <span class="sell-price">${item.sell}€</span></div>
+                        <div class="profit-tag"><i data-lucide="flame" size="12"></i> BÉNÉFICE : +${item.profit}€</div>
                     </div>
                 </div>
                 <div class="card-footer">
-                    <a href="${searchUrl}" target="_blank" class="btn-action btn-vinted">
-                        <i data-lucide="shopping-bag" size="14"></i> VINTED
-                    </a>
+                    <a href="${vinted}" target="_blank" class="btn-action btn-vinted">VINTED</a>
                     <div class="compare-dropdown">
-                        <select class="select-compare" onchange="openCompare(this.value, '${exactSearch}'); this.value='';">
-                            <option value="" disabled selected>COTE SITES</option>
+                        <select class="select-compare" onchange="openCompare(this.value, '${q}'); this.value='';">
+                            <option value="" disabled selected>COMPARER</option>
                             <option value="lbc">LEBONCOIN</option>
                             <option value="ebay">EBAY</option>
-                            <option value="stockx">STOCKX</option>
                         </select>
                         <i data-lucide="chevron-down" size="14" class="dropdown-icon"></i>
                     </div>
