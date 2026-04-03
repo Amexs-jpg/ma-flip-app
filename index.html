@@ -3,136 +3,164 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>FlipFinder Pro - Ultimate V3.3</title>
+    <title>FlipFinder Pro - Sniper Elite V3.5</title>
     <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/lucide@latest"></script>
     <style>
         :root {
-            --bg: #050505; --surface: #111; --card: #181818; --border: #282828;
+            --bg: #050505; --surface: #0f0f0f; --card: #161616; --border: #222;
             --accent: #d4ff3f; --vinted: #09b1ba; --text: #ffffff;
-            --muted: #888; --score-a: #d4ff3f; --score-b: #f1a435; --score-c: #ff4d4d;
+            --muted: #666; --score-a: #d4ff3f; --score-b: #f1a435; --score-c: #ff4d4d;
         }
+
         * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+        
         body {
             background: var(--bg); color: var(--text);
             font-family: 'DM Sans', sans-serif; min-height: 100vh;
-            padding: 24px 20px 80px; max-width: 600px; margin: auto;
+            padding: 24px 20px 80px; max-width: 500px; margin: auto;
         }
-        .header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 24px; }
-        .logo { font-family: 'Bebas Neue', sans-serif; font-size: 2.4rem; letter-spacing: 2px; color: var(--accent); }
-        .logo span { color: var(--text); }
-        .badge { background: rgba(212, 255, 63, 0.1); color: var(--accent); font-size: 10px; font-weight: 800; padding: 6px 12px; border-radius: 20px; border: 1px solid var(--accent); }
 
-        /* Formulaire */
-        .filters { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 24px; }
-        .filter-group { display: flex; flex-direction: column; gap: 6px; }
-        label { font-size: 10px; color: var(--muted); text-transform: uppercase; font-weight: 700; display: flex; align-items: center; gap: 4px; }
+        /* Animations */
+        @keyframes scanline { 0% { top: 0; } 100% { top: 100%; } }
+        @keyframes pulse { 0% { opacity: 0.5; } 50% { opacity: 1; } 100% { opacity: 0.5; } }
+        @keyframes slideIn { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
+
+        .header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 24px; }
+        .logo { font-family: 'Bebas Neue', sans-serif; font-size: 2.2rem; letter-spacing: 1px; color: var(--accent); }
+        .logo span { color: var(--text); }
+        .badge { background: #1a1a1a; color: var(--accent); font-size: 9px; font-weight: 800; padding: 5px 10px; border-radius: 6px; border: 1px solid var(--accent); }
+
+        /* Formulaire Style */
+        .filters { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 20px; }
+        .filter-group { display: flex; flex-direction: column; gap: 5px; }
+        label { font-size: 9px; color: var(--muted); text-transform: uppercase; font-weight: 700; letter-spacing: 0.5px; }
+        
         input, select {
-            background: var(--card); border: 1px solid var(--border); color: var(--text);
-            padding: 14px; border-radius: 12px; font-size: 13px; outline: none; transition: 0.2s;
-            appearance: none;
+            background: var(--surface); border: 1px solid var(--border); color: var(--text);
+            padding: 12px; border-radius: 10px; font-size: 13px; outline: none; transition: 0.3s;
         }
-        input:focus, select:focus { border-color: var(--accent); background: #1c1c1c; }
+        input:focus { border-color: var(--accent); }
 
         .btn-scan {
-            background: var(--accent); color: #000; width: 100%; border: none; padding: 18px;
-            border-radius: 16px; font-family: 'Bebas Neue', sans-serif; font-size: 1.3rem;
-            letter-spacing: 2px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 12px;
+            background: var(--accent); color: #000; width: 100%; border: none; padding: 16px;
+            border-radius: 12px; font-family: 'Bebas Neue', sans-serif; font-size: 1.4rem;
+            cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px;
+            transition: transform 0.1s active;
+        }
+        .btn-scan:active { transform: scale(0.98); }
+
+        /* Status & Stats */
+        .loading-zone { display: none; margin: 20px 0; text-align: center; }
+        .loading-zone.active { display: block; }
+        .skeleton-card { height: 120px; background: var(--card); border-radius: 15px; margin-bottom: 10px; animation: pulse 1.5s infinite; }
+
+        .stats-bar { 
+            display: none; background: var(--surface); border: 1px solid var(--border); 
+            border-radius: 14px; margin: 20px 0; overflow: hidden; 
+        }
+        .stat { flex: 1; padding: 12px; text-align: center; border-right: 1px solid var(--border); }
+        .stat-val { font-family: 'Bebas Neue', sans-serif; font-size: 1.4rem; color: var(--accent); }
+        .stat-label { font-size: 8px; color: var(--muted); text-transform: uppercase; }
+
+        /* Cards Elite */
+        .card { 
+            background: var(--card); border: 1px solid var(--border); border-radius: 20px; 
+            margin-bottom: 14px; overflow: hidden; position: relative;
+            animation: slideIn 0.4s ease forwards;
+        }
+        
+        .grade-tag {
+            position: absolute; top: 12px; right: 12px; padding: 4px 8px; border-radius: 6px;
+            font-family: 'Bebas Neue', sans-serif; font-size: 1rem; z-index: 5;
         }
 
-        .stats-bar { display: none; background: var(--surface); border: 1px solid var(--border); border-radius: 16px; margin: 24px 0; overflow: hidden; }
-        .stat { flex: 1; padding: 16px; border-right: 1px solid var(--border); text-align: center; }
-        .stat-val { font-family: 'Bebas Neue', sans-serif; font-size: 1.6rem; color: var(--accent); }
-        .stat-label { font-size: 9px; color: var(--muted); text-transform: uppercase; }
-
-        /* Cards */
-        .card { background: var(--card); border: 1px solid var(--border); border-radius: 22px; margin-bottom: 16px; overflow: hidden; position: relative; animation: slideUp 0.4s ease both; }
-        .grade-badge { position: absolute; top: 12px; right: 12px; width: 34px; height: 34px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-family: 'Bebas Neue', sans-serif; font-size: 1.4rem; z-index: 10; font-weight: bold; }
-        .grade-a { background: var(--score-a); color: #000; box-shadow: 0 0 20px rgba(212,255,63,0.25); }
-        .grade-b { background: var(--score-b); color: #000; }
-        .grade-c { background: var(--score-c); color: #fff; }
-
-        .card-top { display: flex; padding: 15px; gap: 16px; }
-        .card-photo { width: 105px; height: 135px; background: #111; border-radius: 14px; overflow: hidden; flex-shrink: 0; }
-        .card-photo img { width: 100%; height: 100%; object-fit: cover; opacity: 0; transition: 0.5s; }
-        .card-photo img.loaded { opacity: 1; }
-        
-        .card-info { flex: 1; display: flex; flex-direction: column; justify-content: center; }
-        .card-tag { font-size: 9px; font-weight: 800; color: var(--accent); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 2px; }
-        .card-title { font-size: 15px; font-weight: 600; color: #eee; margin-bottom: 6px; line-height: 1.2; }
-        
-        .price-box { display: flex; align-items: baseline; gap: 8px; }
-        .buy-price { font-family: 'Bebas Neue', sans-serif; color: #666; text-decoration: line-through; font-size: 1.1rem; }
-        .sell-price { font-family: 'Bebas Neue', sans-serif; color: #fff; font-size: 1.8rem; }
-
-        .profit-tag { display: inline-flex; align-items: center; gap: 4px; background: rgba(212, 255, 63, 0.08); color: var(--accent); padding: 5px 10px; border-radius: 8px; font-size: 11px; font-weight: 800; margin-top: 8px; border: 1px solid rgba(212, 255, 63, 0.2); }
-
-        .card-footer { padding: 12px; background: rgba(255,255,255,0.02); border-top: 1px solid var(--border); display: flex; gap: 8px; }
-        .btn-action { flex: 1.2; padding: 12px; border-radius: 12px; font-size: 11px; font-weight: 800; text-decoration: none; text-align: center; display: flex; align-items: center; justify-content: center; gap: 6px; transition: 0.2s; }
-        .btn-vinted { background: var(--vinted); color: white; }
-        .btn-vinted:active { transform: scale(0.96); }
-
-        .compare-dropdown { flex: 1; position: relative; }
-        .select-compare {
-            width: 100%; height: 100%; padding: 12px; border-radius: 12px;
-            background: rgba(255,255,255,0.05); border: 1px solid var(--border); color: #ccc;
-            font-size: 10px; font-weight: 700; cursor: pointer; appearance: none;
-            text-align: center; outline: none;
+        .card-body { display: flex; padding: 12px; gap: 12px; }
+        .img-container { 
+            width: 90px; height: 110px; background: #000; border-radius: 12px; 
+            position: relative; overflow: hidden; flex-shrink: 0;
         }
-        .dropdown-icon { position: absolute; right: 10px; top: 50%; transform: translateY(-50%); pointer-events: none; color: #666; }
+        .img-container img { width: 100%; height: 100%; object-fit: cover; opacity: 0; transition: 0.5s; }
+        .img-container img.loaded { opacity: 0.7; }
+        
+        /* Effet de scan sur l'image */
+        .img-container::after {
+            content: ""; position: absolute; top: 0; left: 0; width: 100%; height: 2px;
+            background: var(--accent); box-shadow: 0 0 10px var(--accent);
+            animation: scanline 2s linear infinite;
+        }
 
-        .loading { display: none; text-align: center; padding: 40px; color: var(--muted); font-size: 12px; }
-        .loading.active { display: block; }
-        @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        .info { flex: 1; }
+        .item-brand { font-size: 9px; font-weight: 800; color: var(--accent); text-transform: uppercase; }
+        .item-name { font-size: 14px; font-weight: 600; margin: 2px 0 8px; color: #fff; }
+        
+        .price-row { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; }
+        .price-buy { font-size: 12px; color: #777; text-decoration: line-through; }
+        .price-sell { font-family: 'Bebas Neue', sans-serif; font-size: 1.5rem; color: #fff; }
+
+        .roi-badge {
+            display: inline-flex; align-items: center; gap: 4px; 
+            background: rgba(255,255,255,0.05); padding: 4px 8px; border-radius: 6px;
+            font-size: 10px; font-weight: 700; color: #ddd;
+        }
+
+        .card-actions { 
+            display: flex; padding: 10px; background: rgba(0,0,0,0.2); 
+            border-top: 1px solid var(--border); gap: 8px;
+        }
+        .btn-main { 
+            flex: 2; background: var(--vinted); color: #fff; text-decoration: none;
+            text-align: center; padding: 10px; border-radius: 8px; font-size: 11px; font-weight: 800;
+        }
+        .btn-sec {
+            flex: 1; background: var(--surface); border: 1px solid var(--border);
+            color: #ccc; font-size: 10px; border-radius: 8px; cursor: pointer;
+        }
     </style>
 </head>
 <body>
 
 <div class="header">
     <div class="logo">Flip<span>Finder</span></div>
-    <div class="badge">V3.3 PRO-SNIPER</div>
+    <div class="badge">V3.5 SNIPER-ELITE</div>
 </div>
 
 <div class="filters">
-    <div class="filter-group">
-        <label><i data-lucide="tag" size="12"></i> Marque</label>
-        <input type="text" id="marque" value="Carhartt">
+    <div class="filter-group" style="grid-column: span 2;">
+        <label>Cible Marque</label>
+        <input type="text" id="brand" value="Carhartt">
     </div>
     <div class="filter-group">
-        <label><i data-lucide="wallet" size="12"></i> Budget Max</label>
-        <input type="text" id="budget" value="70€">
+        <label>Budget</label>
+        <input type="number" id="budget" value="60">
+    </div>
+    <div class="filter-group">
+        <label>Taille</label>
+        <input type="text" id="size" value="L">
     </div>
     <div class="filter-group" style="grid-column: span 2;">
-        <label><i data-lucide="layers" size="12"></i> Type d'article (Cible Vinted)</label>
-        <select id="typeSelect">
-            <option value="outerwear">Vestes & Blousons (Detroit, Santa Fe, Nocta)</option>
-            <option value="tops">Hauts (Pulls Laine, Hoodies, Sweats Vintage)</option>
-            <option value="bottoms">Pantalons (Double Knee, Baggy, Carpenter)</option>
-            <option value="sneakers">Sneakers (Jordan, Dunk, New Balance)</option>
-        </select>
-    </div>
-    <div class="filter-group">
-        <label><i data-lucide="maximize" size="12"></i> Taille</label>
-        <input type="text" id="taille" value="L">
-    </div>
-    <div class="filter-group">
-        <label><i data-lucide="sparkles" size="12"></i> État Min.</label>
-        <select id="condition">
-            <option value="very_good">Très bon état</option>
-            <option value="new">Neuf avec étiquette</option>
+        <label>Catégorie</label>
+        <select id="category">
+            <option value="outerwear">Vestes & Workwear</option>
+            <option value="tops">Sweats & Knitwear</option>
+            <option value="sneakers">Sneakers & Hype</option>
         </select>
     </div>
 </div>
 
-<button class="btn-scan" id="scanBtn" onclick="lancerScan()">
-    <i data-lucide="zap" size="18"></i> SNIPER LES OFFRES
+<button class="btn-scan" onclick="startScan()">
+    <i data-lucide="crosshair" size="20"></i> ANALYSER LE MARCHÉ
 </button>
 
-<div class="loading" id="loading">Analyse des algorithmes de vente Vinted...</div>
+<div class="loading-zone" id="loading">
+    <div class="skeleton-card"></div>
+    <div class="skeleton-card"></div>
+    <p style="font-size: 10px; color: var(--muted)">RECHERCHE DE SOUS-ÉVALUATIONS EN COURS...</p>
+</div>
 
 <div class="stats-bar" id="statsBar">
-    <div class="stat"><div class="stat-val" id="statCount">0</div><div class="stat-label">Pépites</div></div>
-    <div class="stat"><div class="stat-val" id="statProfit">0€</div><div class="stat-label">Gain Moyen</div></div>
+    <div class="stat"><div class="stat-val" id="statCount">0</div><div class="stat-label">Opportunités</div></div>
+    <div class="stat"><div class="stat-val" id="statAvgProfit">0€</div><div class="stat-label">Profit Net Moyen</div></div>
 </div>
 
 <div id="results"></div>
@@ -140,125 +168,89 @@
 <script>
 lucide.createIcons();
 
-// LOGIQUE BASÉE SUR LE RÉEL VINTED
-const categoryData = {
+const DB = {
     "outerwear": [
-        { name: "Detroit Jacket Vintage", multi: 2.8, hot: true, tag: "Workwear" },
-        { name: "Veste Santa Fe Canvas", multi: 2.5, hot: true, tag: "Vintage" },
-        { name: "Active Jacket Jacket", multi: 1.9, hot: true, tag: "Essential" },
-        { name: "Bomber MA-1 Oversized", multi: 1.7, hot: false, tag: "Street" }
+        { n: "Detroit Jacket", m: 2.5, t: "WORKWEAR" },
+        { n: "Santa Fe Jacket", m: 2.2, t: "VINTAGE" },
+        { n: "Active Canvas", m: 1.8, t: "ESSENTIAL" }
     ],
     "tops": [
-        { name: "Pull Torsadé Laine (Cable)", multi: 2.3, hot: true, tag: "Old Money" },
-        { name: "Hoodie Swoosh Central", multi: 2.4, hot: true, tag: "Grail" },
-        { name: "Sweat Col Rond Vintage 90s", multi: 1.8, hot: false, tag: "Retro" },
-        { name: "Pull Bear Collector", multi: 3.0, hot: true, tag: "Rare" }
-    ],
-    "bottoms": [
-        { name: "Double Knee Pant", multi: 2.4, hot: true, tag: "Best-Seller" },
-        { name: "Carpenter Pant Canvas", multi: 2.0, hot: true, tag: "Workwear" },
-        { name: "Jean Baggy 501 Custom", multi: 1.9, hot: true, tag: "Y2K" }
+        { n: "Hoodie Vintage 90s", m: 2.1, t: "RETRO" },
+        { n: "Zip-up Heavyweight", m: 1.9, t: "STREET" },
+        { n: "Pull en Laine", m: 2.4, t: "PREMIUM" }
     ],
     "sneakers": [
-        { name: "Air Jordan 1 Retro High", multi: 1.9, hot: true, tag: "Hype" },
-        { name: "Dunk Low Retro Panda", multi: 1.5, hot: false, tag: "Basic" },
-        { name: "New Balance 2002R Protection", multi: 2.1, hot: true, tag: "Trendy" }
+        { n: "Jordan 4 Retro", m: 1.6, t: "HYPE" },
+        { n: "New Balance 990", m: 1.9, t: "TREND" }
     ]
 };
 
-function lancerScan() {
-    const marque = document.getElementById('marque').value.toUpperCase();
-    const catKey = document.getElementById('typeSelect').value;
-    const budget = parseInt(document.getElementById('budget').value) || 50;
-    const taille = document.getElementById('taille').value;
-
-    document.getElementById('results').innerHTML = '';
-    document.getElementById('loading').classList.add('active');
-    document.getElementById('scanBtn').disabled = true;
+function startScan() {
+    const brand = document.getElementById('brand').value;
+    const cat = document.getElementById('category').value;
+    const budget = parseFloat(document.getElementById('budget').value);
     
+    // UI Reset
+    document.getElementById('results').innerHTML = '';
+    document.getElementById('statsBar').style.display = 'none';
+    document.getElementById('loading').classList.add('active');
+
     setTimeout(() => {
-        const items = categoryData[catKey];
-        const processedItems = items.map((item, i) => {
-            const buy = Math.floor(budget * (0.5 + Math.random() * 0.5));
-            const sell = Math.floor(buy * (item.multi * (0.9 + Math.random() * 0.2)));
+        const data = DB[cat];
+        let totalProfit = 0;
+
+        data.forEach((item, i) => {
+            // Logique de calcul améliorée
+            const buyPrice = Math.floor(budget * (0.6 + Math.random() * 0.4));
+            const estSellPrice = Math.round(buyPrice * item.m);
+            const fees = 0.70 + (buyPrice * 0.05); // Commission Vinted
+            const netProfit = estSellPrice - buyPrice - fees - 5; // -5€ frais de port estimé
+            const roi = Math.round((netProfit / buyPrice) * 100);
             
-            // Calcul frais Vinted (Protec acheteur)
-            const fees = 0.70 + (buy * 0.05);
-            const profit = Math.round(sell - buy - fees);
-            
-            return {
-                title: `${marque} ${item.name}`,
-                tag: item.tag,
-                buy: buy,
-                sell: sell,
-                profit: profit,
-                grade: item.hot && profit > 30 ? 'A' : (item.hot ? 'B' : 'C'),
-                photo: `https://picsum.photos/seed/${item.name}${i}${Date.now()}/220/280`
-            };
+            totalProfit += netProfit;
+
+            const grade = netProfit > 40 ? 'A' : (netProfit > 20 ? 'B' : 'C');
+            const color = grade === 'A' ? 'var(--score-a)' : (grade === 'B' ? 'var(--score-b)' : 'var(--score-c)');
+
+            const cardHtml = `
+                <div class="card" style="animation-delay: ${i*0.1}s">
+                    <div class="grade-tag" style="background:${color}; color:#000">${grade}</div>
+                    <div class="card-body">
+                        <div class="img-container">
+                            <img src="https://picsum.photos/seed/${item.n}${i}/200/300" onload="this.classList.add('loaded')">
+                        </div>
+                        <div class="info">
+                            <div class="item-brand">${brand} • ${item.t}</div>
+                            <div class="item-name">${item.n}</div>
+                            <div class="price-row">
+                                <span class="price-buy">${buyPrice}€</span>
+                                <i data-lucide="arrow-right" size="12" style="color:var(--muted)"></i>
+                                <span class="price-sell">${estSellPrice}€</span>
+                            </div>
+                            <div class="roi-badge">
+                                <i data-lucide="trending-up" size="10" style="color:var(--accent)"></i>
+                                PROFIT : +${Math.round(netProfit)}€ (${roi}%)
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-actions">
+                        <a href="https://www.vinted.fr/catalog?search_text=${brand} ${item.n}" target="_blank" class="btn-main">SNIPER L'OFFRE</a>
+                        <button class="btn-sec" onclick="alert('Ajouté aux favoris !')"><i data-lucide="bookmark" size="14"></i></button>
+                    </div>
+                </div>
+            `;
+            document.getElementById('results').innerHTML += cardHtml;
         });
 
-        render(processedItems, taille, budget);
+        // Update Stats
         document.getElementById('loading').classList.remove('active');
-        document.getElementById('scanBtn').disabled = false;
         document.getElementById('statsBar').style.display = 'flex';
-        document.getElementById('statCount').textContent = items.length;
-        document.getElementById('statProfit').textContent = Math.round(processedItems.reduce((acc, i) => acc + i.profit, 0) / items.length) + "€";
-    }, 1000);
-}
-
-function openCompare(platform, query) {
-    const q = encodeURIComponent(query);
-    let url = "";
-    switch(platform) {
-        case 'lbc': url = `https://www.leboncoin.fr/recherche?text=${q}`; break;
-        case 'ebay': url = `https://www.ebay.fr/sch/i.html?_nkw=${q}`; break;
-        case 'stockx': url = `https://stockx.com/fr-fr/search?s=${q}`; break;
-    }
-    if(url) window.open(url, '_blank');
-}
-
-function render(items, taille, budget) {
-    const container = document.getElementById('results');
-    items.forEach((item, i) => {
-        const exactSearch = `${item.title} ${taille}`;
-        const searchUrl = `https://www.vinted.fr/catalog?search_text=${encodeURIComponent(exactSearch)}&price_to=${budget}&order=newest_first`;
-        
-        container.innerHTML += `
-            <div class="card" style="animation-delay: ${i * 0.1}s">
-                <div class="grade-badge grade-${item.grade.toLowerCase()}">${item.grade}</div>
-                <div class="card-top">
-                    <div class="card-photo"><img src="${item.photo}" onload="this.classList.add('loaded')"></div>
-                    <div class="card-info">
-                        <div class="card-tag">${item.tag}</div>
-                        <div class="card-title">${item.title}</div>
-                        <div class="price-box">
-                            <span class="buy-price">${item.buy}€</span>
-                            <i data-lucide="arrow-right" size="14" style="color:#444"></i>
-                            <span class="sell-price">${item.sell}€</span>
-                        </div>
-                        <div class="profit-tag">
-                            <i data-lucide="trending-up" size="12"></i> BÉNÉFICE : +${item.profit}€ NET
-                        </div>
-                    </div>
-                </div>
-                <div class="card-footer">
-                    <a href="${searchUrl}" target="_blank" class="btn-action btn-vinted">
-                        <i data-lucide="shopping-bag" size="14"></i> SNIPE VINTED
-                    </a>
-                    <div class="compare-dropdown">
-                        <select class="select-compare" onchange="openCompare(this.value, '${exactSearch}'); this.value='';">
-                            <option value="" disabled selected>VÉRIFIER COTE</option>
-                            <option value="lbc">LEBONCOIN</option>
-                            <option value="ebay">EBAY</option>
-                            <option value="stockx">STOCKX</option>
-                        </select>
-                        <i data-lucide="chevron-down" size="14" class="dropdown-icon"></i>
-                    </div>
-                </div>
-            </div>`;
-    });
-    lucide.createIcons();
+        document.getElementById('statCount').innerText = data.length;
+        document.getElementById('statAvgProfit').innerText = Math.round(totalProfit / data.length) + "€";
+        lucide.createIcons();
+    }, 1500);
 }
 </script>
+
 </body>
 </html>
