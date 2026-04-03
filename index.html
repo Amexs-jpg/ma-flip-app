@@ -45,68 +45,63 @@
 
     <div id="results"></div>
 
-    <script>
-        // CONFIGURATION OBLIGATOIRE
-        const CX_ID = "71e2ce8bd66eb466a"; 
+   <script>
+    // REMPLACE CES DEUX VALEURS
+    const CX_ID = "71e2ce8bd66eb466a"; 
 
-        async function lancerScan() {
-            const resultsDiv = document.getElementById('results');
-            const key = document.getElementById('api_key').value.trim();
+    async function lancerScan() {
+        const resultsDiv = document.getElementById('results');
+        const key = document.getElementById('api_key').value.trim();
+        const marque = document.getElementById('marque').value;
+
+        if (!key) { afficherErreur("Entre ta clé API d'abord !"); return; }
+        
+        resultsDiv.innerHTML = "<p style='color:#d4ff3f'>Connexion sécurisée à Google Cloud...</p>";
+
+        try {
+            // Requête propre
+            const url = `https://www.googleapis.com/customsearch/v1?key=${key}&cx=${CX_ID}&q=site:vinted.fr ${marque}`;
             
-            const marque = document.getElementById('marque').value;
-            const budget = document.getElementById('budget').value;
-            const type = document.getElementById('type').value;
+            const response = await fetch(url);
+            const data = await response.json();
 
-            if (!key || key === "") {
-                afficherErreur("Clé API manquante.");
-                return;
+            // Si Google renvoie une erreur spécifique
+            if (data.error) {
+                if (data.error.status === "PERMISSION_DENIED") {
+                    throw new Error("La clé est bloquée. Vérifie les 'Restrictions API' dans Google Console.");
+                }
+                throw new Error(data.error.message);
             }
 
-            // Correction ici : On a enlevé le test bloquant qui vérifiait l'ID CX
+            const items = data.items || [];
 
-            resultsDiv.innerHTML = "<p style='color:#d4ff3f'>Recherche des meilleures pépites Vinted...</p>";
-
-            try {
-                const query = `site:vinted.fr ${marque} ${type} ${budget}`;
-                const url = `https://www.googleapis.com/customsearch/v1?key=${key}&cx=${CX_ID}&q=${encodeURIComponent(query)}`;
-
-                const response = await fetch(url);
-                const data = await response.json();
-
-                if (data.error) {
-                    throw new Error(data.error.message);
-                }
-
-                const items = data.items || [];
-
-                if (items.length === 0) {
-                    resultsDiv.innerHTML = "<p>Aucun résultat trouvé. Essaie de modifier tes filtres.</p>";
-                } else {
-                    resultsDiv.innerHTML = items.map(item => `
-                        <a href="${item.link}" target="_blank">
-                            <div class="card">
-                                <div style="font-size:14px; font-weight:bold;">${item.title}</div>
-                                <div style="color:#d4ff3f; font-size:12px; margin-top:5px;">Voir sur Vinted →</div>
-                            </div>
+            if (items.length === 0) {
+                resultsDiv.innerHTML = "<p>Aucun article trouvé. Vérifie ton ID CX.</p>";
+            } else {
+                resultsDiv.innerHTML = items.map(item => `
+                    <div style="background:#151515; padding:15px; margin-bottom:10px; border-radius:12px; border-left:4px solid #d4ff3f; text-align:left;">
+                        <a href="${item.link}" target="_blank" style="color:white; text-decoration:none;">
+                            <strong>${item.title}</strong><br>
+                            <span style="color:#d4ff3f; font-size:12px;">Cliquer pour voir l'offre →</span>
                         </a>
-                    `).join('');
-                }
-
-            } catch (error) {
-                afficherErreur(error.message);
+                    </div>
+                `).join('');
             }
+        } catch (error) {
+            afficherErreur(error.message);
         }
+    }
 
-        function afficherErreur(msg) {
-            const resultsDiv = document.getElementById('results');
-            resultsDiv.innerHTML = `
-                <div class="error-box">
-                    <span style="font-size:40px;">⚠️</span>
-                    <h2 style="font-size:16px; margin:10px 0;">Erreur de Recherche</h2>
-                    <p class="error-msg">Détails: ${msg}</p>
-                </div>
-            `;
-        }
-    </script>
+    function afficherErreur(msg) {
+        document.getElementById('results').innerHTML = `
+            <div style="background:#1a1a1a; padding:20px; border-radius:15px; border: 1px solid #333;">
+                <span style="font-size:40px;">⚠️</span>
+                <h3 style="color:white;">Erreur de Configuration</h3>
+                <p style="color:#ff5f5f; font-family:monospace; font-size:12px;">${msg}</p>
+                <p style="color:#666; font-size:10px; margin-top:15px;">Vérifie l'activation du service 'Custom Search API' sur Google Cloud.</p>
+            </div>
+        `;
+    }
+</script>
 </body>
 </html>
