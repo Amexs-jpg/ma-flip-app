@@ -5,119 +5,87 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>FlipFinder - Resale</title>
     <style>
-        body {
-            background-color: #000;
-            color: #fff;
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-            margin: 0;
-            padding: 20px;
-        }
-        .header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 5px; }
-        .logo { font-size: 28px; font-weight: bold; letter-spacing: -1px; }
-        .logo span { color: #d4ff3f; }
-        .badge { background: #d4ff3f; color: black; padding: 4px 8px; border-radius: 15px; font-size: 10px; font-weight: 900; text-align: center; line-height: 1; }
+        body { background-color: #000; color: white; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 0; padding: 20px; }
+        .header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 20px; }
+        .logo { color: #d4ff3f; font-size: 28px; font-weight: bold; letter-spacing: -1px; }
+        .logo span { color: white; }
+        .badge { background: #d4ff3f; color: black; padding: 6px 12px; border-radius: 20px; font-size: 10px; font-weight: bold; text-align: center; line-height: 1.2; }
         
-        .subtext { font-size: 13px; color: #666; margin-bottom: 25px; }
+        .subtitle { font-size: 13px; color: #666; margin-top: -15px; margin-bottom: 25px; }
 
-        .filters { 
-            display: grid; 
-            grid-template-columns: 1fr 1fr; 
-            gap: 12px; 
-            margin-bottom: 20px;
-        }
-        .filter-group label { display: block; font-size: 11px; color: #888; text-transform: uppercase; margin-bottom: 8px; font-weight: 600; }
+        .filters { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+        label { display: block; font-size: 10px; color: #888; margin-bottom: 6px; text-transform: uppercase; font-weight: bold; }
         
-        select { 
-            width: 100%; 
-            background: #1c1c1e; 
-            color: #fff; 
+        /* Style des inputs identique à ta photo */
+        .input-box { 
+            background: #1a1a1a; 
             border: 1px solid #333; 
-            padding: 12px; 
-            border-radius: 8px; 
+            padding: 14px; 
+            border-radius: 10px; 
+            color: white; 
+            width: 100%; 
+            box-sizing: border-box; 
+            margin-bottom: 10px;
             font-size: 14px;
-            appearance: none;
-        }
-        
-        .btn-scanner {
-            background: #d4ff3f;
-            color: black;
-            width: 100%;
-            border: none;
-            padding: 16px;
-            border-radius: 12px;
-            font-weight: bold;
-            font-size: 16px;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
         }
 
-        #results { margin-top: 30px; }
+        /* Section API rajoutée */
+        .api-section { margin-top: 10px; border-top: 1px dashed #333; padding-top: 15px; }
+        .api-input { border: 1px solid #d4ff3f55; color: #d4ff3f; font-family: monospace; font-size: 12px; }
+
+        .btn-scanner { 
+            background: #d4ff3f; 
+            color: black; 
+            width: 100%; 
+            border: none; 
+            padding: 16px; 
+            border-radius: 12px; 
+            font-weight: 800; 
+            cursor: pointer; 
+            font-size: 16px; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            gap: 10px;
+            margin-top: 10px;
+            transition: transform 0.1s;
+        }
+        .btn-scanner:active { transform: scale(0.98); }
+
+        #results { margin-top: 30px; text-align: center; }
         
-        /* Style de l'erreur identique à ta capture */
-        .error-container { text-align: center; margin-top: 60px; }
-        .error-icon { color: #ffcc00; font-size: 80px; margin-bottom: 10px; }
-        .error-title { font-size: 24px; margin-bottom: 20px; font-weight: normal; }
-        .console-box { background: #1c1c1e; border-radius: 8px; text-align: left; overflow: hidden; }
-        .console-header { background: #2c2c2e; padding: 8px 15px; font-size: 12px; color: #aaa; }
-        .console-body { padding: 15px; color: #ff6b6b; font-family: monospace; font-size: 13px; line-height: 1.4; }
+        /* Box d'erreur style console */
+        .error-container { margin-top: 30px; }
+        .error-triangle { color: #ffcc00; font-size: 60px; margin-bottom: 10px; }
+        .console-box { 
+            background: #1c1c1e; 
+            border-radius: 12px; 
+            overflow: hidden; 
+            margin-top: 20px; 
+            text-align: left; 
+        }
+        .console-header { background: #2c2c2e; padding: 10px 15px; color: #8e8e93; font-size: 12px; }
+        .console-body { padding: 20px; color: #ff6b6b; font-family: monospace; font-size: 13px; line-height: 1.5; }
     </style>
 </head>
 <body>
 
     <div class="header">
-        <div class="logo"><span>Flip</span>Finder</div>
+        <div class="logo">Flip<span>Finder</span></div>
         <div class="badge">IA<br>POWERED</div>
     </div>
-    <div class="subtext">Détecteur d'opportunités · Liens directs Vinted</div>
+    <div class="subtitle">Détecteur d'opportunités · Liens directs Vinted</div>
 
     <div class="filters">
-        <div class="filter-group">
-            <label>Marque</label>
-            <select id="marque">
-                <option value="">Toutes (sélectionner)</option>
-                <option value="nike">Nike</option>
-                <option value="adidas">Adidas</option>
-                <option value="ralph-lauren">Ralph Lauren</option>
-                <option value="carhartt">Carhartt</option>
-                <option value="stussy">Stussy</option>
-            </select>
-        </div>
+        <div><label>Marque</label><input type="text" class="input-box" id="marque" value="Nike"></div>
+        <div><label>Budget Max</label><input type="text" class="input-box" id="budget" value="50€"></div>
+        <div><label>Type</label><input type="text" class="input-box" id="type" value="T-shirts"></div>
+        <div><label>Taille</label><input type="text" class="input-box" id="taille" value="S"></div>
+    </div>
 
-        <div class="filter-group">
-            <label>Budget Max d'achat</label>
-            <select id="budget">
-                <option value="10">Jusqu'à 10€</option>
-                <option value="20">Jusqu'à 20€</option>
-                <option value="30" selected>Jusqu'à 30€</option>
-                <option value="50">Jusqu'à 50€</option>
-                <option value="100">Jusqu'à 100€</option>
-            </select>
-        </div>
-
-        <div class="filter-group">
-            <label>Type de vêtements</label>
-            <select id="type">
-                <option value="tous">Tous</option>
-                <option value="sweat">Sweats / Hoodies</option>
-                <option value="tshirt">T-shirts</option>
-                <option value="pantalons">Pantalons / Jeans</option>
-                <option value="vestes">Vestes</option>
-            </select>
-        </div>
-
-        <div class="filter-group">
-            <label>Taille</label>
-            <select id="taille">
-                <option value="toutes">Toutes</option>
-                <option value="s">S</option>
-                <option value="m">M</option>
-                <option value="l">L</option>
-                <option value="xl">XL</option>
-            </select>
-        </div>
+    <div class="api-section">
+        <label>Lien de l'API / Endpoint</label>
+        <input type="text" class="input-box api-input" id="apiUrl" placeholder="https://votre-api.com/search">
     </div>
 
     <button class="btn-scanner" onclick="lancerScan()">🔍 SCANNER</button>
@@ -125,57 +93,61 @@
     <div id="results"></div>
 
     <script>
-        function lancerScan() {
+        async function lancerScan() {
             const resultsDiv = document.getElementById('results');
-            resultsDiv.innerHTML = "<p style='text-align:center; color:#666;'>Recherche en cours...</p>";
+            const apiUrl = document.getElementById('apiUrl').value;
 
-            // Appel à ton API / Backend
-            fetchData()
-                .then(data => {
-                    // LA CORRECTION : on vérifie si data existe et est un tableau
-                    if (data && Array.isArray(data)) {
-                        renderResults(data);
-                    } else {
-                        // Si l'API renvoie du vide, on affiche l'erreur proprement au lieu de crasher
-                        showError("TypeError: Cannot read properties of undefined (reading 'map')");
-                    }
-                })
-                .catch(err => {
-                    showError(err.message);
-                });
+            if (!apiUrl) {
+                afficherErreur("Veuillez entrer l'URL de votre API avant de scanner.");
+                return;
+            }
+
+            resultsDiv.innerHTML = "<p style='color:#d4ff3f'>Connexion à l'API...</p>";
+
+            try {
+                // On récupère les données de l'URL saisie
+                const response = await fetch(apiUrl);
+                
+                if (!response.ok) throw new Error(`Erreur Serveur: ${response.status}`);
+                
+                const data = await response.json();
+
+                // Protection contre le 'undefined' (ton ancienne erreur)
+                const produits = Array.isArray(data) ? data : (data.items || data.products || []);
+
+                if (produits.length === 0) {
+                    afficherErreur("Aucun produit trouvé. L'API a renvoyé une liste vide.");
+                } else {
+                    // Affichage des résultats si tout est OK
+                    resultsDiv.innerHTML = produits.map(p => `
+                        <div style="background:#1a1a1a; padding:15px; margin-bottom:10px; border-radius:10px; text-align:left; border-left: 4px solid #d4ff3f; display:flex; justify-content:space-between;">
+                            <span>${p.nom || 'Article Vinted'}</span>
+                            <span style="color:#d4ff3f; font-weight:bold;">${p.prix || '--'}€</span>
+                        </div>
+                    `).join('');
+                }
+
+            } catch (error) {
+                // Si l'URL est mauvaise ou l'API hors ligne, on affiche ton design d'erreur
+                afficherErreur(error.message);
+            }
         }
 
-        function renderResults(produits) {
-            const resultsDiv = document.getElementById('results');
-            // Utilisation du chaînage optionnel ?. pour éviter le crash
-            resultsDiv.innerHTML = produits?.map(p => `
-                <div style="background:#1c1c1e; padding:15px; margin-bottom:12px; border-radius:10px; border: 1px solid #333;">
-                    <div style="color:#d4ff3f; font-weight:bold;">${p.prix}€</div>
-                    <div style="font-size:14px;">${p.nom}</div>
-                </div>
-            `).join('');
-        }
-
-        function showError(msg) {
+        function afficherErreur(msg) {
             const resultsDiv = document.getElementById('results');
             resultsDiv.innerHTML = `
                 <div class="error-container">
-                    <div class="error-icon">⚠️</div>
-                    <div class="error-title">Erreur</div>
+                    <div class="error-triangle">⚠️</div>
+                    <div style="font-size:24px; font-weight:bold;">Erreur</div>
                     <div class="console-box">
                         <div class="console-header">Console Messages</div>
                         <div class="console-body">
-                            Error: ${msg}
+                            Error: TypeError: ${msg}<br>
+                            <span style="color:#666; font-size:11px;">(Vérifiez l'URL de l'API et la structure du JSON)</span>
                         </div>
                     </div>
                 </div>
             `;
-        }
-
-        // Simule ton backend (remplace par ton vrai code fetch)
-        async function fetchData() {
-            // Ici, ton code actuel renvoie probablement "undefined" ce qui cause l'erreur
-            return undefined; 
         }
     </script>
 </body>
