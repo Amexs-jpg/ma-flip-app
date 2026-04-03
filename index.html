@@ -5,76 +5,25 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>FlipFinder - Resale</title>
     <style>
-        body { background-color: #000; color: white; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 0; padding: 20px; }
-        .header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 20px; }
-        .logo { color: #d4ff3f; font-size: 28px; font-weight: bold; letter-spacing: -1px; }
+        body { background-color: #000; color: white; font-family: sans-serif; margin: 0; padding: 20px; }
+        .logo { color: #d4ff3f; font-size: 24px; font-weight: bold; }
         .logo span { color: white; }
-        .badge { background: #d4ff3f; color: black; padding: 6px 12px; border-radius: 20px; font-size: 10px; font-weight: bold; text-align: center; line-height: 1.2; }
-        
-        .subtitle { font-size: 13px; color: #666; margin-top: -15px; margin-bottom: 25px; }
-
-        .filters { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-        label { display: block; font-size: 10px; color: #888; margin-bottom: 6px; text-transform: uppercase; font-weight: bold; }
-        
-        /* Style des inputs identique à ta photo */
-        .input-box { 
-            background: #1a1a1a; 
-            border: 1px solid #333; 
-            padding: 14px; 
-            border-radius: 10px; 
-            color: white; 
-            width: 100%; 
-            box-sizing: border-box; 
-            margin-bottom: 10px;
-            font-size: 14px;
-        }
-
-        /* Section API rajoutée */
-        .api-section { margin-top: 10px; border-top: 1px dashed #333; padding-top: 15px; }
-        .api-input { border: 1px solid #d4ff3f55; color: #d4ff3f; font-family: monospace; font-size: 12px; }
-
-        .btn-scanner { 
-            background: #d4ff3f; 
-            color: black; 
-            width: 100%; 
-            border: none; 
-            padding: 16px; 
-            border-radius: 12px; 
-            font-weight: 800; 
-            cursor: pointer; 
-            font-size: 16px; 
-            display: flex; 
-            align-items: center; 
-            justify-content: center; 
-            gap: 10px;
-            margin-top: 10px;
-            transition: transform 0.1s;
-        }
-        .btn-scanner:active { transform: scale(0.98); }
-
+        .badge { background: #d4ff3f; color: black; padding: 5px 10px; border-radius: 20px; float: right; font-size: 10px; font-weight: bold; text-align: center; }
+        .filters { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 20px; }
+        label { display: block; font-size: 10px; color: #666; margin-bottom: 5px; text-transform: uppercase; }
+        .input-box { background: #1a1a1a; border: 1px solid #333; padding: 12px; border-radius: 8px; color: white; width: 100%; box-sizing: border-box; margin-bottom: 15px; font-size: 14px; }
+        .api-field { border: 1px solid #d4ff3f55; color: #d4ff3f; font-family: monospace; }
+        .btn-scanner { background: #d4ff3f; color: black; width: 100%; border: none; padding: 15px; border-radius: 12px; font-weight: bold; cursor: pointer; font-size: 16px; margin-top: 10px; }
         #results { margin-top: 30px; text-align: center; }
-        
-        /* Box d'erreur style console */
-        .error-container { margin-top: 30px; }
-        .error-triangle { color: #ffcc00; font-size: 60px; margin-bottom: 10px; }
-        .console-box { 
-            background: #1c1c1e; 
-            border-radius: 12px; 
-            overflow: hidden; 
-            margin-top: 20px; 
-            text-align: left; 
-        }
-        .console-header { background: #2c2c2e; padding: 10px 15px; color: #8e8e93; font-size: 12px; }
-        .console-body { padding: 20px; color: #ff6b6b; font-family: monospace; font-size: 13px; line-height: 1.5; }
+        .error-box { background: #1a1a1a; border-radius: 10px; padding: 20px; margin-top: 20px; border: 1px solid #333; }
+        .error-msg { color: #ff6b6b; font-family: monospace; font-size: 12px; text-align: left; margin-top: 10px; }
     </style>
 </head>
 <body>
 
-    <div class="header">
-        <div class="logo">Flip<span>Finder</span></div>
-        <div class="badge">IA<br>POWERED</div>
-    </div>
-    <div class="subtitle">Détecteur d'opportunités · Liens directs Vinted</div>
+    <div class="badge">IA<br>POWERED</div>
+    <div class="logo">Flip<span>Finder</span></div>
+    <p style="font-size: 12px; color: #666;">Détecteur d'opportunités · Liens directs Vinted</p>
 
     <div class="filters">
         <div><label>Marque</label><input type="text" class="input-box" id="marque" value="Nike"></div>
@@ -83,10 +32,10 @@
         <div><label>Taille</label><input type="text" class="input-box" id="taille" value="S"></div>
     </div>
 
-    <div class="api-section">
-        <label>Lien de l'API / Endpoint</label>
-        <input type="text" class="input-box api-input" id="apiUrl" placeholder="https://votre-api.com/search">
-    </div>
+    <hr style="border: 0; border-top: 1px dashed #333; margin: 20px 0;">
+
+    <label>Lien de l'API / Endpoint</label>
+    <input type="text" id="api_url" class="input-box api-field" placeholder="https://votre-api.com/search" value="">
 
     <button class="btn-scanner" onclick="lancerScan()">🔍 SCANNER</button>
 
@@ -95,40 +44,45 @@
     <script>
         async function lancerScan() {
             const resultsDiv = document.getElementById('results');
-            const apiUrl = document.getElementById('apiUrl').value;
+            const url = document.getElementById('api_url').value.trim();
 
-            if (!apiUrl) {
-                afficherErreur("Veuillez entrer l'URL de votre API avant de scanner.");
+            if (!url) {
+                afficherErreur("Veuillez entrer une URL d'API valide.");
                 return;
             }
 
-            resultsDiv.innerHTML = "<p style='color:#d4ff3f'>Connexion à l'API...</p>";
+            if (!url.startsWith('http')) {
+                afficherErreur("L'URL doit commencer par http:// ou https://");
+                return;
+            }
+
+            resultsDiv.innerHTML = "<p>Connexion au serveur...</p>";
 
             try {
-                // On récupère les données de l'URL saisie
-                const response = await fetch(apiUrl);
+                const response = await fetch(url);
                 
-                if (!response.ok) throw new Error(`Erreur Serveur: ${response.status}`);
+                if (response.status === 404) {
+                    throw new Error("Erreur 404 : L'adresse de l'API est introuvable.");
+                }
+                
+                if (!response.ok) {
+                    throw new Error("Erreur Serveur: " + response.status);
+                }
                 
                 const data = await response.json();
-
-                // Protection contre le 'undefined' (ton ancienne erreur)
-                const produits = Array.isArray(data) ? data : (data.items || data.products || []);
+                const produits = Array.isArray(data) ? data : (data.items || []);
 
                 if (produits.length === 0) {
-                    afficherErreur("Aucun produit trouvé. L'API a renvoyé une liste vide.");
+                    afficherErreur("Aucun produit trouvé.");
                 } else {
-                    // Affichage des résultats si tout est OK
                     resultsDiv.innerHTML = produits.map(p => `
-                        <div style="background:#1a1a1a; padding:15px; margin-bottom:10px; border-radius:10px; text-align:left; border-left: 4px solid #d4ff3f; display:flex; justify-content:space-between;">
-                            <span>${p.nom || 'Article Vinted'}</span>
-                            <span style="color:#d4ff3f; font-weight:bold;">${p.prix || '--'}€</span>
+                        <div style="background:#1a1a1a; padding:15px; margin-bottom:10px; border-radius:10px; text-align:left; border-left: 4px solid #d4ff3f;">
+                            <strong>${p.nom || 'Produit'}</strong> - ${p.prix || '0'}€
                         </div>
                     `).join('');
                 }
 
             } catch (error) {
-                // Si l'URL est mauvaise ou l'API hors ligne, on affiche ton design d'erreur
                 afficherErreur(error.message);
             }
         }
@@ -136,15 +90,12 @@
         function afficherErreur(msg) {
             const resultsDiv = document.getElementById('results');
             resultsDiv.innerHTML = `
-                <div class="error-container">
-                    <div class="error-triangle">⚠️</div>
-                    <div style="font-size:24px; font-weight:bold;">Erreur</div>
-                    <div class="console-box">
-                        <div class="console-header">Console Messages</div>
-                        <div class="console-body">
-                            Error: TypeError: ${msg}<br>
-                            <span style="color:#666; font-size:11px;">(Vérifiez l'URL de l'API et la structure du JSON)</span>
-                        </div>
+                <div style="margin-top: 20px;">
+                    <span style="font-size: 50px;">⚠️</span>
+                    <h2 style="margin:10px 0;">Erreur</h2>
+                    <div class="error-box">
+                        <p style="color:#666; font-size:11px; text-align:left; margin:0;">Console Messages</p>
+                        <p class="error-msg">Error: ${msg}</p>
                     </div>
                 </div>
             `;
