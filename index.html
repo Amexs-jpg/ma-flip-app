@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>FlipFinder Pro - Apparel Logic</title>
+    <title>FlipFinder Pro - Apparel Expert</title>
     <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/lucide@latest"></script>
     <style>
@@ -101,6 +101,7 @@
             border-top-color: var(--accent); border-radius: 50%;
             animation: spin 0.8s linear infinite; margin: 0 auto 12px;
         }
+        @keyframes spin { to { transform: rotate(360deg); } }
         @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
     </style>
 </head>
@@ -108,7 +109,7 @@
 
 <div class="header">
     <div class="logo">Flip<span>Finder</span></div>
-    <div class="badge">V2.7 APPAREL-PRO</div>
+    <div class="badge">V2.8 APPAREL-ENGINE</div>
 </div>
 
 <div class="filters">
@@ -118,7 +119,7 @@
     </div>
     <div class="filter-group">
         <label><i data-lucide="wallet" size="12"></i> Budget Max</label>
-        <input type="text" id="budget" value="50€">
+        <input type="text" id="budget" value="45€">
     </div>
     <div class="filter-group">
         <label><i data-lucide="shirt" size="12"></i> Type</label>
@@ -126,22 +127,22 @@
     </div>
     <div class="filter-group">
         <label><i data-lucide="maximize" size="12"></i> Taille</label>
-        <input type="text" id="taille" value="L">
+        <input type="text" id="taille" value="M">
     </div>
 </div>
 
 <button class="btn-scan" id="scanBtn" onclick="lancerScan()">
-    <i data-lucide="zap" size="18"></i> ANALYSER LE MARCHÉ
+    <i data-lucide="zap" size="18"></i> ANALYSER LES PÉPITES
 </button>
 
 <div class="loading" id="loading">
     <div class="spinner"></div>
-    <p style="color: var(--muted); font-size: 12px;">Analyse des tendances vestimentaires...</p>
+    <p style="color: var(--muted); font-size: 12px;">Scan des matières et coupes rares...</p>
 </div>
 
 <div class="stats-bar" id="statsBar">
-    <div class="stat"><div class="stat-val" id="statCount">0</div><div class="stat-label">Annonces</div></div>
-    <div class="stat"><div class="stat-val" id="statMargin" style="color:var(--score-a)">0%</div><div class="stat-label">Bénéf. Max</div></div>
+    <div class="stat"><div class="stat-val" id="statCount">0</div><div class="stat-label">Offres</div></div>
+    <div class="stat"><div class="stat-val" id="statMargin" style="color:var(--score-a)">0%</div><div class="stat-label">Marge Max</div></div>
     <div class="stat"><div class="stat-val" id="statProfit">0€</div><div class="stat-label">Gain Moyen</div></div>
 </div>
 
@@ -150,17 +151,15 @@
 <script>
 lucide.createIcons();
 
+const fabrics = ["Laine", "Coton Lourd", "Denim Selvedge", "Velours Côtelé", "Cuir Véritable", "Toile Canevas"];
+const fits = ["Oversized", "Boxy Fit", "Baggy", "Vintage Cut", "Straight Fit"];
+
 const marketData = {
-    // CHAUSSURES (Non touché)
-    "sneakers": { multiplier: 2.1, volume: 10, suffixes: ["Air Force 1", "Dunk Low", "Jordan 1 Retro", "TN Air Max"] },
-    
-    // VÊTEMENTS - LOGIQUE SPÉCIFIQUE
-    "nike": { multiplier: 1.8, volume: 9, apparelSuffixes: ["Tech Fleece", "Vintage Hoodie", "Sweat Big Swoosh", "Pantalon de Jogging"] },
-    "carhartt": { multiplier: 2.3, volume: 9, apparelSuffixes: ["Detroit Jacket", "Double Knee Pant", "Active Jacket Canvas", "Veste Carpenter"] },
-    "ralph lauren": { multiplier: 2.5, volume: 8, apparelSuffixes: ["Pull Col V Laine", "Chemise Slim Oxford", "Polo Bear", "Doudoune Sans Manche"] },
-    "lacoste": { multiplier: 2.2, volume: 8, apparelSuffixes: ["Survêtement Brillant", "Polo Classic Fit", "Cardigan Laine", "Veste de Tennis"] },
-    "adidas": { multiplier: 1.6, volume: 7, apparelSuffixes: ["Veste Firebird", "Hoodie Trèfle", "Jogging Adibreak", "Coupe-vent Vintage"] },
-    "default": { multiplier: 1.5, volume: 5, apparelSuffixes: ["Veste Vintage", "Hoodie Oversized", "T-shirt Graphique", "Pantalon Cargo"] }
+    "sneakers": { multiplier: 2.1, volume: 10, suffixes: ["Air Force 1", "Dunk Low", "Jordan 1", "TN Air Max"] },
+    "nike": { multiplier: 1.8, volume: 9, apparelSuffixes: ["Hoodie Swoosh Central", "Veste de survêtement", "Tech Fleece", "Sweat Brodé"] },
+    "carhartt": { multiplier: 2.3, volume: 9, apparelSuffixes: ["Detroit Jacket", "Double Knee", "Active Jacket", "Veste Carpenter"] },
+    "ralph lauren": { multiplier: 2.4, volume: 8, apparelSuffixes: ["Pull Torsadé Laine", "Chemise Oxford", "Doudoune Sans Manche", "Polo Bear"] },
+    "default": { multiplier: 1.5, volume: 5, apparelSuffixes: ["Veste Vintage", "Hoodie Graphique", "Pantalon Cargo", "Sweat Col Rond"] }
 };
 
 function lancerScan() {
@@ -180,37 +179,40 @@ function lancerScan() {
     setTimeout(() => {
         const items = [];
         for(let i=0; i<5; i++) {
-            // Calcul Prix Achat
             const minBuy = Math.max(10, budgetNum * 0.4);
             const buy = Math.floor(minBuy + (Math.random() * (budgetNum - minBuy)));
             
-            // Multiplicateur
-            const sell = Math.floor(buy * (logic.multiplier * (0.8 + Math.random() * 0.5)));
+            // Logic de prix augmentée pour les matières nobles
+            let currentMultiplier = logic.multiplier;
+            const fabric = fabrics[Math.floor(Math.random() * fabrics.length)];
+            const fit = fits[Math.floor(Math.random() * fits.length)];
             
+            if (fabric === "Laine" || fabric === "Cuir Véritable" || fabric === "Denim Selvedge") {
+                currentMultiplier += 0.4; // Bonus de revente pour matière premium
+            }
+
+            const sell = Math.floor(buy * (currentMultiplier * (0.85 + Math.random() * 0.45)));
             const frais = 0.70 + (buy * 0.05);
             const profitNet = Math.round(sell - buy - frais);
             const profitPercent = Math.round((profitNet / buy) * 100);
 
-            // LOGIQUE DE TITRE DIFFÉRENCIÉE
-            let suffix;
+            let title = "";
             if (isSneakers) {
-                // Utilise les suffixes de sneakers de la catégorie Sneakers globale ou par marque si dispo
                 const sneakerList = marketData["sneakers"].suffixes;
-                suffix = sneakerList[Math.floor(Math.random() * sneakerList.length)];
+                title = `${marqueInput.toUpperCase()} ${sneakerList[Math.floor(Math.random() * sneakerList.length)]}`;
             } else {
-                // Utilise les suffixes vêtements
                 const apparelList = logic.apparelSuffixes || marketData["default"].apparelSuffixes;
-                suffix = apparelList[Math.floor(Math.random() * apparelList.length)];
+                const baseTitle = apparelList[Math.floor(Math.random() * apparelList.length)];
+                title = `${marqueInput.toUpperCase()} ${baseTitle} - ${fabric} (${fit})`;
             }
 
-            // Grade
             let grade = "C";
-            const scoreTotal = logic.volume + (profitPercent / 50);
-            if(scoreTotal > 10.5) grade = "A";
-            else if(scoreTotal > 7.5) grade = "B";
+            const scoreTotal = logic.volume + (profitPercent / 45);
+            if(scoreTotal > 11) grade = "A";
+            else if(scoreTotal > 8) grade = "B";
 
             items.push({
-                title: `${marqueInput.toUpperCase()} ${suffix}`,
+                title: title,
                 brand: marqueInput.toUpperCase(),
                 buy: buy,
                 sell: sell,
@@ -241,7 +243,6 @@ function openCompare(platform, query) {
 function render(items, taille, budgetNum) {
     const container = document.getElementById('results');
     document.getElementById('statsBar').style.display = 'flex';
-    
     document.getElementById('statCount').textContent = items.length;
     document.getElementById('statMargin').textContent = "+" + Math.max(...items.map(i => i.percent)) + "%";
     document.getElementById('statProfit').textContent = Math.round(items.reduce((acc, i) => acc + i.gain, 0) / items.length) + '€';
@@ -267,14 +268,14 @@ function render(items, taille, budgetNum) {
                             <span class="price-sell">${item.sell}€</span>
                         </div>
                         <div class="profit-tag">
-                            <i data-lucide="shopping-cart" size="12" style="color:var(--accent)"></i>
-                            +${item.gain}€ (${item.percent}%)
+                            <i data-lucide="sparkles" size="12" style="color:var(--accent)"></i>
+                            BÉNÉFICE : +${item.gain}€ (${item.percent}%)
                         </div>
                     </div>
                 </div>
                 <div class="card-footer">
                     <a href="${vintedUrl}" target="_blank" class="btn-action btn-vinted">
-                        <i data-lucide="shopping-bag" size="14"></i> VINTED
+                        <i data-lucide="shopping-bag" size="14"></i> VOIR VINTED
                     </a>
                     <div class="compare-dropdown">
                         <select class="select-compare" onchange="openCompare(this.value, '${exactSearch}'); this.value='';">
