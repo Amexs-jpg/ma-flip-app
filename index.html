@@ -1,103 +1,55 @@
-<!<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>FlipFinder Pro — Google AI</title>
-    <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FlipFinder Pro</title>
     <style>
-        :root {
-            --bg: #0a0a0a; --surface: #141414; --card: #1a1a1a; --border: #2a2a2a;
-            --accent: #c8f135; --accent2: #f1a435; --vinted: #09b1ba;
-            --text: #f0f0f0; --muted: #666; --good: #4caf50;
-        }
-        * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-        body { background: var(--bg); color: var(--text); font-family: 'DM Sans', sans-serif; min-height: 100vh; }
-
-        header { padding: 20px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; background: var(--bg); position: sticky; top: 0; z-index: 100; }
-        .logo { font-family: 'Bebas Neue', sans-serif; font-size: 1.8rem; color: var(--accent); letter-spacing: 1px; }
-        .settings-toggle { background: var(--card); border: 1px solid var(--border); color: var(--text); padding: 8px 12px; border-radius: 8px; cursor: pointer; font-size: 0.8rem; }
-
-        #settingsPanel { display: none; padding: 20px; background: var(--surface); border-bottom: 1px solid var(--border); }
-        .api-input { width: 100%; background: var(--card); border: 1px solid var(--border); color: var(--text); padding: 12px; border-radius: 8px; margin-top: 8px; font-family: monospace; }
-
-        .filters { padding: 20px; display: flex; flex-direction: column; gap: 12px; background: var(--surface); }
-        .filter-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-        .filter-group label { font-size: 0.65rem; text-transform: uppercase; color: var(--muted); font-weight: 700; display: block; margin-bottom: 5px; }
-        select { width: 100%; background: var(--card); border: 1px solid var(--border); color: var(--text); padding: 12px; border-radius: 10px; font-size: 0.9rem; appearance: none; }
-        
-        .btn-scan { background: var(--accent); color: #000; border: none; padding: 16px; border-radius: 12px; font-family: 'Bebas Neue', sans-serif; font-size: 1.3rem; cursor: pointer; margin-top: 10px; width: 100%; }
-        .btn-scan:disabled { opacity: 0.5; }
-
-        .stats-bar { padding: 15px; display: none; grid-template-columns: repeat(4, 1fr); gap: 10px; border-bottom: 1px solid var(--border); background: #000; text-align: center;}
-        .stat-val { font-family: 'Bebas Neue', sans-serif; font-size: 1.3rem; color: var(--accent); display: block; }
-        .stat-label { font-size: 0.55rem; color: var(--muted); text-transform: uppercase; }
-
-        .results { padding: 15px; display: grid; gap: 15px; }
-        .card { background: var(--card); border: 1px solid var(--border); border-radius: 16px; overflow: hidden; animation: fadeIn 0.4s ease; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-        
-        .vinted-head { background: rgba(9, 177, 186, 0.1); padding: 10px 15px; font-size: 0.75rem; color: var(--vinted); font-weight: bold; display: flex; justify-content: space-between; }
+        :root { --bg: #0f0f0f; --card: #1a1a1a; --primary: #8bc34a; --text: #ffffff; --muted: #aaaaaa; }
+        body { font-family: sans-serif; background: var(--bg); color: var(--text); margin: 0; padding: 15px; }
+        header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+        .logo { color: var(--primary); font-weight: bold; font-size: 1.5rem; text-transform: uppercase; }
+        .settings-btn { background: #222; border: none; color: var(--muted); padding: 8px 12px; border-radius: 5px; cursor: pointer; }
+        .input-group { display: flex; gap: 10px; margin-bottom: 15px; }
+        input { flex: 1; background: #222; border: 1px solid #333; padding: 12px; border-radius: 8px; color: white; }
+        #scanBtn { width: 100%; background: var(--primary); border: none; padding: 15px; border-radius: 8px; font-weight: bold; font-size: 1rem; color: #000; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px; }
+        #scanBtn:disabled { opacity: 0.5; }
+        .card { background: var(--card); border-radius: 12px; margin-top: 15px; overflow: hidden; border: 1px solid #333; }
         .card-body { padding: 15px; }
-        .price-row { display: flex; align-items: center; gap: 12px; margin: 12px 0; }
-        .p-buy { font-family: 'Bebas Neue', sans-serif; font-size: 1.6rem; }
-        .p-sell { font-family: 'Bebas Neue', sans-serif; font-size: 1.6rem; color: var(--accent); }
-        .m-pill { margin-left: auto; background: rgba(200, 241, 53, 0.1); color: var(--accent); padding: 4px 10px; border-radius: 20px; font-size: 0.8rem; font-weight: bold; }
-
-        .btn-vinted { display: block; background: var(--vinted); color: white; text-align: center; padding: 14px; border-radius: 10px; text-decoration: none; font-weight: bold; margin-top: 15px; }
-
-        .loader { display: none; text-align: center; padding: 40px; }
-        .spinner { width: 40px; height: 40px; border: 3px solid var(--border); border-top-color: var(--accent); border-radius: 50%; animation: spin 0.8s linear infinite; margin: 0 auto 15px; }
-        @keyframes spin { to { transform: rotate(360deg); } }
-        .notif { display: none; position: fixed; bottom: 20px; left: 20px; right: 20px; background: var(--accent); color: #000; padding: 15px; border-radius: 12px; font-weight: bold; text-align: center; z-index: 1000; }
+        .price-row { display: flex; align-items: center; gap: 10px; margin: 10px 0; }
+        .p-buy { text-decoration: line-through; color: #ff5252; font-weight: bold; }
+        .p-sell { color: #8bc34a; font-weight: bold; font-size: 1.2rem; }
+        .m-pill { background: rgba(139, 195, 74, 0.1); color: var(--primary); padding: 4px 8px; border-radius: 4px; font-size: 0.8rem; }
+        .btn-vinted { display: block; text-align: center; background: #007782; color: white; text-decoration: none; padding: 10px; border-radius: 6px; margin-top: 10px; font-size: 0.9rem; }
+        #loader { display: none; text-align: center; margin: 20px 0; }
+        #settingsPanel { display: none; background: #222; padding: 15px; border-radius: 8px; margin-bottom: 15px; }
     </style>
 </head>
 <body>
 
 <header>
     <div class="logo">FLIPFINDER</div>
-    <button class="settings-toggle" onclick="toggleSettings()">⚙️ GOOGLE KEY</button>
+    <button class="settings-btn" onclick="toggleSettings()">⚙️ GOOGLE KEY</button>
 </header>
 
 <div id="settingsPanel">
-    <label style="font-size: 0.8rem; font-weight: bold;">Clé API Google Gemini (Gratuite)</label>
-    <input type="password" id="apiKeyInput" class="api-input" placeholder="AIzaSy...">
-    <button class="btn-scan" style="font-size: 0.9rem; padding: 8px; margin-top: 10px;" onclick="saveKey()">Enregistrer</button>
+    <p style="font-size: 0.8rem; color: var(--muted); margin-top: 0;">Colle ta clé API Gemini ci-dessous :</p>
+    <input type="password" id="apiKeyInput" placeholder="AIzaSy...">
+    <button onclick="saveKey()" style="margin-top:10px; background:var(--primary); border:none; padding:8px; width:100%; border-radius:5px; font-weight:bold;">Enregistrer</button>
 </div>
 
-<div class="filters">
-    <div class="filter-row">
-        <div class="filter-group"><label>Marques</label>
-            <select id="brand">
-                <option value="Nike, Adidas">Nike / Adidas</option>
-                <option value="Ralph Lauren, Lacoste">RL / Lacoste</option>
-                <option value="Vintage 90s, Streetwear">Vintage / Street</option>
-            </select>
-        </div>
-        <div class="filter-group"><label>Budget</label>
-            <select id="budget">
-                <option value="25">25€ max</option>
-                <option value="50">50€ max</option>
-            </select>
-        </div>
-    </div>
-    <button class="btn-scan" id="scanBtn" onclick="scan()">🔍 SCANNER GRATUITEMENT</button>
+<div class="input-group">
+    <input type="text" id="brands" placeholder="Nike / Adidas">
+    <input type="text" id="budget" placeholder="25€ max">
 </div>
 
-<div class="stats-bar" id="statsBar">
-    <div class="stat"><span class="stat-val" id="statCount">0</span><span class="stat-label">Objets</span></div>
-    <div class="stat"><span class="stat-val" id="statBest">0%</span><span class="stat-label">Marge</span></div>
-    <div class="stat"><span class="stat-val" id="statProfit">0€</span><span class="stat-label">Profit</span></div>
-    <div class="stat"><span class="stat-val" id="statHot">0</span><span class="stat-label">Hot</span></div>
+<button id="scanBtn" onclick="scan()">🔍 SCANNER GRATUITEMENT</button>
+
+<div id="loader">
+    <p>🤖 L'IA analyse Vinted...</p>
 </div>
 
-<div class="loader" id="loader">
-    <div class="spinner"></div>
-    <p>Recherche des pépites avec Gemini...</p>
-</div>
-
-<div id="resultsContainer" class="results"></div>
-<div id="notif" class="notif"></div>
+<div id="resultsContainer"></div>
 
 <script>
     window.onload = () => {
@@ -128,14 +80,12 @@
         btn.disabled = true; 
         container.innerHTML = ''; 
         loader.style.display = 'block';
-        document.getElementById('statsBar').style.display = 'none';
 
-        const prompt = `Agis en expert Vinted. Donne 5 opportunités d'achat-revente : Nike, Adidas, Ralph Lauren, budget 30€. 
-        Réponds UNIQUEMENT avec un JSON pur au format : {"items":[{"title":"Nom","brand":"Marque","size":"Taille","buyPrice":10,"sellPrice":30,"tip":"Conseil","score":"hot"}]}`;
+        const prompt = `Agis en expert Vinted. Donne 4 opportunités d'achat-revente : Nike, Adidas, Ralph Lauren. Réponds UNIQUEMENT avec ce JSON : {"items":[{"title":"Nom","brand":"Marque","size":"Taille","buyPrice":10,"sellPrice":30,"tip":"Conseil"}]}`;
 
         try {
-            // CORRECTION ICI : Retour en v1beta pour Gemini 1.5 Flash
-            const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${key}`;
+            // Changement pour le modèle PRO qui est plus stable sur les anciennes versions
+            const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=${key}`;
             
             const response = await fetch(url, {
                 method: "POST",
@@ -145,20 +95,29 @@
 
             const data = await response.json();
 
-            if (data.error) {
-                throw new Error(data.error.message);
-            }
+            if (data.error) throw new Error(data.error.message);
 
-            if (data.candidates && data.candidates[0].content.parts[0].text) {
-                let text = data.candidates[0].content.parts[0].text;
-                const jsonMatch = text.match(/\{[\s\S]*\}/);
-                if (!jsonMatch) throw new Error("Format de réponse invalide");
-                const results = JSON.parse(jsonMatch[0]).items;
-                renderResults(results);
-                updateStats(results);
-            } else {
-                throw new Error("Réponse vide");
-            }
+            const text = data.candidates[0].content.parts[0].text;
+            const jsonMatch = text.match(/\{[\s\S]*\}/);
+            const results = JSON.parse(jsonMatch[0]).items;
+            
+            results.forEach(item => {
+                const profit = item.sellPrice - item.buyPrice;
+                container.innerHTML += `
+                    <div class="card">
+                        <div class="card-body">
+                            <h3>${item.title}</h3>
+                            <p style="font-size:0.8rem; color:var(--muted)">${item.brand} • ${item.size}</p>
+                            <div class="price-row">
+                                <span class="p-buy">${item.buyPrice}€</span>
+                                <span class="p-sell">${item.sellPrice}€</span>
+                                <span class="m-pill">+${profit}€ de profit</span>
+                            </div>
+                            <p style="font-size:0.75rem; color:#aaa">💡 ${item.tip}</p>
+                            <a href="https://www.vinted.fr/catalog?search_text=${encodeURIComponent(item.brand + ' ' + item.title)}&price_to=${item.buyPrice}" target="_blank" class="btn-vinted">Trouver sur Vinted</a>
+                        </div>
+                    </div>`;
+            });
 
         } catch (err) {
             alert("⚠️ " + err.message);
@@ -167,35 +126,7 @@
             btn.disabled = false;
         }
     }
+</script>
 
-    function renderResults(items) {
-        const container = document.getElementById('resultsContainer');
-        items.forEach(item => {
-            const profit = item.sellPrice - item.buyPrice;
-            const margin = Math.round((profit / item.buyPrice) * 100);
-            container.innerHTML += `
-                <div class="card">
-                    <div class="vinted-head">GÉMINI AI <span>${item.score === 'hot' ? '🔥' : '⭐'}</span></div>
-                    <div class="card-body">
-                        <h3>${item.title}</h3>
-                        <p style="font-size:0.8rem; color:var(--muted)">${item.brand} • Taille ${item.size}</p>
-                        <div class="price-row">
-                            <span class="p-buy">${item.buyPrice}€</span>
-                            <span class="p-sell">${item.sellPrice}€</span>
-                            <span class="m-pill">+${profit}€ (${margin}%)</span>
-                        </div>
-                        <p style="font-size:0.75rem; color:#aaa">💡 ${item.tip}</p>
-                        <a href="https://www.vinted.fr/catalog?search_text=${encodeURIComponent(item.brand + ' ' + item.title)}&price_to=${item.buyPrice}" target="_blank" class="btn-vinted">Trouver sur Vinted</a>
-                    </div>
-                </div>`;
-        });
-    }
-
-    function updateStats(items) {
-        document.getElementById('statCount').textContent = items.length;
-        const avgProfit = items.reduce((acc, i) => acc + (i.sellPrice-i.buyPrice), 0) / items.length;
-        document.getElementById('statProfit').textContent = Math.round(avgProfit) + "€";
-        document.getElementById('statsBar').style.display = 'grid';
-    }
-</script></body>
+</body>
 </html>
