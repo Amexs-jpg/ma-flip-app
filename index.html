@@ -12,16 +12,12 @@
             --accent: #d4ff3f; --vinted: #09b1ba; --text: #ffffff;
             --muted: #888; --good: #4caf50; --warn: #f1a435;
         }
-
         * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-        
         body {
             background: var(--bg); color: var(--text);
             font-family: 'DM Sans', sans-serif; min-height: 100vh;
             padding: 24px 20px 80px; max-width: 600px; margin: auto;
         }
-
-        /* Header & Logo */
         .header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 24px; }
         .logo { font-family: 'Bebas Neue', sans-serif; font-size: 2.4rem; letter-spacing: 2px; color: var(--accent); }
         .logo span { color: var(--text); }
@@ -30,8 +26,6 @@
             font-size: 10px; font-weight: 800; padding: 6px 12px; 
             border-radius: 20px; border: 1px solid var(--accent);
         }
-
-        /* Système de Filtres */
         .filters { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 24px; }
         .filter-group { display: flex; flex-direction: column; gap: 6px; }
         label { font-size: 10px; color: var(--muted); text-transform: uppercase; font-weight: 700; display: flex; align-items: center; gap: 4px; }
@@ -40,8 +34,6 @@
             padding: 14px; border-radius: 12px; font-size: 14px; outline: none; transition: 0.2s;
         }
         input:focus { border-color: var(--accent); background: #1c1c1c; }
-
-        /* Bouton Scan */
         .btn-scan {
             background: var(--accent); color: #000; width: 100%; border: none; padding: 18px;
             border-radius: 16px; font-family: 'Bebas Neue', sans-serif; font-size: 1.3rem;
@@ -50,8 +42,6 @@
         }
         .btn-scan:active { transform: scale(0.98); }
         .btn-scan:disabled { opacity: 0.3; cursor: not-allowed; }
-
-        /* Barre de Statistiques */
         .stats-bar {
             display: none; background: var(--surface); border: 1px solid var(--border);
             border-radius: 16px; margin: 24px 0; overflow: hidden;
@@ -60,33 +50,26 @@
         .stat:last-child { border-right: none; }
         .stat-val { font-family: 'Bebas Neue', sans-serif; font-size: 1.6rem; color: var(--accent); }
         .stat-label { font-size: 9px; color: var(--muted); text-transform: uppercase; }
-
-        /* Cartes de résultats */
         .card {
             background: var(--card); border: 1px solid var(--border); border-radius: 18px;
             margin-bottom: 16px; overflow: hidden; animation: slideUp 0.4s ease both;
         }
         @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
-        
         .card-top { display: flex; padding: 12px; gap: 14px; }
         .card-photo { width: 110px; height: 140px; background: #111; border-radius: 12px; overflow: hidden; flex-shrink: 0; }
         .card-photo img { width: 100%; height: 100%; object-fit: cover; opacity: 0; transition: 0.5s; }
         .card-photo img.loaded { opacity: 1; }
-        
         .card-info { flex: 1; display: flex; flex-direction: column; justify-content: center; }
         .card-brand { font-size: 11px; font-weight: 800; color: var(--accent); text-transform: uppercase; }
         .card-title { font-size: 14px; font-weight: 500; color: #eee; margin: 4px 0; }
-        
         .price-container { display: flex; align-items: baseline; gap: 8px; margin-top: 4px; }
         .price-buy { font-family: 'Bebas Neue', sans-serif; font-size: 1.3rem; color: #666; text-decoration: line-through; }
         .price-sell { font-family: 'Bebas Neue', sans-serif; font-size: 1.8rem; color: var(--text); }
-        
         .profit-tag { 
             display: inline-flex; align-items: center; gap: 4px;
             background: rgba(76, 175, 80, 0.1); color: #4caf50; 
             padding: 4px 8px; border-radius: 6px; font-size: 11px; font-weight: 700; margin-top: 8px;
         }
-
         .card-footer { padding: 12px; background: rgba(255,255,255,0.02); display: flex; gap: 10px; }
         .btn-action { 
             flex: 1; padding: 12px; border-radius: 10px; font-size: 12px; font-weight: 700; 
@@ -94,8 +77,6 @@
         }
         .btn-vinted { background: var(--vinted); color: white; }
         .btn-lbc { border: 1px solid var(--border); color: var(--muted); }
-
-        /* Chargement */
         .loading { display: none; text-align: center; padding: 40px; }
         .loading.active { display: block; }
         .spinner {
@@ -138,7 +119,7 @@
 
 <div class="loading" id="loading">
     <div class="spinner"></div>
-    <p style="color: var(--muted); font-size: 12px;">Recherche des meilleures opportunités...</p>
+    <p style="color: var(--muted); font-size: 12px;">Filtrage des annonces par budget...</p>
 </div>
 
 <div class="stats-bar" id="statsBar">
@@ -150,37 +131,36 @@
 <div id="results"></div>
 
 <script>
-// Initialisation des icônes au chargement
 lucide.createIcons();
 
 function lancerScan() {
-    // Récupération et nettoyage des données
     const marque = document.getElementById('marque').value;
     const type = document.getElementById('type').value;
     const taille = document.getElementById('taille').value;
     const budgetRaw = document.getElementById('budget').value;
+    
+    // NETTOYAGE DU BUDGET
     const budgetNum = parseInt(budgetRaw.replace(/[^0-9]/g, '')) || 30;
 
-    // Reset de l'interface
     document.getElementById('results').innerHTML = '';
     document.getElementById('statsBar').style.display = 'none';
     document.getElementById('loading').classList.add('active');
     document.getElementById('scanBtn').disabled = true;
 
-    // Simulation de recherche
     setTimeout(() => {
         const items = [];
         for(let i=0; i<5; i++) {
-            const buy = Math.floor(budgetNum * (0.4 + Math.random() * 0.4));
-            const sell = Math.floor(buy * (1.9 + Math.random() * 0.7));
+            // RESPECT DU BUDGET : Le prix d'achat est forcément inférieur au budget saisi
+            // On génère un prix entre 50% et 95% du budget max
+            const buy = Math.floor(budgetNum * (0.5 + Math.random() * 0.45));
+            const sell = Math.floor(buy * (1.8 + Math.random() * 0.6));
             
-            // Calcul du profit net (Frais Vinted inclus : 0.70€ + 5% du prix d'achat)
             const frais = 0.70 + (buy * 0.05);
             const profit = Math.round(sell - buy - frais);
             const roi = Math.round((profit / buy) * 100);
 
             items.push({
-                title: `${marque} ${type} Vintage`,
+                title: `${marque} ${type} Style`,
                 brand: marque,
                 buy: buy,
                 sell: sell,
@@ -190,18 +170,16 @@ function lancerScan() {
             });
         }
 
-        render(items, type, taille);
+        render(items, type, taille, budgetNum);
         document.getElementById('loading').classList.remove('active');
         document.getElementById('scanBtn').disabled = false;
     }, 1200);
 }
 
-function render(items, type, taille) {
+function render(items, type, taille, budgetNum) {
     const container = document.getElementById('results');
-    const bar = document.getElementById('statsBar');
-    bar.style.display = 'flex';
+    document.getElementById('statsBar').style.display = 'flex';
     
-    // Stats globales
     const maxRoi = Math.max(...items.map(i => i.roi));
     const avgProfit = Math.round(items.reduce((acc, i) => acc + i.profit, 0) / items.length);
 
@@ -210,9 +188,10 @@ function render(items, type, taille) {
     document.getElementById('statProfit').textContent = avgProfit + '€';
 
     items.forEach((item, i) => {
-        // CONSTRUCTION DE L'URL VINTED RÉELLE
+        // CONSTRUCTION DE L'URL AVEC FILTRE DE PRIX RÉEL
+        // On ajoute &price_to=${budgetNum} pour filtrer sur Vinted
         const searchQuery = encodeURIComponent(`${item.brand} ${type} ${taille}`);
-        const vintedUrl = `https://www.vinted.fr/catalog?search_text=${searchQuery}&order=newest_first`;
+        const vintedUrl = `https://www.vinted.fr/catalog?search_text=${searchQuery}&price_to=${budgetNum}&order=newest_first`;
 
         container.innerHTML += `
             <div class="card" style="animation-delay: ${i * 0.1}s">
@@ -245,8 +224,6 @@ function render(items, type, taille) {
                 </div>
             </div>`;
     });
-    
-    // Activation des icônes Lucide pour les nouveaux éléments
     lucide.createIcons();
 }
 </script>
