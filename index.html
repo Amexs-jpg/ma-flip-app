@@ -14,15 +14,16 @@
         input { flex: 1; background: #222; border: 1px solid #333; padding: 12px; border-radius: 8px; color: white; }
         #scanBtn { width: 100%; background: var(--primary); border: none; padding: 15px; border-radius: 8px; font-weight: bold; font-size: 1rem; color: #000; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px; }
         #scanBtn:disabled { opacity: 0.5; }
-        .card { background: var(--card); border-radius: 12px; margin-top: 15px; overflow: hidden; border: 1px solid #333; }
+        .card { background: var(--card); border-radius: 12px; margin-top: 15px; overflow: hidden; border: 1px solid #333; animation: fadeIn 0.5s ease; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
         .card-body { padding: 15px; }
         .price-row { display: flex; align-items: center; gap: 10px; margin: 10px 0; }
         .p-buy { text-decoration: line-through; color: #ff5252; font-weight: bold; }
         .p-sell { color: #8bc34a; font-weight: bold; font-size: 1.2rem; }
         .m-pill { background: rgba(139, 195, 74, 0.1); color: var(--primary); padding: 4px 8px; border-radius: 4px; font-size: 0.8rem; }
-        .btn-vinted { display: block; text-align: center; background: #007782; color: white; text-decoration: none; padding: 10px; border-radius: 6px; margin-top: 10px; font-size: 0.9rem; }
+        .btn-vinted { display: block; text-align: center; background: #007782; color: white; text-decoration: none; padding: 12px; border-radius: 6px; margin-top: 10px; font-size: 0.9rem; font-weight: bold; }
         #loader { display: none; text-align: center; margin: 20px 0; }
-        #settingsPanel { display: none; background: #222; padding: 15px; border-radius: 8px; margin-bottom: 15px; }
+        #settingsPanel { display: none; background: #222; padding: 15px; border-radius: 8px; margin-bottom: 15px; border: 1px solid var(--primary); }
     </style>
 </head>
 <body>
@@ -33,20 +34,20 @@
 </header>
 
 <div id="settingsPanel">
-    <p style="font-size: 0.8rem; color: var(--muted); margin-top: 0;">Colle ta clé API Gemini ci-dessous :</p>
+    <p style="font-size: 0.8rem; color: var(--muted); margin-top: 0;">Colle ta clé API Gemini :</p>
     <input type="password" id="apiKeyInput" placeholder="AIzaSy...">
-    <button onclick="saveKey()" style="margin-top:10px; background:var(--primary); border:none; padding:8px; width:100%; border-radius:5px; font-weight:bold;">Enregistrer</button>
+    <button onclick="saveKey()" style="margin-top:10px; background:var(--primary); border:none; padding:10px; width:100%; border-radius:5px; font-weight:bold;">ENREGISTRER</button>
 </div>
 
 <div class="input-group">
-    <input type="text" id="brands" placeholder="Nike / Adidas">
-    <input type="text" id="budget" placeholder="25€ max">
+    <input type="text" id="brands" placeholder="Marques (Nike, Levi's...)">
+    <input type="text" id="budget" placeholder="Budget max (ex: 30€)">
 </div>
 
-<button id="scanBtn" onclick="scan()">🔍 SCANNER GRATUITEMENT</button>
+<button id="scanBtn" onclick="scan()">🔍 SCANNER LES PÉPITES</button>
 
 <div id="loader">
-    <p>🤖 L'IA analyse Vinted...</p>
+    <p>🤖 IA en cours d'analyse...</p>
 </div>
 
 <div id="resultsContainer"></div>
@@ -64,14 +65,15 @@
 
     function saveKey() {
         const key = document.getElementById('apiKeyInput').value.trim();
+        if(!key) return;
         localStorage.setItem('flip_gemini_key', key);
-        alert("✅ Clé enregistrée !");
+        alert("✅ Clé sauvegardée !");
         toggleSettings();
     }
 
     async function scan() {
         const key = localStorage.getItem('flip_gemini_key');
-        if (!key) { alert("❌ Ajoute ta clé (⚙️)"); toggleSettings(); return; }
+        if (!key) { alert("❌ Configure ta clé d'abord !"); toggleSettings(); return; }
 
         const btn = document.getElementById('scanBtn');
         const loader = document.getElementById('loader');
@@ -81,11 +83,11 @@
         container.innerHTML = ''; 
         loader.style.display = 'block';
 
-        const prompt = `Agis en expert Vinted. Donne 4 opportunités d'achat-revente : Nike, Adidas, Ralph Lauren. Réponds UNIQUEMENT avec ce JSON : {"items":[{"title":"Nom","brand":"Marque","size":"Taille","buyPrice":10,"sellPrice":30,"tip":"Conseil"}]}`;
+        const prompt = "Agis en expert Vinted. Donne 4 opportunités d'achat-revente mode. Réponds UNIQUEMENT avec ce format JSON : {\"items\":[{\"title\":\"Veste\",\"brand\":\"Nike\",\"size\":\"L\",\"buyPrice\":20,\"sellPrice\":50,\"tip\":\"Top tendance\"}]}";
 
         try {
-            // Changement pour le modèle PRO qui est plus stable sur les anciennes versions
-            const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=${key}`;
+            // URL VERSION 1 - LA PLUS STABLE POUR 2026
+            const url = `https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash:generateContent?key=${key}`;
             
             const response = await fetch(url, {
                 method: "POST",
@@ -106,21 +108,21 @@
                 container.innerHTML += `
                     <div class="card">
                         <div class="card-body">
-                            <h3>${item.title}</h3>
-                            <p style="font-size:0.8rem; color:var(--muted)">${item.brand} • ${item.size}</p>
+                            <h3 style="margin:0">${item.title}</h3>
+                            <p style="font-size:0.8rem; color:var(--muted); margin:5px 0">${item.brand} • Taille ${item.size}</p>
                             <div class="price-row">
                                 <span class="p-buy">${item.buyPrice}€</span>
                                 <span class="p-sell">${item.sellPrice}€</span>
-                                <span class="m-pill">+${profit}€ de profit</span>
+                                <span class="m-pill">+${profit}€ de bénéfice</span>
                             </div>
-                            <p style="font-size:0.75rem; color:#aaa">💡 ${item.tip}</p>
-                            <a href="https://www.vinted.fr/catalog?search_text=${encodeURIComponent(item.brand + ' ' + item.title)}&price_to=${item.buyPrice}" target="_blank" class="btn-vinted">Trouver sur Vinted</a>
+                            <p style="font-size:0.75rem; color:#aaa; font-style:italic">💡 ${item.tip}</p>
+                            <a href="https://www.vinted.fr/catalog?search_text=${encodeURIComponent(item.brand + ' ' + item.title)}&price_to=${item.buyPrice}" target="_blank" class="btn-vinted">Chercher sur Vinted</a>
                         </div>
                     </div>`;
             });
 
         } catch (err) {
-            alert("⚠️ " + err.message);
+            alert("⚠️ Erreur : " + err.message);
         } finally {
             loader.style.display = 'none'; 
             btn.disabled = false;
