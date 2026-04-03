@@ -5,130 +5,86 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>FlipFinder Pro</title>
     <style>
-        :root { --bg: #0f0f0f; --card: #1a1a1a; --primary: #8bc34a; --text: #ffffff; --muted: #aaaaaa; }
+        :root { --bg: #0f0f0f; --card: #1a1a1a; --primary: #8bc34a; --text: #ffffff; }
         body { font-family: sans-serif; background: var(--bg); color: var(--text); margin: 0; padding: 15px; }
         header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
-        .logo { color: var(--primary); font-weight: bold; font-size: 1.5rem; text-transform: uppercase; }
-        .settings-btn { background: #222; border: none; color: var(--muted); padding: 8px 12px; border-radius: 5px; cursor: pointer; }
-        .input-group { display: flex; gap: 10px; margin-bottom: 15px; }
-        input { flex: 1; background: #222; border: 1px solid #333; padding: 12px; border-radius: 8px; color: white; }
-        #scanBtn { width: 100%; background: var(--primary); border: none; padding: 15px; border-radius: 8px; font-weight: bold; font-size: 1rem; color: #000; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px; }
-        #scanBtn:disabled { opacity: 0.5; }
-        .card { background: var(--card); border-radius: 12px; margin-top: 15px; overflow: hidden; border: 1px solid #333; animation: fadeIn 0.5s ease; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-        .card-body { padding: 15px; }
-        .price-row { display: flex; align-items: center; gap: 10px; margin: 10px 0; }
-        .p-buy { text-decoration: line-through; color: #ff5252; font-weight: bold; }
-        .p-sell { color: #8bc34a; font-weight: bold; font-size: 1.2rem; }
-        .m-pill { background: rgba(139, 195, 74, 0.1); color: var(--primary); padding: 4px 8px; border-radius: 4px; font-size: 0.8rem; }
-        .btn-vinted { display: block; text-align: center; background: #007782; color: white; text-decoration: none; padding: 12px; border-radius: 6px; margin-top: 10px; font-size: 0.9rem; font-weight: bold; }
+        .logo { color: var(--primary); font-weight: bold; font-size: 1.5rem; }
+        .settings-btn { background: #222; border: none; color: #aaa; padding: 8px; border-radius: 5px; }
+        input { width: 100%; background: #222; border: 1px solid #333; padding: 12px; border-radius: 8px; color: white; margin-bottom: 10px; box-sizing: border-box; }
+        #scanBtn { width: 100%; background: var(--primary); border: none; padding: 15px; border-radius: 8px; font-weight: bold; cursor: pointer; }
+        .card { background: var(--card); border-radius: 12px; margin-top: 15px; padding: 15px; border: 1px solid #333; }
+        .btn-vinted { display: block; text-align: center; background: #007782; color: white; text-decoration: none; padding: 10px; border-radius: 6px; margin-top: 10px; }
         #loader { display: none; text-align: center; margin: 20px 0; }
-        #settingsPanel { display: none; background: #222; padding: 15px; border-radius: 8px; margin-bottom: 15px; border: 1px solid var(--primary); }
     </style>
 </head>
 <body>
 
 <header>
     <div class="logo">FLIPFINDER</div>
-    <button class="settings-btn" onclick="toggleSettings()">⚙️ GOOGLE KEY</button>
+    <button class="settings-btn" onclick="toggleSettings()">⚙️ CLÉ</button>
 </header>
 
-<div id="settingsPanel">
-    <p style="font-size: 0.8rem; color: var(--muted); margin-top: 0;">Colle ta clé API Gemini :</p>
-    <input type="password" id="apiKeyInput" placeholder="AIzaSy...">
-    <button onclick="saveKey()" style="margin-top:10px; background:var(--primary); border:none; padding:10px; width:100%; border-radius:5px; font-weight:bold;">ENREGISTRER</button>
+<div id="settingsPanel" style="display:none; margin-bottom:20px;">
+    <input type="password" id="apiKeyInput" placeholder="Colle ta clé AIza...">
+    <button onclick="saveKey()" style="width:100%; background:white; border:none; padding:8px; border-radius:5px;">SAUVEGARDER</button>
 </div>
 
-<div class="input-group">
-    <input type="text" id="brands" placeholder="Marques (Nike, Levi's...)">
-    <input type="text" id="budget" placeholder="Budget max (ex: 30€)">
-</div>
-
+<input type="text" id="brands" placeholder="Nike, Adidas...">
 <button id="scanBtn" onclick="scan()">🔍 SCANNER LES PÉPITES</button>
 
-<div id="loader">
-    <p>🤖 IA en cours d'analyse...</p>
-</div>
-
+<div id="loader">🤖 Analyse IA en cours...</div>
 <div id="resultsContainer"></div>
 
 <script>
-    window.onload = () => {
-        const savedKey = localStorage.getItem('flip_gemini_key');
-        if (savedKey) document.getElementById('apiKeyInput').value = savedKey;
-    };
-
     function toggleSettings() {
         const p = document.getElementById('settingsPanel');
         p.style.display = p.style.display === 'block' ? 'none' : 'block';
     }
 
     function saveKey() {
-        const key = document.getElementById('apiKeyInput').value.trim();
-        if(!key) return;
-        localStorage.setItem('flip_gemini_key', key);
-        alert("✅ Clé sauvegardée !");
+        localStorage.setItem('flip_gemini_key', document.getElementById('apiKeyInput').value.trim());
+        alert("Clé enregistrée !");
         toggleSettings();
     }
 
     async function scan() {
         const key = localStorage.getItem('flip_gemini_key');
-        if (!key) { alert("❌ Configure ta clé d'abord !"); toggleSettings(); return; }
+        if (!key) { alert("Mets ta clé !"); return; }
 
-        const btn = document.getElementById('scanBtn');
-        const loader = document.getElementById('loader');
+        document.getElementById('loader').style.display = 'block';
         const container = document.getElementById('resultsContainer');
-
-        btn.disabled = true; 
-        container.innerHTML = ''; 
-        loader.style.display = 'block';
-
-        const prompt = "Agis en expert Vinted. Donne 4 opportunités d'achat-revente mode. Réponds UNIQUEMENT avec ce format JSON : {\"items\":[{\"title\":\"Veste\",\"brand\":\"Nike\",\"size\":\"L\",\"buyPrice\":20,\"sellPrice\":50,\"tip\":\"Top tendance\"}]}";
+        container.innerHTML = '';
 
         try {
-            // URL VERSION 1 - LA PLUS STABLE POUR 2026
-            const url = `https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash:generateContent?key=${key}`;
+            // URL MODIFIÉE : On utilise la v1beta mais avec un fallback sur le nom du modèle
+            const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent?key=${key}`;
             
             const response = await fetch(url, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }] })
+                body: JSON.stringify({ contents: [{ parts: [{ text: "Donne moi 3 idées de flip Vinted (Nike, Adidas). Réponds uniquement en JSON format: {\"items\":[{\"title\":\"Veste\",\"brand\":\"Nike\",\"buyPrice\":20,\"sellPrice\":50}]}" }] }] })
             });
 
             const data = await response.json();
-
             if (data.error) throw new Error(data.error.message);
 
             const text = data.candidates[0].content.parts[0].text;
-            const jsonMatch = text.match(/\{[\s\S]*\}/);
-            const results = JSON.parse(jsonMatch[0]).items;
+            const json = JSON.parse(text.match(/\{[\s\S]*\}/)[0]);
             
-            results.forEach(item => {
-                const profit = item.sellPrice - item.buyPrice;
+            json.items.forEach(item => {
                 container.innerHTML += `
                     <div class="card">
-                        <div class="card-body">
-                            <h3 style="margin:0">${item.title}</h3>
-                            <p style="font-size:0.8rem; color:var(--muted); margin:5px 0">${item.brand} • Taille ${item.size}</p>
-                            <div class="price-row">
-                                <span class="p-buy">${item.buyPrice}€</span>
-                                <span class="p-sell">${item.sellPrice}€</span>
-                                <span class="m-pill">+${profit}€ de bénéfice</span>
-                            </div>
-                            <p style="font-size:0.75rem; color:#aaa; font-style:italic">💡 ${item.tip}</p>
-                            <a href="https://www.vinted.fr/catalog?search_text=${encodeURIComponent(item.brand + ' ' + item.title)}&price_to=${item.buyPrice}" target="_blank" class="btn-vinted">Chercher sur Vinted</a>
-                        </div>
+                        <h3>${item.brand} - ${item.title}</h3>
+                        <p>Achat: ${item.buyPrice}€ | Revente: ${item.sellPrice}€</p>
+                        <a href="https://www.vinted.fr/catalog?search_text=${item.brand}+${item.title}" class="btn-vinted">Chercher</a>
                     </div>`;
             });
-
         } catch (err) {
-            alert("⚠️ Erreur : " + err.message);
+            alert("Erreur: " + err.message);
         } finally {
-            loader.style.display = 'none'; 
-            btn.disabled = false;
+            document.getElementById('loader').style.display = 'none';
         }
     }
 </script>
-
 </body>
 </html>
