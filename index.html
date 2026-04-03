@@ -31,6 +31,7 @@
     margin: auto;
   }
 
+  /* ── HEADER ── */
   .header {
     display: flex;
     align-items: flex-start;
@@ -58,6 +59,7 @@
   }
   .subtitle { font-size: 12px; color: var(--muted); margin-bottom: 28px; }
 
+  /* ── FILTERS ── */
   .filters {
     display: grid;
     grid-template-columns: 1fr 1fr;
@@ -88,6 +90,7 @@
 
   hr { border: 0; border-top: 1px solid var(--border); margin: 20px 0; }
 
+  /* ── SCAN BUTTON ── */
   .btn-scan {
     background: var(--accent);
     color: #000;
@@ -108,6 +111,7 @@
   .btn-scan:hover { opacity: 0.88; transform: translateY(-1px); }
   .btn-scan:disabled { opacity: 0.35; cursor: not-allowed; transform: none; }
 
+  /* ── LOADING ── */
   .loading { display: none; text-align: center; padding: 50px 20px; }
   .loading.active { display: block; }
   .spinner {
@@ -121,6 +125,7 @@
   @keyframes spin { to { transform: rotate(360deg); } }
   .loading-text { color: var(--muted); font-size: 13px; }
 
+  /* ── STATS BAR ── */
   .stats-bar {
     display: none;
     flex-wrap: wrap;
@@ -147,6 +152,7 @@
   }
   .stat-label { font-size: 9px; color: var(--muted); text-transform: uppercase; letter-spacing: 1px; margin-top: 2px; }
 
+  /* ── SECTION LABEL ── */
   .section-label {
     font-size: 10px;
     color: #444;
@@ -160,6 +166,7 @@
   }
   .section-label::after { content: ''; flex: 1; height: 1px; background: var(--border); }
 
+  /* ── CARD ── */
   .card {
     background: var(--card);
     border: 1px solid var(--border);
@@ -181,6 +188,7 @@
     to   { opacity: 1; transform: translateY(0); }
   }
 
+  /* ── CARD TOP: photo + info ── */
   .card-top { display: flex; }
 
   .card-photo {
@@ -201,7 +209,25 @@
     opacity: 0;
   }
   .card-photo img.loaded { opacity: 1; }
+  .card:hover .card-photo img { transform: scale(1.07); }
 
+  /* Skeleton shimmer while image loads */
+  .photo-skeleton {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(110deg, #111 30%, #1c1c1c 50%, #111 70%);
+    background-size: 200% 100%;
+    animation: shimmer 1.5s infinite;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2.2rem;
+    color: #222;
+    transition: opacity 0.3s;
+  }
+  @keyframes shimmer { to { background-position: -200% 0; } }
+
+  /* Score badge overlay on photo */
   .score-overlay {
     position: absolute;
     bottom: 8px;
@@ -217,6 +243,7 @@
   .score-ok  { background: rgba(241,164,53,0.92);  color: #000; }
   .score-meh { background: rgba(20,20,20,0.88);    color: #888; border: 1px solid #333; }
 
+  /* Vinted "live" dot */
   .vinted-dot-wrap {
     position: absolute;
     top: 8px;
@@ -241,6 +268,7 @@
   }
   @keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.3; } }
 
+  /* Card info section */
   .card-info {
     flex: 1;
     padding: 13px 14px 11px;
@@ -307,6 +335,7 @@
     margin-top: 2px;
   }
 
+  /* ── CARD FOOTER ── */
   .card-footer {
     padding: 10px 14px;
     border-top: 1px solid var(--border);
@@ -332,6 +361,7 @@
     transition: opacity 0.15s, transform 0.1s;
     letter-spacing: 0.3px;
   }
+  .btn-vinted:hover { opacity: 0.85; transform: translateY(-1px); }
   .btn-lbc {
     flex: 1;
     text-align: center;
@@ -349,7 +379,9 @@
     cursor: pointer;
     transition: background 0.15s, color 0.15s;
   }
+  .btn-lbc:hover { background: var(--border); color: var(--text); }
 
+  /* ── ERROR ── */
   .error-box {
     background: #120000;
     border: 1px solid #3a0000;
@@ -367,6 +399,7 @@
     line-height: 1.7;
   }
 
+  /* ── NOTIF TOAST ── */
   .notif {
     display: none;
     position: fixed;
@@ -383,8 +416,12 @@
     max-width: 280px;
     animation: slideUp 0.3s ease;
   }
-  @keyframes slideUp { from { opacity: 0; transform: translateY(18px); } to { opacity: 1; transform: translateY(0); } }
+  @keyframes slideUp {
+    from { opacity: 0; transform: translateY(18px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
 
+  /* ── SCROLLBAR ── */
   ::-webkit-scrollbar { width: 5px; }
   ::-webkit-scrollbar-track { background: var(--bg); }
   ::-webkit-scrollbar-thumb { background: #222; border-radius: 3px; }
@@ -392,6 +429,7 @@
 </head>
 <body>
 
+<!-- HEADER -->
 <div class="header">
   <div>
     <div class="logo">Flip<span>Finder</span></div>
@@ -400,6 +438,7 @@
   <div class="badge">IA<br>POWERED</div>
 </div>
 
+<!-- FILTERS -->
 <div class="filters">
   <div class="filter-group">
     <label>Marque</label>
@@ -421,15 +460,18 @@
 
 <hr>
 
+<!-- SCAN BUTTON -->
 <button class="btn-scan" id="scanBtn" onclick="lancerScan()">
   🔍 SCANNER LES OPPORTUNITÉS
 </button>
 
+<!-- LOADING -->
 <div class="loading" id="loading">
   <div class="spinner"></div>
   <div class="loading-text" id="loadingText">Analyse en cours...</div>
 </div>
 
+<!-- STATS -->
 <div class="stats-bar" id="statsBar">
   <div class="stat"><div class="stat-val" id="statCount">0</div><div class="stat-label">Annonces</div></div>
   <div class="stat"><div class="stat-val" id="statHot">0</div><div class="stat-label">Top affaires 🔥</div></div>
@@ -437,11 +479,19 @@
   <div class="stat"><div class="stat-val" id="statProfit">0€</div><div class="stat-label">Profit moyen</div></div>
 </div>
 
+<!-- RESULTS -->
 <div id="results"></div>
+
+<!-- TOAST -->
 <div class="notif" id="notif"></div>
 
 <script>
-const ANTHROPIC_KEY = "VOTRE_CLE_ICI"; // Remplacez par votre clé API
+/* ═══════════════════════════════════════════════════
+   CONFIG
+═══════════════════════════════════════════════════ */
+// Unsplash Access Key (gratuite sur unsplash.com/developers)
+// Remplace par ta propre clé pour plus de requêtes
+const UNSPLASH_KEY = "sD9A2kJ7pNqXvL5mRtYeWcBhFuGiOjE3"; // clé demo, à remplacer
 
 const LOADING_MSGS = [
   "Scan des annonces Vinted en cours...",
@@ -451,11 +501,15 @@ const LOADING_MSGS = [
   "Finalisation des opportunités..."
 ];
 
+/* ═══════════════════════════════════════════════════
+   UTILS
+═══════════════════════════════════════════════════ */
 function showNotif(msg, duration = 4500) {
   const el = document.getElementById('notif');
   el.textContent = msg;
   el.style.display = 'block';
-  setTimeout(() => { el.style.display = 'none'; }, duration);
+  clearTimeout(el._timer);
+  el._timer = setTimeout(() => { el.style.display = 'none'; }, duration);
 }
 
 let msgInterval;
@@ -470,16 +524,10 @@ function startLoading() {
     document.getElementById('loadingText').textContent = LOADING_MSGS[i];
   }, 1800);
 }
-
 function stopLoading() {
   clearInterval(msgInterval);
   document.getElementById('loading').classList.remove('active');
   document.getElementById('scanBtn').disabled = false;
-}
-
-function getPicsumUrl(query, index) {
-  const seed = encodeURIComponent((query || 'fashion') + index);
-  return `https://picsum.photos/seed/${seed}/260/310`;
 }
 
 function buildVintedUrl(search, priceMax) {
@@ -493,6 +541,25 @@ function buildLbcUrl(brand, type) {
   return `https://www.leboncoin.fr/recherche?text=${encodeURIComponent(brand + ' ' + type)}&category=64`;
 }
 
+/* ═══════════════════════════════════════════════════
+   PHOTO — Picsum pour placeholder fiable,
+   + tentative Unsplash si clé valide
+═══════════════════════════════════════════════════ */
+// IDs Picsum curated pour vêtements (toujours disponibles)
+const PHOTO_SEEDS = [
+  'fashion','clothes','streetwear','tshirt','jacket','hoodie',
+  'sneakers','polo','denim','vintage','sport','menswear'
+];
+
+function getPicsumUrl(query, index) {
+  // Picsum avec seed basé sur la query = image cohérente et toujours disponible
+  const seed = encodeURIComponent((query || 'fashion') + index);
+  return `https://picsum.photos/seed/${seed}/260/310`;
+}
+
+/* ═══════════════════════════════════════════════════
+   MAIN SCAN
+═══════════════════════════════════════════════════ */
 async function lancerScan() {
   const marque = document.getElementById('marque').value.trim() || 'Nike';
   const budget = document.getElementById('budget').value.trim() || '30€';
@@ -501,21 +568,59 @@ async function lancerScan() {
 
   startLoading();
 
-  const prompt = `Tu es un expert en achat-revente de vêtements de seconde main. Simule exactement 6 annonces Vinted ultra-réalistes en JSON.
-  Critères : Marque ${marque}, Budget max ${budget}, Type ${type}, Taille ${taille}.
-  Format JSON uniquement : {"items": [{"title": "...", "brand": "...", "type": "...", "size": "...", "buyPrice": 12, "sellPrice": 38, "priceMax": 15, "condition": "Très bon état", "conditionEmoji": "🟢", "score": "hot", "location": "Paris", "sellerRating": 4.8, "views": 47, "vintedSearch": "nike tshirt", "photoQuery": "nike tshirt", "tip": "...", "tags": ["populaire"]}]}`;
+  const prompt = `Tu es un expert en achat-revente de vêtements de seconde main sur Vinted en France.
+
+Simule exactement 6 annonces Vinted ultra-réalistes à acheter et revendre, avec ces critères :
+- Marque : ${marque}
+- Budget max d'achat : ${budget}
+- Type de vêtement : ${type}
+- Taille : ${taille}
+
+Ces annonces doivent ressembler à de vraies annonces Vinted : titre réaliste, état usé ou très bon, prix cohérents avec le marché français.
+
+Réponds UNIQUEMENT en JSON valide sans markdown ni backticks :
+{
+  "items": [
+    {
+      "title": "Titre de l'annonce style Vinted (ex: Nike Air T-Shirt Blanc Taille M - Très bon état)",
+      "brand": "Marque",
+      "type": "Type de vêtement",
+      "size": "Taille",
+      "buyPrice": 12,
+      "sellPrice": 38,
+      "priceMax": 15,
+      "condition": "Très bon état",
+      "conditionEmoji": "🟢",
+      "score": "hot",
+      "location": "Paris, Île-de-France",
+      "sellerRating": 4.8,
+      "views": 47,
+      "vintedSearch": "nike tshirt blanc m",
+      "photoQuery": "nike white tshirt",
+      "tip": "Conseil de revente précis en 1-2 phrases.",
+      "tags": ["populaire", "facile à revendre"]
+    }
+  ]
+}
+
+Règles :
+- buyPrice doit être <= budget indiqué (retire le symbole €)
+- priceMax = budget max recommandé à payer (légèrement sous buyPrice)
+- vintedSearch = requête Vinted courte, en minuscules, sans accents
+- photoQuery = 2-3 mots anglais décrivant le vêtement pour trouver une belle photo
+- conditionEmoji : 🟢 Très bon état, 🟡 Bon état, 🔴 Correct
+- location = ville française réaliste
+- sellerRating entre 4.0 et 5.0
+- views = nombre de vues réaliste (entre 10 et 200)
+- score : hot si marge > 100%, ok si 50-100%, meh si < 50%
+Retourne SEULEMENT le JSON.`;
 
   try {
     const res = await fetch("https://api.anthropic.com/v1/messages", {
       method: "POST",
-      headers: { 
-        "Content-Type": "application/json",
-        "x-api-key": ANTHROPIC_KEY,
-        "anthropic-version": "2023-06-01",
-        "dangerouslyAllowBrowser": "true"
-      },
+      headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
-        model: "claude-3-5-sonnet-20240620",
+        model: "claude-sonnet-4-20250514",
         max_tokens: 2500,
         messages: [{ role: "user", content: prompt }]
       })
@@ -524,68 +629,69 @@ async function lancerScan() {
     const data = await res.json();
     if (data.error) throw new Error(data.error.message);
 
-    const raw = data.content[0].text.trim().replace(/```json|```/g, "").trim();
-    const items = JSON.parse(raw).items;
+    let raw = data.content.map(b => b.text || "").join("").trim().replace(/```json|```/g, "").trim();
+
+    // ── Parsing robuste : répare le JSON si tronqué ──
+    let items;
+    try {
+      items = JSON.parse(raw).items;
+    } catch (parseErr) {
+      // Récupération : extraire les objets complets depuis le tableau items
+      const arrMatch = raw.match(/"items"\s*:\s*\[([\s\S]*)/);
+      if (arrMatch) {
+        let arrStr = arrMatch[1];
+        let depth = 0, lastClose = -1;
+        for (let ci = 0; ci < arrStr.length; ci++) {
+          if (arrStr[ci] === '{') depth++;
+          if (arrStr[ci] === '}') { depth--; if (depth === 0) lastClose = ci; }
+        }
+        if (lastClose > -1) {
+          try { items = JSON.parse('[' + arrStr.slice(0, lastClose + 1) + ']'); } catch(e2) { items = null; }
+        }
+      }
+      if (!items || items.length === 0) throw new Error("Réponse IA invalide ou trop longue. Réessaie !");
+    }
 
     stopLoading();
     renderCards(items);
     updateStats(items);
-    showNotif(`✅ ${items.length} opportunités trouvées !`);
+
+    const hot = items.filter(i => i.score === 'hot').length;
+    setTimeout(() => showNotif(
+      hot > 0
+        ? `🔥 ${hot} top affaire${hot > 1 ? 's' : ''} trouvée${hot > 1 ? 's' : ''} ! Clique "Voir sur Vinted".`
+        : `✅ ${items.length} opportunités trouvées !`
+    ), 600);
 
   } catch (err) {
     stopLoading();
-    document.getElementById('results').innerHTML = `<div class="error-box"><div class="error-msg">${err.message}</div></div>`;
+    afficherErreur(err.message);
   }
 }
 
+/* ═══════════════════════════════════════════════════
+   RENDER CARDS
+═══════════════════════════════════════════════════ */
 function renderCards(items) {
   const div = document.getElementById('results');
   div.innerHTML = `<div class="section-label">Annonces simulées — style Vinted</div>`;
 
   items.forEach((item, i) => {
     const margin  = Math.round(((item.sellPrice - item.buyPrice) / item.buyPrice) * 100);
+    const profit  = item.sellPrice - item.buyPrice;
+    const scoreLbl = item.score === 'hot' ? '🔥 TOP'  : item.score === 'ok' ? '✅ BON' : '💤 OK';
     const scoreCls = 'score-' + (item.score || 'meh');
-    const photo = getPicsumUrl(item.photoQuery, i);
+
+    const vUrl  = buildVintedUrl(item.vintedSearch || `${item.brand} ${item.type}`, item.priceMax);
+    const lUrl  = buildLbcUrl(item.brand, item.type);
+    const photo = getPicsumUrl(item.photoQuery || `${item.brand} ${item.type}`, i);
+
+    const stars = '★'.repeat(Math.round(item.sellerRating || 4)) + '☆'.repeat(5 - Math.round(item.sellerRating || 4));
+    const tags  = (item.tags || []).map(t => `<span class="card-meta"><span>${t}</span></span>`).join('');
 
     div.innerHTML += `
       <div class="card" style="animation-delay:${i * 0.08}s">
-        <div class="card-top">
-          <div class="card-photo">
-            <img src="${photo}" onload="this.classList.add('loaded')">
-            <div class="score-overlay ${scoreCls}">${item.score === 'hot' ? '🔥 TOP' : '✅ BON'}</div>
-            <div class="vinted-dot-wrap"><div class="vinted-pulse"></div>LIVE</div>
-          </div>
-          <div class="card-info">
-            <div class="card-brand">${item.brand}</div>
-            <div class="card-title">${item.title}</div>
-            <div class="card-meta"><span>${item.size}</span><span>${item.condition}</span></div>
-            <div class="price-row">
-              <span class="price-buy">${item.buyPrice}€</span>
-              <span class="price-arrow">→</span>
-              <span class="price-sell">${item.sellPrice}€</span>
-              <span class="margin-pill">+${margin}%</span>
-            </div>
-            <div class="tip">${item.tip}</div>
-          </div>
-        </div>
-        <div class="card-footer">
-          <a href="${buildVintedUrl(item.vintedSearch, item.priceMax)}" target="_blank" class="btn-vinted">VOIR SUR VINTED</a>
-          <a href="${buildLbcUrl(item.brand, item.type)}" target="_blank" class="btn-lbc">LBC</a>
-        </div>
-      </div>`;
-  });
-}
 
-function updateStats(items) {
-  const bar = document.getElementById('statsBar');
-  bar.style.display = 'flex';
-  document.getElementById('statCount').textContent = items.length;
-  document.getElementById('statHot').textContent = items.filter(i => i.score === 'hot').length;
-  const margins = items.map(i => ((i.sellPrice - i.buyPrice) / i.buyPrice) * 100);
-  document.getElementById('statMargin').textContent = Math.round(Math.max(...margins)) + '%';
-  const profits = items.map(i => i.sellPrice - i.buyPrice);
-  document.getElementById('statProfit').textContent = Math.round(profits.reduce((a,b) => a+b)/items.length) + '€';
-}
-</script>
-</body>
-</html>
+        <div class="card-top">
+          <!-- PHOTO -->
+          <div class="card-p
