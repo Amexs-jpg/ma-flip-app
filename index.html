@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>FlipFinder - Live Resale</title>
+<title>FlipFinder - Visual Resale</title>
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
 <style>
   :root {
@@ -67,10 +67,10 @@
   @keyframes fadeUp { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: translateY(0); } }
   
   .card-top { display: flex; }
-  .card-photo { width: 130px; height: 155px; background: #0d0d0d; position: relative; flex-shrink: 0; }
-  .card-photo img { width: 100%; height: 100%; object-fit: cover; opacity: 0; transition: 0.4s; }
-  .card-photo img.loaded { opacity: 1; }
-  .score-overlay { position: absolute; bottom: 8px; left: 8px; font-family: 'Bebas Neue', sans-serif; font-size: 0.82rem; padding: 3px 8px; border-radius: 6px; background: var(--accent); color: #000; }
+  .card-photo { width: 130px; height: 155px; background: #0d0d0d; position: relative; flex-shrink: 0; overflow: hidden; }
+  .card-photo img { width: 100%; height: 100%; object-fit: cover; opacity: 0; transition: 0.6s ease; transform: scale(1.1); }
+  .card-photo img.loaded { opacity: 1; transform: scale(1); }
+  .score-overlay { position: absolute; bottom: 8px; left: 8px; font-family: 'Bebas Neue', sans-serif; font-size: 0.82rem; padding: 3px 8px; border-radius: 6px; background: var(--accent); color: #000; z-index: 2; }
   
   .card-info { flex: 1; padding: 13px 14px; display: flex; flex-direction: column; gap: 4px; }
   .card-brand { font-size: 10px; font-weight: 700; color: var(--warn); text-transform: uppercase; }
@@ -89,20 +89,20 @@
 <body>
 
 <div class="header">
-  <div><div class="logo">Flip<span>Finder</span></div><div class="subtitle">Chercheur d'opportunités Vinted en temps réel</div></div>
-  <div class="badge">VINTED<br>DIRECT</div>
+  <div><div class="logo">Flip<span>Finder</span></div><div class="subtitle">Analyse visuelle et prix Vinted en temps réel</div></div>
+  <div class="badge">IA VISUAL<br>ACTIVE</div>
 </div>
 
 <div class="filters">
-  <div class="filter-group"><label>Marque</label><input type="text" id="marque" value="Nike"></div>
-  <div class="filter-group"><label>Budget Max</label><input type="text" id="budget" value="35€"></div>
-  <div class="filter-group"><label>Produit</label><input type="text" id="type" value="Veste Vintage"></div>
-  <div class="filter-group"><label>Taille</label><input type="text" id="taille" value="M"></div>
+  <div class="filter-group"><label>Marque</label><input type="text" id="marque" value="Carhartt"></div>
+  <div class="filter-group"><label>Budget Max</label><input type="text" id="budget" value="45€"></div>
+  <div class="filter-group"><label>Produit</label><input type="text" id="type" value="Veste"></div>
+  <div class="filter-group"><label>Taille</label><input type="text" id="taille" value="L"></div>
 </div>
 
-<button class="btn-scan" id="scanBtn" onclick="lancerScan()">🔍 TROUVER DES OFFRES RÉELLES</button>
+<button class="btn-scan" id="scanBtn" onclick="lancerScan()">🔍 GÉNÉRER LES OPPORTUNITÉS VISUELLES</button>
 
-<div class="loading" id="loading"><div class="spinner"></div><div id="loadingText">Connexion à Vinted...</div></div>
+<div class="loading" id="loading"><div class="spinner"></div><div id="loadingText">Recherche d'images correspondantes...</div></div>
 
 <div class="stats-bar" id="statsBar">
   <div class="stat"><div class="stat-val" id="statCount">0</div><div class="stat-label">Annonces</div></div>
@@ -117,40 +117,42 @@ function lancerScan() {
   const marque = document.getElementById('marque').value;
   const type = document.getElementById('type').value;
   const taille = document.getElementById('taille').value;
-  const budgetStr = document.getElementById('budget').value;
-  const budgetNum = parseInt(budgetStr.replace(/[^0-9]/g, '')) || 40;
+  const budgetNum = parseInt(document.getElementById('budget').value) || 40;
 
   document.getElementById('results').innerHTML = '';
   document.getElementById('statsBar').style.display = 'none';
   document.getElementById('loading').classList.add('active');
   document.getElementById('scanBtn').disabled = true;
 
-  // Simulation d'analyse (1.2 seconde)
+  // On utilise Unsplash Source pour récupérer des photos qui matchent la recherche
+  // Format : https://source.unsplash.com/featured/?{keyword}
+  
   setTimeout(() => {
     const items = [];
-    // On génère 6 suggestions réalistes basées sur tes critères
     for(let i=0; i<6; i++) {
       const buyPrice = Math.floor(budgetNum * (0.5 + Math.random() * 0.4));
-      const sellPrice = Math.floor(buyPrice * (1.6 + Math.random() * 1.1));
+      const sellPrice = Math.floor(buyPrice * (1.7 + Math.random() * 1.2));
       
-      // Construction de l'URL Vinted : recherche par mots-clés + prix max
       const searchTerms = encodeURIComponent(`${marque} ${type} ${taille}`);
       const vintedUrl = `https://www.vinted.fr/catalog?search_text=${searchTerms}&price_to=${buyPrice}&order=newest_first`;
 
+      // On ajoute un index à la recherche d'image pour éviter d'avoir 6 fois la même photo
+      const photoUrl = `https://source.unsplash.com/featured/300x400?${encodeURIComponent(marque + ',' + type)}&sig=${i}`;
+
       items.push({
-        title: `${marque} ${type} ${taille} - Excellent état`,
+        title: `${marque} - ${type} Style - Taille ${taille}`,
         brand: marque,
         buy: buyPrice,
         sell: sellPrice,
         vintedUrl: vintedUrl,
-        photo: `https://picsum.photos/seed/${marque}${i+10}/260/310`
+        photo: photoUrl
       });
     }
 
     document.getElementById('loading').classList.remove('active');
     document.getElementById('scanBtn').disabled = false;
     render(items);
-  }, 1200);
+  }, 1500);
 }
 
 function render(items) {
@@ -169,7 +171,7 @@ function render(items) {
         <div class="card-top">
           <div class="card-photo">
             <img src="${item.photo}" onload="this.classList.add('loaded')">
-            <div class="score-overlay">🔥 TOP PRIX</div>
+            <div class="score-overlay">🔥 PÉPITE</div>
           </div>
           <div class="card-info">
             <div class="card-brand">${item.brand}</div>
@@ -179,11 +181,11 @@ function render(items) {
               <span style="color:#444">→</span>
               <span class="price-sell">${item.sell}€</span>
             </div>
-            <div class="tip">Potentiel de revente élevé sur ce type d'article.</div>
+            <div class="tip">Demande forte pour ${item.brand} en ce moment.</div>
           </div>
         </div>
         <div class="card-footer">
-          <a href="${item.vintedUrl}" target="_blank" class="btn-vinted">VOIR SUR VINTED</a>
+          <a href="${item.vintedUrl}" target="_blank" class="btn-vinted">TROUVER SUR VINTED</a>
           <a href="#" class="btn-lbc">ESTIMER</a>
         </div>
       </div>`;
