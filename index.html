@@ -5,25 +5,27 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>FlipFinder - Resale</title>
     <style>
-        body { background-color: #000; color: white; font-family: sans-serif; margin: 0; padding: 20px; }
-        .logo { color: #d4ff3f; font-size: 24px; font-weight: bold; }
+        body { background-color: #000; color: white; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 0; padding: 20px; }
+        .logo { color: #d4ff3f; font-size: 24px; font-weight: bold; letter-spacing: -1px; }
         .logo span { color: white; }
-        .badge { background: #d4ff3f; color: black; padding: 5px 10px; border-radius: 20px; float: right; font-size: 10px; font-weight: bold; text-align: center; }
-        .filters { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 20px; }
-        label { display: block; font-size: 10px; color: #666; margin-bottom: 5px; text-transform: uppercase; }
-        .input-box { background: #1a1a1a; border: 1px solid #333; padding: 12px; border-radius: 8px; color: white; width: 100%; box-sizing: border-box; margin-bottom: 15px; font-size: 14px; }
-        .api-field { border: 1px solid #d4ff3f55; color: #d4ff3f; font-family: monospace; }
-        .btn-scanner { background: #d4ff3f; color: black; width: 100%; border: none; padding: 15px; border-radius: 12px; font-weight: bold; cursor: pointer; font-size: 16px; margin-top: 10px; }
+        .badge { background: #d4ff3f; color: black; padding: 5px 12px; border-radius: 20px; float: right; font-size: 10px; font-weight: 900; text-align: center; line-height: 1.1; }
+        .filters { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 25px; }
+        label { display: block; font-size: 10px; color: #777; margin-bottom: 6px; text-transform: uppercase; font-weight: bold; }
+        .input-box { background: #151515; border: 1px solid #252525; padding: 12px; border-radius: 10px; color: white; width: 100%; box-sizing: border-box; margin-bottom: 15px; font-size: 14px; outline: none; }
+        .input-box:focus { border-color: #d4ff3f; }
+        .api-field { border: 1px solid #d4ff3f44; color: #d4ff3f; font-family: 'Courier New', Courier, monospace; }
+        .btn-scanner { background: #d4ff3f; color: black; width: 100%; border: none; padding: 16px; border-radius: 14px; font-weight: 800; cursor: pointer; font-size: 16px; margin-top: 10px; transition: transform 0.1s; }
+        .btn-scanner:active { transform: scale(0.98); }
         #results { margin-top: 30px; text-align: center; }
-        .error-box { background: #1a1a1a; border-radius: 10px; padding: 20px; margin-top: 20px; border: 1px solid #333; }
-        .error-msg { color: #ff6b6b; font-family: monospace; font-size: 12px; text-align: left; margin-top: 10px; }
+        .error-box { background: #111; border-radius: 12px; padding: 20px; margin-top: 20px; border: 1px solid #222; }
+        .error-msg { color: #ff5f5f; font-family: monospace; font-size: 12px; text-align: left; margin-top: 10px; line-height: 1.4; }
     </style>
 </head>
 <body>
 
     <div class="badge">IA<br>POWERED</div>
     <div class="logo">Flip<span>Finder</span></div>
-    <p style="font-size: 12px; color: #666;">Détecteur d'opportunités · Liens directs Vinted</p>
+    <p style="font-size: 12px; color: #555; margin-top: 4px;">Détecteur d'opportunités · Liens directs Vinted</p>
 
     <div class="filters">
         <div><label>Marque</label><input type="text" class="input-box" id="marque" value="Nike"></div>
@@ -32,52 +34,57 @@
         <div><label>Taille</label><input type="text" class="input-box" id="taille" value="S"></div>
     </div>
 
-    <hr style="border: 0; border-top: 1px dashed #333; margin: 20px 0;">
+    <hr style="border: 0; border-top: 1px solid #222; margin: 20px 0;">
 
-    <label>Lien de l'API / Endpoint</label>
-    <input type="text" id="api_url" class="input-box api-field" placeholder="https://votre-api.com/search" value="">
+    <label>Ta Clé API (Key)</label>
+    <input type="password" id="api_key" class="input-box api-field" placeholder="Colle ta clé AIzaSy... ici" value="">
 
     <button class="btn-scanner" onclick="lancerScan()">🔍 SCANNER</button>
 
     <div id="results"></div>
 
     <script>
+        // CONFIGURATION : Remplace l'URL ci-dessous par l'adresse de ton service de recherche
+        const BASE_ENDPOINT = "https://ton-serveur-ou-api.com/search"; 
+
         async function lancerScan() {
             const resultsDiv = document.getElementById('results');
-            const url = document.getElementById('api_url').value.trim();
+            const key = document.getElementById('api_key').value.trim();
+            
+            // Récupération des filtres pour la recherche
+            const marque = document.getElementById('marque').value;
+            const budget = document.getElementById('budget').value;
 
-            if (!url) {
-                afficherErreur("Veuillez entrer une URL d'API valide.");
+            if (!key) {
+                afficherErreur("Clé API manquante. Veuillez coller votre clé pour continuer.");
                 return;
             }
 
-            if (!url.startsWith('http')) {
-                afficherErreur("L'URL doit commencer par http:// ou https://");
-                return;
-            }
-
-            resultsDiv.innerHTML = "<p>Connexion au serveur...</p>";
+            resultsDiv.innerHTML = "<p style='color:#d4ff3f'>Analyse des opportunités en cours...</p>";
 
             try {
-                const response = await fetch(url);
-                
-                if (response.status === 404) {
-                    throw new Error("Erreur 404 : L'adresse de l'API est introuvable.");
-                }
+                // Construction de l'URL avec la clé et les paramètres
+                // Exemple : https://api.com/search?key=AIza...&q=Nike+50€
+                const urlComplete = `${BASE_ENDPOINT}?key=${key}&q=${encodeURIComponent(marque + " " + budget)}`;
+
+                const response = await fetch(urlComplete);
                 
                 if (!response.ok) {
-                    throw new Error("Erreur Serveur: " + response.status);
+                    throw new Error(`Réponse Serveur : ${response.status}. Vérifie si ta clé est valide pour cet endpoint.`);
                 }
                 
                 const data = await response.json();
-                const produits = Array.isArray(data) ? data : (data.items || []);
+                
+                // On essaie de trouver les résultats dans le JSON reçu
+                const produits = Array.isArray(data) ? data : (data.items || data.results || []);
 
                 if (produits.length === 0) {
-                    afficherErreur("Aucun produit trouvé.");
+                    resultsDiv.innerHTML = "<p>Aucune pépite trouvée pour le moment.</p>";
                 } else {
                     resultsDiv.innerHTML = produits.map(p => `
-                        <div style="background:#1a1a1a; padding:15px; margin-bottom:10px; border-radius:10px; text-align:left; border-left: 4px solid #d4ff3f;">
-                            <strong>${p.nom || 'Produit'}</strong> - ${p.prix || '0'}€
+                        <div style="background:#151515; padding:15px; margin-bottom:12px; border-radius:12px; text-align:left; border-left: 4px solid #d4ff3f;">
+                            <div style="font-size:14px; font-weight:bold;">${p.title || p.nom || 'Article trouvé'}</div>
+                            <div style="color:#d4ff3f; font-size:13px; margin-top:4px;">${p.price || p.prix || 'Prix inconnu'}</div>
                         </div>
                     `).join('');
                 }
@@ -91,11 +98,11 @@
             const resultsDiv = document.getElementById('results');
             resultsDiv.innerHTML = `
                 <div style="margin-top: 20px;">
-                    <span style="font-size: 50px;">⚠️</span>
-                    <h2 style="margin:10px 0;">Erreur</h2>
+                    <img src="https://cdn-icons-png.flaticon.com/512/564/564619.png" width="60" style="filter: invert(1); opacity: 0.8;">
+                    <h2 style="margin:10px 0; font-size: 18px;">Erreur de Connexion</h2>
                     <div class="error-box">
-                        <p style="color:#666; font-size:11px; text-align:left; margin:0;">Console Messages</p>
-                        <p class="error-msg">Error: ${msg}</p>
+                        <p style="color:#555; font-size:10px; text-align:left; margin:0; text-transform:uppercase;">Détails Techniques</p>
+                        <p class="error-msg">${msg}</p>
                     </div>
                 </div>
             `;
