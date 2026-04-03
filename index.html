@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>FlipFinder Pro - Vinted Hot-List</title>
+    <title>FlipFinder Pro - Category Expert</title>
     <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/lucide@latest"></script>
     <style>
@@ -21,86 +21,53 @@
         .header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 24px; }
         .logo { font-family: 'Bebas Neue', sans-serif; font-size: 2.4rem; letter-spacing: 2px; color: var(--accent); }
         .logo span { color: var(--text); }
-        .badge { 
-            background: rgba(212, 255, 63, 0.1); color: var(--accent); 
-            font-size: 10px; font-weight: 800; padding: 6px 12px; 
-            border-radius: 20px; border: 1px solid var(--accent);
-        }
+        
+        /* Formulaire */
         .filters { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 24px; }
         .filter-group { display: flex; flex-direction: column; gap: 6px; }
         label { font-size: 10px; color: var(--muted); text-transform: uppercase; font-weight: 700; display: flex; align-items: center; gap: 4px; }
-        input {
+        input, select {
             background: var(--card); border: 1px solid var(--border); color: var(--text);
-            padding: 14px; border-radius: 12px; font-size: 14px; outline: none; transition: 0.2s;
+            padding: 14px; border-radius: 12px; font-size: 13px; outline: none; transition: 0.2s;
+            appearance: none;
         }
-        input:focus { border-color: var(--accent); background: #1c1c1c; }
+        input:focus, select:focus { border-color: var(--accent); background: #1c1c1c; }
+
         .btn-scan {
             background: var(--accent); color: #000; width: 100%; border: none; padding: 18px;
             border-radius: 16px; font-family: 'Bebas Neue', sans-serif; font-size: 1.3rem;
             letter-spacing: 2px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 12px;
         }
-        .stats-bar {
-            display: none; background: var(--surface); border: 1px solid var(--border);
-            border-radius: 16px; margin: 24px 0; overflow: hidden;
-        }
+
+        /* Stats & Cards */
+        .stats-bar { display: none; background: var(--surface); border: 1px solid var(--border); border-radius: 16px; margin: 24px 0; overflow: hidden; }
         .stat { flex: 1; padding: 16px; border-right: 1px solid var(--border); text-align: center; }
         .stat-val { font-family: 'Bebas Neue', sans-serif; font-size: 1.6rem; color: var(--accent); }
         .stat-label { font-size: 9px; color: var(--muted); text-transform: uppercase; }
 
-        .card {
-            background: var(--card); border: 1px solid var(--border); border-radius: 18px;
-            margin-bottom: 16px; overflow: hidden; position: relative; animation: slideUp 0.4s ease both;
-        }
-        .grade-badge {
-            position: absolute; top: 12px; right: 12px; width: 32px; height: 32px;
-            border-radius: 8px; display: flex; align-items: center; justify-content: center;
-            font-family: 'Bebas Neue', sans-serif; font-size: 1.4rem; font-weight: bold; z-index: 10;
-        }
+        .card { background: var(--card); border: 1px solid var(--border); border-radius: 18px; margin-bottom: 16px; overflow: hidden; position: relative; animation: slideUp 0.4s ease both; }
+        .grade-badge { position: absolute; top: 12px; right: 12px; width: 32px; height: 32px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-family: 'Bebas Neue', sans-serif; font-size: 1.4rem; z-index: 10; }
         .grade-a { background: var(--score-a); color: #000; }
         .grade-b { background: var(--score-b); color: #000; }
         .grade-c { background: var(--score-c); color: #fff; }
 
         .card-top { display: flex; padding: 12px; gap: 14px; }
-        .card-photo { width: 110px; height: 140px; background: #111; border-radius: 12px; overflow: hidden; flex-shrink: 0; }
+        .card-photo { width: 100px; height: 130px; background: #111; border-radius: 12px; overflow: hidden; flex-shrink: 0; }
         .card-photo img { width: 100%; height: 100%; object-fit: cover; opacity: 0; transition: 0.5s; }
         .card-photo img.loaded { opacity: 1; }
-        .card-info { flex: 1; display: flex; flex-direction: column; justify-content: center; padding-right: 30px; }
-        .card-brand { font-size: 11px; font-weight: 800; color: var(--accent); text-transform: uppercase; }
-        .card-title { font-size: 14px; font-weight: 500; color: #eee; margin: 4px 0; }
-        .price-container { display: flex; align-items: baseline; gap: 8px; margin-top: 4px; }
-        .price-buy { font-family: 'Bebas Neue', sans-serif; font-size: 1.3rem; color: #666; text-decoration: line-through; }
-        .price-sell { font-family: 'Bebas Neue', sans-serif; font-size: 1.8rem; color: var(--text); }
         
-        .profit-tag { 
-            display: inline-flex; align-items: center; gap: 4px;
-            background: rgba(255, 255, 255, 0.05); color: #fff; 
-            padding: 4px 10px; border-radius: 8px; font-size: 11px; font-weight: 800; margin-top: 8px;
-            border: 1px solid var(--border);
-        }
+        .card-info { flex: 1; display: flex; flex-direction: column; justify-content: center; }
+        .card-brand { font-size: 11px; font-weight: 800; color: var(--accent); text-transform: uppercase; }
+        .card-title { font-size: 13px; font-weight: 600; color: #eee; margin: 4px 0; line-height: 1.2; }
+        
+        .profit-tag { display: inline-flex; align-items: center; gap: 4px; background: rgba(255, 255, 255, 0.05); color: #fff; padding: 4px 8px; border-radius: 6px; font-size: 10px; font-weight: 800; margin-top: 6px; border: 1px solid var(--border); }
 
-        .card-footer { padding: 12px; background: rgba(255,255,255,0.02); display: flex; gap: 10px; }
-        .btn-action { 
-            flex: 1; padding: 12px; border-radius: 10px; font-size: 12px; font-weight: 700; 
-            text-decoration: none; text-align: center; display: flex; align-items: center; justify-content: center; gap: 6px;
-        }
+        .card-footer { padding: 10px; background: rgba(255,255,255,0.02); display: flex; gap: 8px; }
+        .btn-action { flex: 1; padding: 10px; border-radius: 8px; font-size: 11px; font-weight: 700; text-decoration: none; text-align: center; display: flex; align-items: center; justify-content: center; gap: 4px; }
         .btn-vinted { background: var(--vinted); color: white; }
         
-        .compare-dropdown { flex: 1; position: relative; }
-        .select-compare {
-            width: 100%; height: 100%; padding: 12px; border-radius: 10px;
-            background: transparent; border: 1px solid var(--border); color: var(--muted);
-            font-size: 11px; font-weight: 700; cursor: pointer; appearance: none;
-            text-align: center; outline: none; text-transform: uppercase;
-        }
-        .dropdown-icon { position: absolute; right: 10px; top: 50%; transform: translateY(-50%); pointer-events: none; color: var(--muted); }
-
-        .loading { display: none; text-align: center; padding: 40px; }
+        .loading { display: none; text-align: center; padding: 40px; color: var(--muted); font-size: 12px; }
         .loading.active { display: block; }
-        .spinner {
-            width: 30px; height: 30px; border: 3px solid var(--border);
-            border-top-color: var(--accent); border-radius: 50%;
-            animation: spin 0.8s linear infinite; margin: 0 auto 12px;
-        }
         @keyframes spin { to { transform: rotate(360deg); } }
         @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
     </style>
@@ -109,41 +76,50 @@
 
 <div class="header">
     <div class="logo">Flip<span>Finder</span></div>
-    <div class="badge">V3.0 BEST-SELLERS</div>
+    <div class="badge">V3.1 CATEGORY-PRO</div>
 </div>
 
 <div class="filters">
     <div class="filter-group">
         <label><i data-lucide="tag" size="12"></i> Marque</label>
-        <input type="text" id="marque" placeholder="Ex: Carhartt, Nike, Stussy">
+        <input type="text" id="marque" value="Carhartt">
     </div>
     <div class="filter-group">
         <label><i data-lucide="wallet" size="12"></i> Budget Max</label>
-        <input type="text" id="budget" value="60€">
+        <input type="text" id="budget" value="55€">
     </div>
-    <div class="filter-group">
-        <label><i data-lucide="shirt" size="12"></i> Type</label>
-        <input type="text" id="type" value="Veste">
+    <div class="filter-group" style="grid-column: span 2;">
+        <label><i data-lucide="layers" size="12"></i> Type d'article (Cible)</label>
+        <select id="typeSelect">
+            <option value="outerwear">Vestes & Blousons (Detroit, Nocta, Bomber)</option>
+            <option value="tops">Hauts (Hoodies, Pulls Torsadés, Sweats)</option>
+            <option value="bottoms">Pantalons (Double Knee, Baggy, Cargo)</option>
+            <option value="sneakers">Sneakers (Jordan, Dunk, AF1)</option>
+        </select>
     </div>
     <div class="filter-group">
         <label><i data-lucide="maximize" size="12"></i> Taille</label>
-        <input type="text" id="taille" value="L">
+        <input type="text" id="taille" value="XL">
+    </div>
+    <div class="filter-group">
+        <label><i data-lucide="sparkles" size="12"></i> État Min.</label>
+        <select id="condition">
+            <option value="very_good">Très bon état</option>
+            <option value="good">Bon état</option>
+            <option value="new">Neuf avec étiquette</option>
+        </select>
     </div>
 </div>
 
 <button class="btn-scan" id="scanBtn" onclick="lancerScan()">
-    <i data-lucide="zap" size="18"></i> RECHERCHER DES BEST-SELLERS
+    <i data-lucide="search" size="18"></i> SNIPER LA CATÉGORIE
 </button>
 
-<div class="loading" id="loading">
-    <div class="spinner"></div>
-    <p style="color: var(--muted); font-size: 12px;">Filtrage des articles les plus demandés...</p>
-</div>
+<div class="loading" id="loading">Analyse des flux de ventes récents...</div>
 
 <div class="stats-bar" id="statsBar">
     <div class="stat"><div class="stat-val" id="statCount">0</div><div class="stat-label">Pépites</div></div>
-    <div class="stat"><div class="stat-val" id="statMargin" style="color:var(--score-a)">0%</div><div class="stat-label">ROI Moyen</div></div>
-    <div class="stat"><div class="stat-val" id="statProfit">0€</div><div class="stat-label">Cash Net</div></div>
+    <div class="stat"><div class="stat-val" id="statProfit">0€</div><div class="stat-label">Gain Moyen</div></div>
 </div>
 
 <div id="results"></div>
@@ -151,144 +127,94 @@
 <script>
 lucide.createIcons();
 
-// BASE DE DONNÉES BASÉE SUR LES RECHERCHES RÉELLES VINTED
-const hotInventory = {
-    "carhartt": [
-        { model: "Veste Detroit Vintage", demand: 10, multiplier: 2.8, detail: "Toile délavée" },
-        { model: "Pantalon Double Knee", demand: 9.5, multiplier: 2.2, detail: "Coupe Baggy" },
-        { model: "Active Jacket", demand: 9, multiplier: 2.0, detail: "Doublée polaire" },
-        { model: "Veste Santa Fe", demand: 8.5, multiplier: 2.5, detail: "Rare" }
+const categoryData = {
+    "outerwear": [
+        { name: "Detroit Jacket Vintage", multi: 2.8, hot: true, tag: "Workwear" },
+        { name: "Veste Sans Manche Nocta", multi: 2.0, hot: true, tag: "Hype" },
+        { name: "Bomber MA-1 Oversized", multi: 1.9, hot: false, tag: "Vintage" },
+        { name: "Doudoune 700 Down Fill", multi: 2.2, hot: true, tag: "Hiver" }
     ],
-    "nike": [
-        { model: "Hoodie Vintage Logo Brodé", demand: 10, multiplier: 2.4, detail: "Années 90" },
-        { model: "Veste Nocta", demand: 9.5, multiplier: 1.8, detail: "Drake x Nike" },
-        { model: "Tech Fleece Full Zip", demand: 9, multiplier: 1.6, detail: "Ancienne saison" },
-        { model: "Sweat à capuche Swoosh Central", demand: 10, multiplier: 2.6, detail: "Très recherché" }
+    "tops": [
+        { name: "Hoodie Logo Brodé", multi: 2.4, hot: true, tag: "Streetwear" },
+        { name: "Pull Torsadé Laine", multi: 2.1, hot: true, tag: "Old Money" },
+        { name: "Sweat Col Rond Vintage", multi: 1.8, hot: false, tag: "Classic" },
+        { name: "Polo Bear Collector", multi: 3.2, hot: true, tag: "Rare" }
     ],
-    "ralph lauren": [
-        { model: "Pull Torsadé (Cable Knit)", demand: 9, multiplier: 2.3, detail: "Laine ou Coton" },
-        { model: "Doudoune Sans Manche", demand: 8, multiplier: 1.9, detail: "Logo poney" },
-        { model: "Chemise Oxford Slim Fit", demand: 7, multiplier: 1.7, detail: "Classique" },
-        { model: "Pull Bear (Ours)", demand: 10, multiplier: 3.0, detail: "Collector" }
+    "bottoms": [
+        { name: "Pantalon Double Knee", multi: 2.5, hot: true, tag: "Graal" },
+        { name: "Jean Baggy 90s", multi: 1.9, hot: true, tag: "Y2K" },
+        { name: "Pantalon Cargo Militaire", multi: 1.7, hot: false, tag: "Gorpcore" },
+        { name: "Carpenter Pant Canvas", multi: 2.1, hot: true, tag: "Workwear" }
     ],
-    "stussy": [
-        { model: "8 Ball Fleece Jacket", demand: 10, multiplier: 2.5, detail: "Hype" },
-        { model: "T-shirt World Tour", demand: 9, multiplier: 2.0, detail: "Graphique" },
-        { model: "Hoodie Dice", demand: 9.5, multiplier: 2.2, detail: "Logo dés" }
-    ],
-    "default": [
-        { model: "Veste Bomber Vintage", demand: 6, multiplier: 1.8, detail: "Style 90s" },
-        { model: "Pantalon Cargo", demand: 7, multiplier: 1.6, detail: "Coupe large" },
-        { model: "Hoodie Graphic", demand: 5, multiplier: 1.5, detail: "Streetwear" }
+    "sneakers": [
+        { name: "Air Force 1 Low White", multi: 1.6, hot: true, tag: "Essentiel" },
+        { name: "Jordan 1 Retro High", multi: 1.9, hot: true, tag: "Hype" },
+        { name: "Dunk Low Panda", multi: 1.5, hot: false, tag: "Basique" },
+        { name: "New Balance 2002R", multi: 1.8, hot: true, tag: "Trendy" }
     ]
 };
 
 function lancerScan() {
-    const marqueInput = document.getElementById('marque').value.toLowerCase().trim() || "default";
-    const type = document.getElementById('type').value;
+    const marque = document.getElementById('marque').value.toUpperCase();
+    const catKey = document.getElementById('typeSelect').value;
+    const budget = parseInt(document.getElementById('budget').value) || 50;
     const taille = document.getElementById('taille').value;
-    const budgetNum = parseInt(document.getElementById('budget').value.replace(/[^0-9]/g, '')) || 50;
 
     document.getElementById('results').innerHTML = '';
-    document.getElementById('statsBar').style.display = 'none';
     document.getElementById('loading').classList.add('active');
-    document.getElementById('scanBtn').disabled = true;
-
-    const itemsList = hotInventory[marqueInput] || hotInventory["default"];
-
+    
     setTimeout(() => {
-        const items = [];
-        itemsList.forEach((entry, i) => {
-            const minBuy = Math.max(15, budgetNum * 0.5);
-            const buy = Math.floor(minBuy + (Math.random() * (budgetNum - minBuy)));
-            const sell = Math.floor(buy * entry.multiplier);
+        const items = categoryData[catKey];
+        const processedItems = items.map((item, i) => {
+            const buy = Math.floor(budget * (0.6 + Math.random() * 0.4));
+            const sell = Math.floor(buy * item.multi);
+            const profit = sell - buy - (buy * 0.08);
             
-            const frais = 0.70 + (buy * 0.05);
-            const profit = Math.round(sell - buy - frais);
-            const percent = Math.round((profit / buy) * 100);
-
-            // Grade basé sur la demande réelle du marché
-            let grade = "C";
-            if(entry.demand >= 9.5) grade = "A";
-            else if(entry.demand >= 8) grade = "B";
-
-            items.push({
-                title: `${marqueInput.toUpperCase()} ${entry.model}`,
-                brand: marqueInput.toUpperCase(),
-                detail: entry.detail,
+            return {
+                title: `${marque} ${item.name}`,
+                tag: item.tag,
                 buy: buy,
                 sell: sell,
-                gain: profit,
-                percent: percent,
-                grade: grade,
-                photo: `https://picsum.photos/seed/${entry.model}${i}/220/280`
-            });
+                profit: Math.round(profit),
+                grade: item.hot ? 'A' : 'B',
+                photo: `https://picsum.photos/seed/${item.name}${i}/200/260`
+            };
         });
 
-        render(items, taille, budgetNum);
+        render(processedItems, taille, budget);
         document.getElementById('loading').classList.remove('active');
-        document.getElementById('scanBtn').disabled = false;
-    }, 1000);
+        document.getElementById('statsBar').style.display = 'flex';
+        document.getElementById('statCount').textContent = items.length;
+        document.getElementById('statProfit').textContent = Math.round(processedItems.reduce((acc, i) => acc + i.profit, 0) / items.length) + "€";
+    }, 800);
 }
 
-function openCompare(platform, query) {
-    const q = encodeURIComponent(query);
-    let url = "";
-    switch(platform) {
-        case 'lbc': url = `https://www.leboncoin.fr/recherche?text=${q}`; break;
-        case 'ebay': url = `https://www.ebay.fr/sch/i.html?_nkw=${q}`; break;
-        case 'stockx': url = `https://stockx.com/fr-fr/search?s=${q}`; break;
-    }
-    if(url) window.open(url, '_blank');
-}
-
-function render(items, taille, budgetNum) {
+function render(items, taille, budget) {
     const container = document.getElementById('results');
-    document.getElementById('statsBar').style.display = 'flex';
-    document.getElementById('statCount').textContent = items.length;
-    document.getElementById('statMargin').textContent = "+" + Math.max(...items.map(i => i.percent)) + "%";
-    document.getElementById('statProfit').textContent = Math.round(items.reduce((acc, i) => acc + i.gain, 0) / items.length) + '€';
-
     items.forEach((item, i) => {
-        const exactSearch = `${item.title} ${taille}`;
-        const encodedSearch = encodeURIComponent(exactSearch);
-        const vintedUrl = `https://www.vinted.fr/catalog?search_text=${encodedSearch}&price_to=${budgetNum}&order=newest_first`;
-
+        const search = encodeURIComponent(`${item.title} ${taille}`);
+        const url = `https://www.vinted.fr/catalog?search_text=${search}&price_to=${budget}&order=newest_first`;
+        
         container.innerHTML += `
-            <div class="card" style="animation-delay: ${i * 0.1}s">
+            <div class="card">
                 <div class="grade-badge grade-${item.grade.toLowerCase()}">${item.grade}</div>
                 <div class="card-top">
-                    <div class="card-photo">
-                        <img src="${item.photo}" onload="this.classList.add('loaded')">
-                    </div>
+                    <div class="card-photo"><img src="${item.photo}" onload="this.classList.add('loaded')"></div>
                     <div class="card-info">
-                        <div class="card-brand">${item.brand}</div>
+                        <div class="card-brand">${item.tag}</div>
                         <div class="card-title">${item.title}</div>
-                        <p style="font-size:10px; color:var(--muted); margin-bottom:4px;"># ${item.detail}</p>
-                        <div class="price-container">
-                            <span class="price-buy">${item.buy}€</span>
-                            <i data-lucide="arrow-right" size="14" style="color:#444"></i>
-                            <span class="price-sell">${item.sell}€</span>
+                        <div style="font-family:'Bebas Neue'; font-size:1.4rem; color:var(--text); margin-top:4px;">
+                            <span style="color:var(--muted); text-decoration:line-through; font-size:1rem;">${item.buy}€</span> 
+                            ${item.sell}€
                         </div>
                         <div class="profit-tag">
-                            <i data-lucide="trending-up" size="12" style="color:var(--accent)"></i>
-                            BÉNÉFICE : +${item.gain}€ (${item.percent}%)
+                            <i data-lucide="zap" size="10" style="color:var(--accent)"></i>
+                            BÉNÉFICE NET : +${item.profit}€
                         </div>
                     </div>
                 </div>
                 <div class="card-footer">
-                    <a href="${vintedUrl}" target="_blank" class="btn-action btn-vinted">
-                        <i data-lucide="shopping-bag" size="14"></i> SNIPE SUR VINTED
-                    </a>
-                    <div class="compare-dropdown">
-                        <select class="select-compare" onchange="openCompare(this.value, '${exactSearch}'); this.value='';">
-                            <option value="" disabled selected>VÉRIFIER COTE</option>
-                            <option value="lbc">Leboncoin</option>
-                            <option value="ebay">eBay</option>
-                            <option value="stockx">StockX</option>
-                        </select>
-                        <i data-lucide="chevron-down" size="14" class="dropdown-icon"></i>
-                    </div>
+                    <a href="${url}" target="_blank" class="btn-action btn-vinted"><i data-lucide="external-link" size="14"></i> VOIR LES ANNONCES</a>
                 </div>
             </div>`;
     });
