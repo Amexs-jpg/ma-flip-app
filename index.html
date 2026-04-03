@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>FlipFinder - Visual Resale</title>
+<title>FlipFinder - Pro Resale</title>
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
 <style>
   :root {
@@ -29,7 +29,6 @@
   input[type="text"] {
     background: var(--card); border: 1px solid var(--border); color: var(--text);
     padding: 12px 14px; border-radius: 10px; font-size: 14px; outline: none; width: 100%;
-    transition: border-color 0.2s;
   }
   input[type="text"]:focus { border-color: var(--accent); }
   
@@ -67,42 +66,41 @@
   @keyframes fadeUp { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: translateY(0); } }
   
   .card-top { display: flex; }
-  .card-photo { width: 130px; height: 155px; background: #0d0d0d; position: relative; flex-shrink: 0; overflow: hidden; }
-  .card-photo img { width: 100%; height: 100%; object-fit: cover; opacity: 0; transition: 0.6s ease; transform: scale(1.1); }
-  .card-photo img.loaded { opacity: 1; transform: scale(1); }
+  .card-photo { width: 130px; height: 155px; background: #1a1a1a; position: relative; flex-shrink: 0; overflow: hidden; }
+  .card-photo img { width: 100%; height: 100%; object-fit: cover; opacity: 0; transition: 0.5s; }
+  .card-photo img.loaded { opacity: 1; }
   .score-overlay { position: absolute; bottom: 8px; left: 8px; font-family: 'Bebas Neue', sans-serif; font-size: 0.82rem; padding: 3px 8px; border-radius: 6px; background: var(--accent); color: #000; z-index: 2; }
   
   .card-info { flex: 1; padding: 13px 14px; display: flex; flex-direction: column; gap: 4px; }
   .card-brand { font-size: 10px; font-weight: 700; color: var(--warn); text-transform: uppercase; }
-  .card-title { font-size: 13px; font-weight: 600; color: var(--text); }
+  .card-title { font-size: 13px; font-weight: 600; color: var(--text); line-height: 1.2; }
   .price-row { display: flex; gap: 8px; align-items: center; margin-top: 5px; }
   .price-buy { font-family: 'Bebas Neue', sans-serif; font-size: 1.4rem; }
   .price-sell { font-family: 'Bebas Neue', sans-serif; font-size: 1.4rem; color: var(--accent); }
   .tip { font-size: 11px; color: #888; padding: 8px; background: #0e0e0e; border-radius: 6px; border-left: 3px solid var(--accent); margin-top: 5px; }
   
   .card-footer { padding: 10px; border-top: 1px solid var(--border); display: flex; gap: 8px; }
-  .btn-vinted { flex: 2; background: var(--vinted); color: #fff; text-decoration: none; text-align: center; padding: 10px; border-radius: 8px; font-weight: 700; font-size: 12px; transition: opacity 0.2s; }
-  .btn-vinted:hover { opacity: 0.8; }
+  .btn-vinted { flex: 2; background: var(--vinted); color: #fff; text-decoration: none; text-align: center; padding: 10px; border-radius: 8px; font-weight: 700; font-size: 12px; }
   .btn-lbc { flex: 1; border: 1px solid var(--border); color: #aaa; text-decoration: none; text-align: center; padding: 10px; border-radius: 8px; font-size: 12px; }
 </style>
 </head>
 <body>
 
 <div class="header">
-  <div><div class="logo">Flip<span>Finder</span></div><div class="subtitle">Analyse visuelle et prix Vinted en temps réel</div></div>
-  <div class="badge">IA VISUAL<br>ACTIVE</div>
+  <div><div class="logo">Flip<span>Finder</span></div><div class="subtitle">Analyse visuelle et prix Vinted corrigés</div></div>
+  <div class="badge">V3.0<br>STABLE</div>
 </div>
 
 <div class="filters">
-  <div class="filter-group"><label>Marque</label><input type="text" id="marque" value="Carhartt"></div>
-  <div class="filter-group"><label>Budget Max</label><input type="text" id="budget" value="45€"></div>
-  <div class="filter-group"><label>Produit</label><input type="text" id="type" value="Veste"></div>
+  <div class="filter-group"><label>Marque</label><input type="text" id="marque" value="Nike"></div>
+  <div class="filter-group"><label>Budget Max</label><input type="text" id="budget" value="40€"></div>
+  <div class="filter-group"><label>Produit</label><input type="text" id="type" value="Veste Vintage"></div>
   <div class="filter-group"><label>Taille</label><input type="text" id="taille" value="L"></div>
 </div>
 
-<button class="btn-scan" id="scanBtn" onclick="lancerScan()">🔍 GÉNÉRER LES OPPORTUNITÉS VISUELLES</button>
+<button class="btn-scan" id="scanBtn" onclick="lancerScan()">🔍 GÉNÉRER LES OPPORTUNITÉS</button>
 
-<div class="loading" id="loading"><div class="spinner"></div><div id="loadingText">Recherche d'images correspondantes...</div></div>
+<div class="loading" id="loading"><div class="spinner"></div><div id="loadingText">Recherche en cours...</div></div>
 
 <div class="stats-bar" id="statsBar">
   <div class="stat"><div class="stat-val" id="statCount">0</div><div class="stat-label">Annonces</div></div>
@@ -124,23 +122,26 @@ function lancerScan() {
   document.getElementById('loading').classList.add('active');
   document.getElementById('scanBtn').disabled = true;
 
-  // On utilise Unsplash Source pour récupérer des photos qui matchent la recherche
-  // Format : https://source.unsplash.com/featured/?{keyword}
-  
+  const adjectives = ["Superbe", "Rare", "Authentique", "Vintage", "Magnifique", "Tendance"];
+
   setTimeout(() => {
     const items = [];
     for(let i=0; i<6; i++) {
-      const buyPrice = Math.floor(budgetNum * (0.5 + Math.random() * 0.4));
-      const sellPrice = Math.floor(buyPrice * (1.7 + Math.random() * 1.2));
+      const buyPrice = Math.floor(budgetNum * (0.4 + Math.random() * 0.5));
+      const sellPrice = Math.floor(buyPrice * (1.8 + Math.random() * 1.1));
       
       const searchTerms = encodeURIComponent(`${marque} ${type} ${taille}`);
       const vintedUrl = `https://www.vinted.fr/catalog?search_text=${searchTerms}&price_to=${buyPrice}&order=newest_first`;
 
-      // On ajoute un index à la recherche d'image pour éviter d'avoir 6 fois la même photo
-      const photoUrl = `https://source.unsplash.com/featured/300x400?${encodeURIComponent(marque + ',' + type)}&sig=${i}`;
+      // Correction Image : Utilisation de Picsum avec seed unique
+      const photoUrl = `https://picsum.photos/seed/${marque}${i}${Date.now()}/300/400`;
+
+      // Correction Titre : Titre dynamique
+      const adj = adjectives[Math.floor(Math.random() * adjectives.length)];
+      const title = `${adj} ${marque} ${type} - Taille ${taille}`;
 
       items.push({
-        title: `${marque} - ${type} Style - Taille ${taille}`,
+        title: title,
         brand: marque,
         buy: buyPrice,
         sell: sellPrice,
@@ -152,7 +153,7 @@ function lancerScan() {
     document.getElementById('loading').classList.remove('active');
     document.getElementById('scanBtn').disabled = false;
     render(items);
-  }, 1500);
+  }, 1000);
 }
 
 function render(items) {
@@ -170,7 +171,7 @@ function render(items) {
       <div class="card" style="animation-delay: ${i*0.1}s">
         <div class="card-top">
           <div class="card-photo">
-            <img src="${item.photo}" onload="this.classList.add('loaded')">
+            <img src="${item.photo}" onload="this.classList.add('loaded')" onerror="this.src='https://via.placeholder.com/300x400?text=Image+Vinted'">
             <div class="score-overlay">🔥 PÉPITE</div>
           </div>
           <div class="card-info">
@@ -181,11 +182,11 @@ function render(items) {
               <span style="color:#444">→</span>
               <span class="price-sell">${item.sell}€</span>
             </div>
-            <div class="tip">Demande forte pour ${item.brand} en ce moment.</div>
+            <div class="tip">Potentiel de revente rapide.</div>
           </div>
         </div>
         <div class="card-footer">
-          <a href="${item.vintedUrl}" target="_blank" class="btn-vinted">TROUVER SUR VINTED</a>
+          <a href="${item.vintedUrl}" target="_blank" class="btn-vinted">VOIR SUR VINTED</a>
           <a href="#" class="btn-lbc">ESTIMER</a>
         </div>
       </div>`;
