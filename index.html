@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>FlipFinder Pro - Deep Search</title>
+    <title>FlipFinder Pro - Profit Analytics</title>
     <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/lucide@latest"></script>
     <style>
@@ -64,10 +64,12 @@
         .price-container { display: flex; align-items: baseline; gap: 8px; margin-top: 4px; }
         .price-buy { font-family: 'Bebas Neue', sans-serif; font-size: 1.3rem; color: #666; text-decoration: line-through; }
         .price-sell { font-family: 'Bebas Neue', sans-serif; font-size: 1.8rem; color: var(--text); }
+        
         .profit-tag { 
             display: inline-flex; align-items: center; gap: 4px;
-            background: rgba(76, 175, 80, 0.1); color: #4caf50; 
-            padding: 4px 8px; border-radius: 6px; font-size: 11px; font-weight: 700; margin-top: 8px;
+            background: rgba(212, 255, 63, 0.1); color: var(--accent); 
+            padding: 4px 10px; border-radius: 8px; font-size: 12px; font-weight: 800; margin-top: 8px;
+            border: 1px solid rgba(212, 255, 63, 0.2);
         }
 
         .card-footer { padding: 12px; background: rgba(255,255,255,0.02); display: flex; gap: 10px; }
@@ -81,8 +83,8 @@
         .select-compare {
             width: 100%; height: 100%; padding: 12px; border-radius: 10px;
             background: transparent; border: 1px solid var(--border); color: var(--muted);
-            font-size: 12px; font-weight: 700; cursor: pointer; appearance: none;
-            text-align: center; outline: none;
+            font-size: 11px; font-weight: 700; cursor: pointer; appearance: none;
+            text-align: center; outline: none; text-transform: uppercase;
         }
         .dropdown-icon {
             position: absolute; right: 10px; top: 50%; transform: translateY(-50%);
@@ -102,7 +104,7 @@
 
 <div class="header">
     <div class="logo">Flip<span>Finder</span></div>
-    <div class="badge">V2.4 DEEP-SEARCH</div>
+    <div class="badge">V2.5 PROFIT-CENTER</div>
 </div>
 
 <div class="filters">
@@ -130,13 +132,13 @@
 
 <div class="loading" id="loading">
     <div class="spinner"></div>
-    <p style="color: var(--muted); font-size: 12px;">Configuration des liens de recherche...</p>
+    <p style="color: var(--muted); font-size: 12px;">Estimation des bénéfices nets...</p>
 </div>
 
 <div class="stats-bar" id="statsBar">
-    <div class="stat"><div class="stat-val" id="statCount">0</div><div class="stat-label">Pépites</div></div>
-    <div class="stat"><div class="stat-val" id="statMargin">0%</div><div class="stat-label">ROI Max</div></div>
-    <div class="stat"><div class="stat-val" id="statProfit">0€</div><div class="stat-label">Profit Moyen</div></div>
+    <div class="stat"><div class="stat-val" id="statCount">0</div><div class="stat-label">Annonces</div></div>
+    <div class="stat"><div class="stat-val" id="statMargin" style="color:var(--text)">0%</div><div class="stat-label">Bénéf. Max</div></div>
+    <div class="stat"><div class="stat-val" id="statProfit">0€</div><div class="stat-label">Gain Moyen</div></div>
 </div>
 
 <div id="results"></div>
@@ -147,16 +149,15 @@ lucide.createIcons();
 const marketData = {
     "nike": { multiplier: 2.1, suffixes: ["Air Force 1", "Dunk Low", "Jordan 1 Retro", "Air Max Plus TN"] },
     "adidas": { multiplier: 1.7, suffixes: ["Samba OG", "Campus 00s", "Yeezy 350", "Gazelle Indoor"] },
-    "ralph lauren": { multiplier: 2.4, suffixes: ["Polo Bear", "Câblé V-Neck", "Veste de survêtement"], },
-    "default": { multiplier: 1.6, suffixes: ["Vintage Edition", "Collection Sport", "Archive Style"] }
+    "ralph lauren": { multiplier: 2.4, suffixes: ["Polo Bear", "Pull Torsadé", "Doudoune Sans Manche"], },
+    "default": { multiplier: 1.6, suffixes: ["Vintage Edition", "Collection Sport", "Rare Find"] }
 };
 
 function lancerScan() {
     const marqueInput = document.getElementById('marque').value.toLowerCase();
     const type = document.getElementById('type').value;
     const taille = document.getElementById('taille').value;
-    const budgetRaw = document.getElementById('budget').value;
-    const budgetNum = parseInt(budgetRaw.replace(/[^0-9]/g, '')) || 40;
+    const budgetNum = parseInt(document.getElementById('budget').value.replace(/[^0-9]/g, '')) || 40;
 
     document.getElementById('results').innerHTML = '';
     document.getElementById('statsBar').style.display = 'none';
@@ -172,20 +173,20 @@ function lancerScan() {
             const buy = Math.floor(minBuy + (Math.random() * (budgetNum - minBuy)));
             const sell = Math.floor(buy * (logic.multiplier * (0.85 + Math.random() * 0.4)));
             
+            // Frais Vinted estimés (0.70€ + 5%)
             const frais = 0.70 + (buy * 0.05);
-            const profit = Math.round(sell - buy - frais);
-            const roi = Math.round((profit / buy) * 100);
+            const profitNet = Math.round(sell - buy - frais);
+            const profitPercent = Math.round((profitNet / buy) * 100);
             
             const suffix = logic.suffixes[Math.floor(Math.random() * logic.suffixes.length)];
 
             items.push({
-                // Le titre devient la base de la recherche
                 title: `${marqueInput.toUpperCase()} ${suffix}`,
                 brand: marqueInput.toUpperCase(),
                 buy: buy,
                 sell: sell,
-                profit: profit,
-                roi: roi,
+                gain: profitNet,
+                percent: profitPercent,
                 photo: `https://picsum.photos/seed/${marqueInput}${i}${Date.now()}/220/280`
             });
         }
@@ -212,15 +213,12 @@ function render(items, taille, budgetNum) {
     document.getElementById('statsBar').style.display = 'flex';
     
     document.getElementById('statCount').textContent = items.length;
-    document.getElementById('statMargin').textContent = Math.max(...items.map(i => i.roi)) + '%';
-    document.getElementById('statProfit').textContent = Math.round(items.reduce((acc, i) => acc + i.profit, 0) / items.length) + '€';
+    document.getElementById('statMargin').textContent = "+" + Math.max(...items.map(i => i.percent)) + "%";
+    document.getElementById('statProfit').textContent = Math.round(items.reduce((acc, i) => acc + i.gain, 0) / items.length) + '€';
 
     items.forEach((item, i) => {
-        // RECHERCHE EXACTE : On utilise le titre précis de l'item + la taille
         const exactSearch = `${item.title} ${taille}`;
         const encodedSearch = encodeURIComponent(exactSearch);
-        
-        // Lien Vinted avec titre exact, budget max et taille dans la recherche
         const vintedUrl = `https://www.vinted.fr/catalog?search_text=${encodedSearch}&price_to=${budgetNum}&order=newest_first`;
 
         container.innerHTML += `
@@ -234,12 +232,12 @@ function render(items, taille, budgetNum) {
                         <div class="card-title">${item.title}</div>
                         <div class="price-container">
                             <span class="price-buy">${item.buy}€</span>
-                            <i data-lucide="arrow-right" size="14" style="color:#444"></i>
+                            <i data-lucide="move-right" size="14" style="color:#444"></i>
                             <span class="price-sell">${item.sell}€</span>
                         </div>
                         <div class="profit-tag">
-                            <i data-lucide="trending-up" size="12"></i>
-                            +${item.profit}€ net (ROI ${item.roi}%)
+                            <i data-lucide="sparkles" size="12"></i>
+                            GAGNE ${item.gain}€ (+${item.percent}%)
                         </div>
                     </div>
                 </div>
@@ -250,7 +248,7 @@ function render(items, taille, budgetNum) {
                     
                     <div class="compare-dropdown">
                         <select class="select-compare" onchange="openCompare(this.value, '${exactSearch}'); this.value='';">
-                            <option value="" disabled selected>COMPARER</option>
+                            <option value="" disabled selected>COMPARER PRIX</option>
                             <option value="lbc">Leboncoin</option>
                             <option value="ebay">eBay</option>
                             <option value="stockx">StockX</option>
