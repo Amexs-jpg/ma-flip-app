@@ -134,8 +134,8 @@
         Réponds UNIQUEMENT avec un JSON pur au format : {"items":[{"title":"Nom","brand":"Marque","size":"Taille","buyPrice":10,"sellPrice":30,"tip":"Conseil","score":"hot"}]}`;
 
         try {
-            // MISE À JOUR : On passe en v1 au lieu de v1beta
-            const url = `https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash:generateContent?key=${key}`;
+            // CORRECTION ICI : Retour en v1beta pour Gemini 1.5 Flash
+            const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${key}`;
             
             const response = await fetch(url, {
                 method: "POST",
@@ -151,21 +151,16 @@
 
             if (data.candidates && data.candidates[0].content.parts[0].text) {
                 let text = data.candidates[0].content.parts[0].text;
-                
-                // Nettoyage ultra-robuste du JSON
                 const jsonMatch = text.match(/\{[\s\S]*\}/);
                 if (!jsonMatch) throw new Error("Format de réponse invalide");
-                
                 const results = JSON.parse(jsonMatch[0]).items;
-                
                 renderResults(results);
                 updateStats(results);
             } else {
-                throw new Error("Réponse vide de l'IA");
+                throw new Error("Réponse vide");
             }
 
         } catch (err) {
-            console.error(err);
             alert("⚠️ " + err.message);
         } finally {
             loader.style.display = 'none'; 
@@ -175,8 +170,6 @@
 
     function renderResults(items) {
         const container = document.getElementById('resultsContainer');
-        if (!items || !Array.isArray(items)) return;
-        
         items.forEach(item => {
             const profit = item.sellPrice - item.buyPrice;
             const margin = Math.round((profit / item.buyPrice) * 100);
@@ -199,13 +192,9 @@
     }
 
     function updateStats(items) {
-        if (!items || items.length === 0) return;
         document.getElementById('statCount').textContent = items.length;
-        const margins = items.map(i => Math.round(((i.sellPrice-i.buyPrice)/i.buyPrice)*100));
-        document.getElementById('statBest').textContent = Math.max(...margins) + "%";
         const avgProfit = items.reduce((acc, i) => acc + (i.sellPrice-i.buyPrice), 0) / items.length;
         document.getElementById('statProfit').textContent = Math.round(avgProfit) + "€";
-        document.getElementById('statHot').textContent = items.filter(i => i.score === 'hot').length;
         document.getElementById('statsBar').style.display = 'grid';
     }
 </script></body>
