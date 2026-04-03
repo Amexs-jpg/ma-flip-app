@@ -9,12 +9,13 @@
         body { font-family: sans-serif; background: var(--bg); color: var(--text); margin: 0; padding: 15px; }
         header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
         .logo { color: var(--primary); font-weight: bold; font-size: 1.5rem; }
-        .settings-btn { background: #222; border: none; color: #aaa; padding: 8px; border-radius: 5px; }
-        input { width: 100%; background: #222; border: 1px solid #333; padding: 12px; border-radius: 8px; color: white; margin-bottom: 10px; box-sizing: border-box; }
-        #scanBtn { width: 100%; background: var(--primary); border: none; padding: 15px; border-radius: 8px; font-weight: bold; cursor: pointer; }
+        .settings-btn { background: #222; border: none; color: #aaa; padding: 8px; border-radius: 5px; cursor: pointer; }
+        .input-group { display: flex; gap: 10px; margin-bottom: 10px; }
+        input { width: 100%; background: #222; border: 1px solid #333; padding: 12px; border-radius: 8px; color: white; box-sizing: border-box; }
+        #scanBtn { width: 100%; background: var(--primary); border: none; padding: 15px; border-radius: 8px; font-weight: bold; cursor: pointer; margin-top: 10px; }
         .card { background: var(--card); border-radius: 12px; margin-top: 15px; padding: 15px; border: 1px solid #333; }
         .btn-vinted { display: block; text-align: center; background: #007782; color: white; text-decoration: none; padding: 10px; border-radius: 6px; margin-top: 10px; }
-        #loader { display: none; text-align: center; margin: 20px 0; }
+        #loader { display: none; text-align: center; margin: 20px 0; color: var(--primary); }
     </style>
 </head>
 <body>
@@ -24,18 +25,27 @@
     <button class="settings-btn" onclick="toggleSettings()">⚙️ CLÉ</button>
 </header>
 
-<div id="settingsPanel" style="display:none; margin-bottom:20px;">
+<div id="settingsPanel" style="display:none; margin-bottom:20px; background:#222; padding:15px; border-radius:8px;">
     <input type="password" id="apiKeyInput" placeholder="Colle ta clé AIza...">
-    <button onclick="saveKey()" style="width:100%; background:white; border:none; padding:8px; border-radius:5px;">SAUVEGARDER</button>
+    <button onclick="saveKey()" style="width:100%; background:white; border:none; padding:8px; border-radius:5px; font-weight:bold;">SAUVEGARDER</button>
 </div>
 
-<input type="text" id="brands" placeholder="Nike, Adidas...">
+<div class="input-group">
+    <input type="text" id="brands" placeholder="Marques (Nike...)">
+    <input type="text" id="budget" placeholder="Budget Max (€)">
+</div>
+
 <button id="scanBtn" onclick="scan()">🔍 SCANNER LES PÉPITES</button>
 
 <div id="loader">🤖 Analyse IA en cours...</div>
 <div id="resultsContainer"></div>
 
 <script>
+    window.onload = () => {
+        const savedKey = localStorage.getItem('flip_gemini_key');
+        if (savedKey) document.getElementById('apiKeyInput').value = savedKey;
+    };
+
     function toggleSettings() {
         const p = document.getElementById('settingsPanel');
         p.style.display = p.style.display === 'block' ? 'none' : 'block';
@@ -49,20 +59,25 @@
 
     async function scan() {
         const key = localStorage.getItem('flip_gemini_key');
-        if (!key) { alert("Mets ta clé !"); return; }
+        if (!key) { alert("Mets ta clé !"); toggleSettings(); return; }
+
+        const brands = document.getElementById('brands').value || "Nike, Adidas";
+        const budget = document.getElementById('budget').value || "30";
 
         document.getElementById('loader').style.display = 'block';
         const container = document.getElementById('resultsContainer');
         container.innerHTML = '';
 
+        const prompt = `Agis en expert Vinted. Trouve 3 pépites ${brands} à moins de ${budget}€. Réponds uniquement en JSON : {"items":[{"title":"Objet","brand":"Marque","buyPrice":10,"sellPrice":30}]}`;
+
         try {
-            // URL MODIFIÉE : On utilise la v1beta mais avec un fallback sur le nom du modèle
-            const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent?key=${key}`;
+            // TEST AVEC LE MODÈLE FLASH 8B (le plus compatible pour les nouvelles clés)
+            const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-8b:generateContent?key=${key}`;
             
             const response = await fetch(url, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ contents: [{ parts: [{ text: "Donne moi 3 idées de flip Vinted (Nike, Adidas). Réponds uniquement en JSON format: {\"items\":[{\"title\":\"Veste\",\"brand\":\"Nike\",\"buyPrice\":20,\"sellPrice\":50}]}" }] }] })
+                body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }] })
             });
 
             const data = await response.json();
@@ -74,9 +89,9 @@
             json.items.forEach(item => {
                 container.innerHTML += `
                     <div class="card">
-                        <h3>${item.brand} - ${item.title}</h3>
-                        <p>Achat: ${item.buyPrice}€ | Revente: ${item.sellPrice}€</p>
-                        <a href="https://www.vinted.fr/catalog?search_text=${item.brand}+${item.title}" class="btn-vinted">Chercher</a>
+                        <h3 style="margin:0">${item.brand} - ${item.title}</h3>
+                        <p style="color:#8bc34a; font-weight:bold;">Achat: ${item.buyPrice}€ | Revente: ${item.sellPrice}€</p>
+                        <a href="https://www.vinted.fr/catalog?search_text=${encodeURIComponent(item.brand + ' ' + item.title)}&price_to=${item.buyPrice}" target="_blank" class="btn-vinted">Trouver</a>
                     </div>`;
             });
         } catch (err) {
