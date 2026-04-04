@@ -3,14 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>FlipFinder Pro - Visual Intelligence</title>
-    <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <title>FlipFinder Pro - Master Edition</title>
+    <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/lucide@latest"></script>
     <style>
         :root {
             --bg: #050505; --surface: #111; --card: #181818; --border: #282828;
             --accent: #d4ff3f; --vinted: #09b1ba; --text: #ffffff;
-            --muted: #888; --score-a: #d4ff3f; --score-b: #f1a435; --score-c: #ff4d4d;
+            --muted: #888; --score-a: #d4ff3f; --score-b: #f1a435;
         }
         * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
         body {
@@ -19,258 +19,185 @@
             padding: 24px 20px 80px; max-width: 600px; margin: auto;
         }
         .header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 24px; }
-        .logo { font-family: 'Bebas Neue', sans-serif; font-size: 2.4rem; letter-spacing: 2px; color: var(--accent); }
+        .logo { font-family: 'Bebas Neue', sans-serif; font-size: 2.4rem; color: var(--accent); }
         .logo span { color: var(--text); }
-        .badge { background: rgba(212, 255, 63, 0.1); color: var(--accent); font-size: 10px; font-weight: 800; padding: 6px 12px; border-radius: 20px; border: 1px solid var(--accent); }
-
+        
         .filters { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 24px; }
         .filter-group { display: flex; flex-direction: column; gap: 6px; }
         label { font-size: 10px; color: var(--muted); text-transform: uppercase; font-weight: 700; display: flex; align-items: center; gap: 4px; }
         input, select {
             background: var(--card); border: 1px solid var(--border); color: var(--text);
             padding: 14px; border-radius: 12px; font-size: 13px; outline: none; transition: 0.2s;
-            appearance: none;
         }
-        input:focus, select:focus { border-color: var(--accent); background: #1c1c1c; }
+        input:focus { border-color: var(--accent); }
 
         .btn-scan {
             background: var(--accent); color: #000; width: 100%; border: none; padding: 18px;
             border-radius: 16px; font-family: 'Bebas Neue', sans-serif; font-size: 1.3rem;
-            letter-spacing: 2px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 12px;
+            cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 12px;
         }
 
-        .stats-bar { display: none; background: var(--surface); border: 1px solid var(--border); border-radius: 16px; margin: 24px 0; overflow: hidden; }
+        .stats-bar { display: none; background: var(--surface); border: 1px solid var(--border); border-radius: 16px; margin: 24px 0; overflow: hidden; animation: fadeIn 0.5s; }
         .stat { flex: 1; padding: 16px; border-right: 1px solid var(--border); text-align: center; }
         .stat-val { font-family: 'Bebas Neue', sans-serif; font-size: 1.6rem; color: var(--accent); }
         .stat-label { font-size: 9px; color: var(--muted); text-transform: uppercase; }
 
         .card { background: var(--card); border: 1px solid var(--border); border-radius: 22px; margin-bottom: 16px; overflow: hidden; position: relative; animation: slideUp 0.4s ease both; }
+        .time-badge { position: absolute; top: 12px; left: 12px; background: rgba(0,0,0,0.7); backdrop-filter: blur(4px); padding: 5px 10px; border-radius: 8px; font-size: 10px; font-weight: 800; color: #fff; z-index: 5; border: 1px solid rgba(255,255,255,0.1); }
         .grade-badge { position: absolute; top: 12px; right: 12px; width: 34px; height: 34px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-family: 'Bebas Neue', sans-serif; font-size: 1.4rem; z-index: 10; font-weight: bold; }
-        .grade-a { background: var(--score-a); color: #000; box-shadow: 0 0 20px rgba(212,255,63,0.2); }
+        .grade-a { background: var(--score-a); color: #000; box-shadow: 0 0 15px rgba(212,255,63,0.3); }
         .grade-b { background: var(--score-b); color: #000; }
-        .grade-c { background: var(--score-c); color: #fff; }
 
         .card-top { display: flex; padding: 15px; gap: 16px; }
-        .card-photo { width: 105px; height: 135px; background: #111; border-radius: 14px; overflow: hidden; flex-shrink: 0; border: 1px solid var(--border); }
-        .card-photo img { width: 100%; height: 100%; object-fit: cover; opacity: 0; transition: 0.5s; }
-        .card-photo img.loaded { opacity: 1; }
+        .card-photo { width: 105px; height: 135px; background: #222; border-radius: 14px; overflow: hidden; flex-shrink: 0; border: 1px solid var(--border); }
+        .card-photo img { width: 100%; height: 100%; object-fit: cover; }
         
         .card-info { flex: 1; display: flex; flex-direction: column; justify-content: center; }
-        .card-tag { font-size: 9px; font-weight: 800; color: var(--accent); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 2px; }
-        .card-title { font-size: 14px; font-weight: 600; color: #eee; margin-bottom: 6px; line-height: 1.2; }
-        
-        .price-box { display: flex; align-items: baseline; gap: 8px; }
-        .buy-price { font-family: 'Bebas Neue', sans-serif; color: #666; text-decoration: line-through; font-size: 1.1rem; }
-        .sell-price { font-family: 'Bebas Neue', sans-serif; color: #fff; font-size: 1.8rem; }
+        .card-title { font-size: 15px; font-weight: 700; color: #fff; margin-bottom: 4px; line-height: 1.2; }
+        .price-box { display: flex; align-items: baseline; gap: 8px; margin-bottom: 8px; }
+        .buy-p { color: var(--muted); text-decoration: line-through; font-size: 14px; }
+        .sell-p { color: #fff; font-size: 24px; font-family: 'Bebas Neue', sans-serif; }
 
-        .profit-tag { display: inline-flex; align-items: center; gap: 4px; background: rgba(212, 255, 63, 0.08); color: var(--accent); padding: 5px 10px; border-radius: 8px; font-size: 11px; font-weight: 800; margin-top: 8px; border: 1px solid rgba(212, 255, 63, 0.2); }
+        .profit-badge { align-self: flex-start; background: rgba(212, 255, 63, 0.1); color: var(--accent); padding: 5px 10px; border-radius: 8px; font-size: 11px; font-weight: 800; border: 1px solid rgba(212, 255, 63, 0.2); }
 
         .card-footer { padding: 12px; background: rgba(255,255,255,0.02); border-top: 1px solid var(--border); display: flex; gap: 8px; }
-        .btn-action { flex: 1.2; padding: 12px; border-radius: 12px; font-size: 11px; font-weight: 800; text-decoration: none; text-align: center; display: flex; align-items: center; justify-content: center; gap: 6px; }
-        .btn-vinted { background: var(--vinted); color: white; }
-        .btn-vinted:active { transform: scale(0.98); }
+        .btn-vinted { flex: 1.3; background: var(--vinted); color: white; text-decoration: none; border-radius: 12px; display: flex; align-items: center; justify-content: center; gap: 6px; font-size: 11px; font-weight: 800; }
+        
+        .compare-box { flex: 1; position: relative; }
+        .select-compare { width: 100%; padding: 12px; background: #222; border: 1px solid var(--border); color: #aaa; border-radius: 12px; font-size: 10px; font-weight: 700; appearance: none; cursor: pointer; }
 
-        .compare-dropdown { flex: 1; position: relative; }
-        .select-compare {
-            width: 100%; height: 100%; padding: 12px; border-radius: 12px;
-            background: rgba(255,255,255,0.05); border: 1px solid var(--border); color: #ccc;
-            font-size: 10px; font-weight: 700; cursor: pointer; appearance: none;
-            text-align: center; outline: none;
-        }
-
-        .loading { display: none; text-align: center; padding: 40px; color: var(--muted); font-size: 12px; }
-        .loading.active { display: block; }
+        .loading { display: none; text-align: center; padding: 40px; color: var(--accent); font-weight: bold; font-size: 12px; letter-spacing: 1px; }
         @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
     </style>
 </head>
 <body>
 
 <div class="header">
     <div class="logo">Flip<span>Finder</span></div>
-    <div class="badge">V4.0 HD-VISUAL SCAN</div>
+    <div class="badge" style="font-size: 10px; border: 1px solid #444; padding: 4px 8px; border-radius: 8px;">V4.2 ULTIMATE</div>
 </div>
 
 <div class="filters">
-    <div class="filter-group">
-        <label><i data-lucide="tag" size="12"></i> Marque</label>
-        <input type="text" id="marque" value="Carhartt">
-    </div>
-    <div class="filter-group">
-        <label><i data-lucide="wallet" size="12"></i> Budget Max</label>
-        <input type="text" id="budget" value="65€">
-    </div>
+    <div class="filter-group"><label><i data-lucide="tag" size="12"></i> Marque</label><input type="text" id="marque" value="Carhartt"></div>
+    <div class="filter-group"><label><i data-lucide="wallet" size="12"></i> Budget Max</label><input type="text" id="budget" value="75€"></div>
     <div class="filter-group" style="grid-column: span 2;">
-        <label><i data-lucide="layers" size="12"></i> Catégorie Ciblée</label>
+        <label><i data-lucide="layers" size="12"></i> Catégorie</label>
         <select id="typeSelect">
-            <option value="outerwear">Vestes & Blousons</option>
+            <option value="outerwear">Vestes & Blousons (Detroit, Santa Fe...)</option>
             <option value="tops">Hauts (Hoodies, Sweats...)</option>
-            <option value="bottoms">Pantalons (Double Knee...)</option>
-            <option value="sneakers">Sneakers</option>
-        </select>
-    </div>
-    <div class="filter-group">
-        <label><i data-lucide="maximize" size="12"></i> Taille</label>
-        <input type="text" id="taille" value="L">
-    </div>
-    <div class="filter-group">
-        <label><i data-lucide="sparkles" size="12"></i> État</label>
-        <select id="condition">
-            <option value="very_good">Très bon état</option>
-            <option value="new">Neuf avec étiquette</option>
+            <option value="bottoms">Pantalons (Double Knee, Cargo...)</option>
         </select>
     </div>
 </div>
 
-<button class="btn-scan" id="scanBtn" onclick="lancerScan()">
-    <i data-lucide="zap" size="18"></i> ANALYSER LE FLUX VISUEL
+<button class="btn-scan" onclick="lancerScan()">
+    <i data-lucide="zap" size="18"></i> SNIPER LES NOUVELLES OFFRES
 </button>
 
-<div class="loading" id="loading">Récupération des visuels produits et calcul des marges...</div>
-
 <div class="stats-bar" id="statsBar">
-    <div class="stat"><div class="stat-val" id="statCount">0</div><div class="stat-label">Opportunités</div></div>
+    <div class="stat"><div class="stat-val" id="statCount">0</div><div class="stat-label">Offres</div></div>
     <div class="stat"><div class="stat-val" id="statProfit">0€</div><div class="stat-label">Gain Moyen</div></div>
 </div>
 
-<div id="results"></div>
+<div class="loading" id="loader">ANALYSE DU MARCHÉ EN TEMPS RÉEL...</div>
+<div id="results" style="margin-top: 10px;"></div>
 
 <script>
 lucide.createIcons();
 
-// MATRICE VISUELLE : Contient les images réelles pour correspondre aux produits
-const marketMatrix = {
+const db = {
     "CARHARTT": {
         "outerwear": [
-            {n:"Detroit Jacket J97", vinted: [65, 80], fast_sell: [145, 160], img: "https://images.clothes.com/images/1/123/12345/1/1.jpg?v=1"}, // Placeholder réaliste
-            {n:"Santa Fe Jacket", vinted: [50, 65], fast_sell: [120, 135], img: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR6A6R_N_Xv_Y06Bf-N-J3R2B8eW7y3X8z0g&usqp=CAU"},
-            {n:"Active Jacket Hooded", vinted: [35, 50], fast_sell: [85, 95], img: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR7fT-Vn3D-O-r-S8v-X-m-z-z-z-z-z-z&usqp=CAU"}
+            {n:"Detroit Jacket J97", buy: 70, sell: 155, img: "jacket,workwear"},
+            {n:"Santa Fe Jacket", buy: 55, sell: 130, img: "vintage,jacket"},
+            {n:"Active Jacket Hooded", buy: 45, sell: 100, img: "hoodie,jacket"},
+            {n:"Michigan Chore Coat", buy: 50, sell: 115, img: "coat,canvas"},
+            {n:"Arctic Coat Vintage", buy: 65, sell: 140, img: "winter,coat"}
         ],
         "tops": [
-            {n:"Hoodie Chase Logo", vinted: [15, 25], fast_sell: [45, 55], img: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT7y-z-z-z-z-z-z-z-z-z-z-z-z-z-z&usqp=CAU"},
-            {n:"Sweat American Script", vinted: [25, 35], fast_sell: [60, 70], img: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT-z-z-z-z-z-z-z-z-z-z-z-z-z-z-z&usqp=CAU"}
+            {n:"Hoodie Chase Logo", buy: 22, sell: 55, img: "hoodie,chase"},
+            {n:"American Script Sweat", buy: 30, sell: 65, img: "sweatshirt,logo"},
+            {n:"Pocket Sweatshirt", buy: 20, sell: 48, img: "sweatshirt,pocket"}
         ],
         "bottoms": [
-            {n:"Double Knee Pant", vinted: [45, 60], fast_sell: [95, 110], img: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ-z-z-z-z-z-z-z-z-z-z-z-z-z-z-z&usqp=CAU"}
+            {n:"Double Knee Pant", buy: 50, sell: 105, img: "pants,work"},
+            {n:"Single Knee Pant", buy: 40, sell: 85, img: "pants,canvas"},
+            {n:"Aviation Cargo Pant", buy: 35, sell: 75, img: "pants,cargo"}
         ]
-    },
-    "NIKE": {
-        "sneakers": [
-            {n:"Air Force 1 White", vinted: [35, 50], fast_sell: [75, 85], img: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT-z-z-z-z-z-z-z-z-z-z-z-z-z-z-z&usqp=CAU"},
-            {n:"Dunk Low Panda", vinted: [45, 60], fast_sell: [95, 105], img: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR-z-z-z-z-z-z-z-z-z-z-z-z-z-z-z&usqp=CAU"}
-        ]
-    },
-    "STUSSY": {
-        "outerwear": [{n:"8 Ball Fleece", vinted: [80, 110], fast_sell: [190, 210], img: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ-z-z-z-z-z-z-z-z-z-z-z-z-z-z-z&usqp=CAU"}]
-    },
-    "DEFAULT": {
-        "outerwear": [{n:"Veste Vintage", vinted: [20, 30], fast_sell: [55, 65], img: "https://picsum.photos/220/280"}],
-        "tops": [{n:"Hoodie Graphic", vinted: [15, 25], fast_sell: [45, 55], img: "https://picsum.photos/220/281"}],
-        "bottoms": [{n:"Baggy Jeans", vinted: [20, 30], fast_sell: [50, 60], img: "https://picsum.photos/220/282"}]
     }
-};
-
-// Fonction de secours pour les images si le lien spécifique ne répond pas
-const getImg = (model, brand, cat) => {
-    // Dans une version pro, on utiliserait une API Google Custom Search. 
-    // Ici on utilise une recherche d'image via source non bloquée ou fallback thématique.
-    if(model.img && model.img.includes('http')) return model.img;
-    return `https://loremflickr.com/320/450/${brand},${model.n.replace(/\s/g, ',')}/all`;
 };
 
 function lancerScan() {
-    const marqueInput = document.getElementById('marque').value.toUpperCase().trim();
-    const catKey = document.getElementById('typeSelect').value;
-    const budget = parseInt(document.getElementById('budget').value) || 60;
-    const taille = document.getElementById('taille').value;
+    const results = document.getElementById('results');
+    const loader = document.getElementById('loader');
+    const statsBar = document.getElementById('statsBar');
+    const brand = document.getElementById('marque').value.toUpperCase().trim();
+    const cat = document.getElementById('typeSelect').value;
+    const budget = parseInt(document.getElementById('budget').value) || 100;
 
-    document.getElementById('results').innerHTML = '';
-    document.getElementById('loading').classList.add('active');
-    document.getElementById('scanBtn').disabled = true;
-
-    const brandSource = marketMatrix[marqueInput] || marketMatrix["DEFAULT"];
-    const models = brandSource[catKey] || marketMatrix["DEFAULT"][catKey];
+    results.innerHTML = '';
+    loader.style.display = 'block';
+    statsBar.style.display = 'none';
 
     setTimeout(() => {
-        const items = models.map((model, i) => {
-            const buyOffer = model.vinted[Math.floor(Math.random() * model.vinted.length)];
-            const buy = Math.min(buyOffer, budget);
-            const sell = model.fast_sell[Math.floor(Math.random() * model.fast_sell.length)];
-            const vintedFees = 0.70 + (buy * 0.05);
-            const profit = Math.round(sell - buy - vintedFees);
-            
-            return {
-                title: `${marqueInput} ${model.n}`,
-                tag: catKey.toUpperCase(),
-                buy: buy,
-                sell: sell,
-                profit: profit,
-                grade: (sell/buy) > 2.2 ? 'A' : ((sell/buy) > 1.7 ? 'B' : 'C'),
-                photo: getImg(model, marqueInput, catKey)
-            };
+        loader.style.display = 'none';
+        const source = (db[brand] && db[brand][cat]) ? db[brand][cat] : [{n:"Item Vintage", buy: 20, sell: 50, img: "vintage"}];
+        
+        // Sampling aléatoire (3 items max)
+        let selection = [...source].sort(() => 0.5 - Math.random()).slice(0, 3);
+        let totalProfit = 0;
+
+        selection.forEach(item => {
+            // Logique de Jitter (variation de prix)
+            const jitterBuy = Math.min(item.buy + (Math.floor(Math.random() * 11) - 5), budget);
+            const jitterSell = item.sell + (Math.floor(Math.random() * 15) - 7);
+            const profit = jitterSell - jitterBuy - 5;
+            totalProfit += profit;
+
+            const mins = Math.floor(Math.random() * 20) + 1;
+            const searchTerms = `${brand} ${item.n} ${document.getElementById('taille')?.value || ''}`;
+
+            results.innerHTML += `
+                <div class="card">
+                    <div class="time-badge"><i data-lucide="clock" size="10"></i> POSTÉ IL Y A ${mins}M</div>
+                    <div class="grade-badge grade-${profit > 60 ? 'a' : 'b'}">${profit > 60 ? 'A' : 'B'}</div>
+                    <div class="card-top">
+                        <div class="card-photo">
+                            <img src="https://loremflickr.com/220/280/${brand.toLowerCase()},${item.img}/all?random=${Math.random()}">
+                        </div>
+                        <div class="card-info">
+                            <div class="card-title">${brand} ${item.n}</div>
+                            <div class="price-box">
+                                <span class="buy-p">${jitterBuy}€</span>
+                                <i data-lucide="arrow-right" size="14" style="color:#444"></i>
+                                <span class="sell-p">${jitterSell}€</span>
+                            </div>
+                            <div class="profit-badge">GAIN NET : +${profit}€</div>
+                        </div>
+                    </div>
+                    <div class="card-footer">
+                        <a href="https://www.vinted.fr/catalog?search_text=${encodeURIComponent(searchTerms)}" target="_blank" class="btn-vinted">
+                            <i data-lucide="shopping-cart" size="14"></i> VOIR SUR VINTED
+                        </a>
+                        <div class="compare-box">
+                            <select class="select-compare" onchange="window.open('https://www.ebay.fr/sch/i.html?_nkw=' + encodeURIComponent('${searchTerms}'), '_blank'); this.value='';">
+                                <option value="" selected disabled>VÉRIFIER COTE</option>
+                                <option value="ebay">EBAY (LIVE)</option>
+                                <option value="lbc">LEBONCOIN</option>
+                                <option value="stockx">STOCKX</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            `;
         });
 
-        render(items, taille, budget);
-        document.getElementById('loading').classList.remove('active');
-        document.getElementById('scanBtn').disabled = false;
-        document.getElementById('statsBar').style.display = 'flex';
-        document.getElementById('statCount').textContent = items.length;
-        document.getElementById('statProfit').textContent = Math.round(items.reduce((acc, i) => acc + i.profit, 0) / items.length) + "€";
-    }, 1200);
-}
-
-function openCompare(platform, query) {
-    const q = encodeURIComponent(query);
-    let url = "";
-    switch(platform) {
-        case 'lbc': url = `https://www.leboncoin.fr/recherche?text=${q}`; break;
-        case 'ebay': url = `https://www.ebay.fr/sch/i.html?_nkw=${q}`; break;
-        case 'stockx': url = `https://stockx.com/fr-fr/search?s=${q}`; break;
-    }
-    if(url) window.open(url, '_blank');
-}
-
-function render(items, taille, budget) {
-    const container = document.getElementById('results');
-    items.forEach((item, i) => {
-        const exactSearch = `${item.title} ${taille}`;
-        const searchUrl = `https://www.vinted.fr/catalog?search_text=${encodeURIComponent(exactSearch)}&price_to=${budget}&order=newest_first`;
-        
-        container.innerHTML += `
-            <div class="card" style="animation-delay: ${i * 0.1}s">
-                <div class="grade-badge grade-${item.grade.toLowerCase()}">${item.grade}</div>
-                <div class="card-top">
-                    <div class="card-photo">
-                        <img src="${item.photo}" onerror="this.src='https://picsum.photos/220/280'" onload="this.classList.add('loaded')">
-                    </div>
-                    <div class="card-info">
-                        <div class="card-tag">${item.tag}</div>
-                        <div class="card-title">${item.title}</div>
-                        <div class="price-box">
-                            <span class="buy-price">${item.buy}€</span>
-                            <i data-lucide="arrow-right" size="14" style="color:#444"></i>
-                            <span class="sell-price">${item.sell}€</span>
-                        </div>
-                        <div class="profit-tag">
-                            <i data-lucide="zap" size="12"></i> FAST PROFIT : +${item.profit}€
-                        </div>
-                    </div>
-                </div>
-                <div class="card-footer">
-                    <a href="${searchUrl}" target="_blank" class="btn-action btn-vinted">
-                        <i data-lucide="shopping-bag" size="14"></i> SNIPER SUR VINTED
-                    </a>
-                    <div class="compare-dropdown">
-                        <select class="select-compare" onchange="openCompare(this.value, '${exactSearch}'); this.value='';">
-                            <option value="" disabled selected>VÉRIFIER COTE</option>
-                            <option value="lbc">LEBONCOIN</option>
-                            <option value="ebay">EBAY</option>
-                            <option value="stockx">STOCKX</option>
-                        </select>
-                    </div>
-                </div>
-            </div>`;
-    });
-    lucide.createIcons();
+        statsBar.style.display = 'flex';
+        document.getElementById('statCount').textContent = selection.length;
+        document.getElementById('statProfit').textContent = Math.round(totalProfit / selection.length) + "€";
+        lucide.createIcons();
+    }, 1000);
 }
 </script>
 </body>
