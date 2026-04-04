@@ -109,6 +109,7 @@
     <div class="filter-group">
         <label><i data-lucide="tag" size="12"></i> Marque</label>
         <select id="marque-vetement">
+            <option value="ALL">✨ TOUTES LES MARQUES</option>
             <optgroup label="── Streetwear ──">
                 <option value="Carhartt">Carhartt WIP</option>
                 <option value="Stussy">Stüssy</option>
@@ -150,6 +151,7 @@
             </optgroup>
         </select>
         <select id="marque-chaussure" style="display:none;">
+            <option value="ALL">✨ TOUTES LES MARQUES</option>
             <optgroup label="── Sneakers Hype ──">
                 <option value="Nike">Nike</option>
                 <option value="Jordan">Jordan</option>
@@ -396,17 +398,39 @@ function lancerScan() {
     document.getElementById('loading').classList.add('active');
     document.getElementById('scanBtn').disabled = true;
 
-    const brandSource = marketMatrix[marqueInput] || marketMatrix["DEFAULT"];
-    const models = brandSource[catKey] || marketMatrix["DEFAULT"][catKey] || marketMatrix["DEFAULT"]["outerwear"];
+    let items = [];
 
-    setTimeout(() => {
-        const items = models.map((model, i) => {
+    // Logique pour "TOUTES LES MARQUES"
+    if (marqueInput === "ALL") {
+        const brands = Object.keys(marketMatrix).filter(b => b !== "DEFAULT");
+        brands.forEach(brandName => {
+            const models = marketMatrix[brandName][catKey] || [];
+            models.forEach((model, i) => {
+                const buy = Math.min(pick(model.vinted), budget);
+                const sell = pick(model.sell);
+                const fees = 0.70 + (buy * 0.05);
+                const profit = Math.round(sell - buy - fees);
+                const ratio = sell / buy;
+                items.push({
+                    title: `${brandName.charAt(0) + brandName.slice(1).toLowerCase()} ${model.n}`,
+                    tag: catKey.toUpperCase(),
+                    buy, sell, profit,
+                    grade: ratio > 2.2 ? 'A' : (ratio > 1.7 ? 'B' : 'C'),
+                    photo: getImg(model.img, i + brandName.length)
+                });
+            });
+        });
+        // Mélanger les résultats
+        items.sort(() => Math.random() - 0.5);
+    } else {
+        const brandSource = marketMatrix[marqueInput] || marketMatrix["DEFAULT"];
+        const models = brandSource[catKey] || marketMatrix["DEFAULT"][catKey] || marketMatrix["DEFAULT"]["outerwear"];
+        items = models.map((model, i) => {
             const buy = Math.min(pick(model.vinted), budget);
             const sell = pick(model.sell);
             const fees = 0.70 + (buy * 0.05);
             const profit = Math.round(sell - buy - fees);
             const ratio = sell / buy;
-
             return {
                 title: `${marqueInput.charAt(0) + marqueInput.slice(1).toLowerCase()} ${model.n}`,
                 tag: catKey.toUpperCase(),
@@ -415,13 +439,15 @@ function lancerScan() {
                 photo: getImg(model.img, i + marqueInput.length)
             };
         });
+    }
 
+    setTimeout(() => {
         render(items, taille, budget);
         document.getElementById('loading').classList.remove('active');
         document.getElementById('scanBtn').disabled = false;
         document.getElementById('statsBar').style.display = 'flex';
         document.getElementById('statCount').textContent = items.length;
-        document.getElementById('statProfit').textContent = Math.round(items.reduce((acc, it) => acc + it.profit, 0) / items.length) + "€";
+        document.getElementById('statProfit').textContent = items.length > 0 ? Math.round(items.reduce((acc, it) => acc + it.profit, 0) / items.length) + "€" : "0€";
     }, 1200);
 }
 
