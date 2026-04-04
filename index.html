@@ -3,165 +3,350 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>FlipFinder Pro</title>
-    <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
-    <script src="https://unpkg.com/lucide@latest"></script>
+    <title>FlipFinder Pro - Visual Intelligence</title>
+    <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@0.473.0/dist/umd/lucide.min.js"></script>
+    <script>
+        function initLucide() {
+            if (typeof lucide !== 'undefined') { lucide.createIcons(); }
+            else { setTimeout(initLucide, 80); }
+        }
+        document.addEventListener('DOMContentLoaded', initLucide);
+    </script>
     <style>
         :root {
-            --bg: #050505; --card: #121212; --accent: #d4ff3f; --vinted: #09b1ba;
-            --text: #ffffff; --muted: #888; --border: #222; --inventory: #a855f7;
+            --bg: #050505; --surface: #111; --card: #181818; --border: #282828;
+            --accent: #d4ff3f; --vinted: #09b1ba; --text: #ffffff;
+            --muted: #888; --score-a: #d4ff3f; --score-b: #f1a435; --score-c: #ff4d4d;
+            --inventory: #a855f7;
         }
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { background: var(--bg); color: var(--text); font-family: 'DM Sans', sans-serif; padding: 20px; max-width: 500px; margin: auto; }
-        
-        .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; }
-        .logo { font-family: 'Bebas Neue', sans-serif; font-size: 2rem; letter-spacing: 1px; }
-        .logo span { color: var(--accent); }
+        * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+        body {
+            background: var(--bg); color: var(--text);
+            font-family: 'DM Sans', sans-serif; min-height: 100vh;
+            padding: 24px 20px 80px; max-width: 600px; margin: auto;
+        }
+        .header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 24px; }
+        .logo { font-family: 'Bebas Neue', sans-serif; font-size: 2.4rem; letter-spacing: 2px; color: var(--accent); }
+        .logo span { color: var(--text); }
+        .badge { background: rgba(212, 255, 63, 0.1); color: var(--accent); font-size: 10px; font-weight: 800; padding: 6px 12px; border-radius: 20px; border: 1px solid var(--accent); }
 
-        /* Filtres */
-        .filter-box { background: var(--card); border: 1px solid var(--border); padding: 15px; border-radius: 15px; margin-bottom: 20px; }
-        select, input { width: 100%; background: #1a1a1a; border: 1px solid var(--border); color: white; padding: 12px; border-radius: 10px; margin-top: 8px; margin-bottom: 15px; }
-        
-        .btn-scan { background: var(--accent); color: black; width: 100%; border: none; padding: 15px; border-radius: 12px; font-family: 'Bebas Neue', sans-serif; font-size: 1.2rem; cursor: pointer; transition: 0.3s; }
-        .btn-scan:active { transform: scale(0.98); }
+        .filters { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 24px; }
+        .filter-group { display: flex; flex-direction: column; gap: 6px; }
+        label { font-size: 10px; color: var(--muted); text-transform: uppercase; font-weight: 700; display: flex; align-items: center; gap: 4px; }
+        input, select {
+            background: var(--card); border: 1px solid var(--border); color: var(--text);
+            padding: 14px; border-radius: 12px; font-size: 13px; outline: none; transition: 0.2s;
+            appearance: none;
+        }
+        input:focus, select:focus { border-color: var(--accent); background: #1c1c1c; }
 
-        /* Cards */
-        .card { background: var(--card); border: 1px solid var(--border); border-radius: 20px; margin-bottom: 15px; overflow: hidden; animation: fadeIn 0.5s ease forwards; }
-        .card-content { display: flex; padding: 15px; gap: 15px; }
-        .img-placeholder { width: 90px; height: 110px; background: #1a1a1a; border-radius: 12px; object-fit: cover; }
-        
-        .info h3 { font-size: 1rem; margin-bottom: 5px; }
-        .prices { display: flex; align-items: baseline; gap: 10px; margin-bottom: 5px; }
-        .price-buy { color: var(--muted); text-decoration: line-through; font-size: 0.9rem; }
-        .price-sell { color: var(--accent); font-family: 'Bebas Neue', sans-serif; font-size: 1.5rem; }
-        
-        .profit-badge { background: rgba(212, 255, 63, 0.1); color: var(--accent); padding: 4px 8px; border-radius: 6px; font-size: 0.8rem; font-weight: bold; display: inline-block; }
-        
-        /* Point 2 : Liquidité */
-        .liquidity { font-size: 0.7rem; color: #f1a435; display: flex; align-items: center; gap: 4px; margin-top: 5px; text-transform: uppercase; font-weight: bold; }
+        .btn-scan {
+            background: var(--accent); color: #000; width: 100%; border: none; padding: 18px;
+            border-radius: 16px; font-family: 'Bebas Neue', sans-serif; font-size: 1.3rem;
+            letter-spacing: 2px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 12px;
+        }
 
-        .actions { display: flex; padding: 10px 15px; gap: 10px; border-top: 1px solid var(--border); background: rgba(255,255,255,0.02); }
-        .btn-vinted { flex: 2; background: var(--vinted); color: white; text-decoration: none; text-align: center; padding: 10px; border-radius: 8px; font-size: 0.8rem; font-weight: bold; }
+        .stats-bar { display: none; background: var(--surface); border: 1px solid var(--border); border-radius: 16px; margin: 24px 0; overflow: hidden; }
+        .stat { flex: 1; padding: 16px; border-right: 1px solid var(--border); text-align: center; }
+        .stat-val { font-family: 'Bebas Neue', sans-serif; font-size: 1.6rem; color: var(--accent); }
+        .stat-label { font-size: 9px; color: var(--muted); text-transform: uppercase; }
+
+        /* Card styles */
+        .card { background: var(--card); border: 1px solid var(--border); border-radius: 22px; margin-bottom: 16px; overflow: hidden; position: relative; animation: slideUp 0.4s ease both; }
+        .grade-badge { position: absolute; top: 12px; right: 12px; width: 34px; height: 34px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-family: 'Bebas Neue', sans-serif; font-size: 1.4rem; z-index: 10; font-weight: bold; }
+        .grade-a { background: var(--score-a); color: #000; box-shadow: 0 0 20px rgba(212,255,63,0.2); }
+        .grade-b { background: var(--score-b); color: #000; }
+        .grade-c { background: var(--score-c); color: #fff; }
+
+        .card-top { display: flex; padding: 15px; gap: 16px; }
+        .card-photo { width: 105px; height: 135px; background: #111; border-radius: 14px; overflow: hidden; flex-shrink: 0; border: 1px solid var(--border); }
+        .card-photo img { width: 100%; height: 100%; object-fit: cover; opacity: 0; transition: 0.5s; }
+        .card-photo img.loaded { opacity: 1; }
         
-        /* Point 5 : Bouton Acquisition */
-        .btn-add { flex: 1; background: transparent; border: 1px solid var(--inventory); color: var(--inventory); padding: 10px; border-radius: 8px; font-size: 0.8rem; font-weight: bold; cursor: pointer; }
-        .btn-add:active { background: var(--inventory); color: white; }
+        .card-info { flex: 1; display: flex; flex-direction: column; justify-content: center; }
+        .card-tag { font-size: 9px; font-weight: 800; color: var(--accent); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 2px; }
+        .card-title { font-size: 14px; font-weight: 600; color: #eee; margin-bottom: 6px; line-height: 1.2; }
+        
+        .price-box { display: flex; align-items: baseline; gap: 8px; }
+        .buy-price { font-family: 'Bebas Neue', sans-serif; color: #666; text-decoration: line-through; font-size: 1.1rem; }
+        .sell-price { font-family: 'Bebas Neue', sans-serif; color: #fff; font-size: 1.8rem; }
 
-        /* Section Inventaire */
-        .inventory-container { margin-top: 40px; padding-top: 20px; border-top: 1px solid var(--border); }
-        .inv-title { font-family: 'Bebas Neue', sans-serif; font-size: 1.5rem; margin-bottom: 15px; color: var(--inventory); display: flex; justify-content: space-between; }
-        .inv-item { background: #1a1a1a; padding: 12px; border-radius: 10px; margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center; border-left: 3px solid var(--inventory); }
-        .inv-total { background: var(--inventory); color: white; padding: 15px; border-radius: 12px; margin-top: 10px; text-align: center; font-weight: bold; }
+        .profit-tag { display: inline-flex; align-items: center; gap: 4px; background: rgba(212, 255, 63, 0.08); color: var(--accent); padding: 5px 10px; border-radius: 8px; font-size: 11px; font-weight: 800; margin-top: 8px; border: 1px solid rgba(212, 255, 63, 0.2); }
+        
+        /* New: Liquidity Tag */
+        .liq-tag { font-size: 9px; font-weight: 700; color: #f1a435; display: flex; align-items: center; gap: 3px; margin-top: 4px; }
 
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        .card-footer { padding: 12px; background: rgba(255,255,255,0.02); border-top: 1px solid var(--border); display: flex; flex-wrap: wrap; gap: 8px; }
+        .btn-action { flex: 1; padding: 12px; border-radius: 12px; font-size: 10px; font-weight: 800; text-decoration: none; text-align: center; display: flex; align-items: center; justify-content: center; gap: 6px; transition: 0.2s; }
+        .btn-vinted { background: var(--vinted); color: white; flex: 1.5; }
+        .btn-inventory { background: transparent; color: var(--inventory); border: 1px solid var(--inventory); }
+        .btn-inventory:active { background: var(--inventory); color: white; }
+
+        .compare-dropdown { flex: 1; position: relative; min-width: 100px; }
+        .select-compare {
+            width: 100%; height: 100%; padding: 12px; border-radius: 12px;
+            background: rgba(255,255,255,0.05); border: 1px solid var(--border); color: #ccc;
+            font-size: 10px; font-weight: 700; cursor: pointer; appearance: none;
+            text-align: center; outline: none;
+        }
+
+        /* Inventory Section */
+        .inventory-section { margin-top: 40px; border-top: 2px dashed var(--border); padding-top: 24px; }
+        .inventory-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
+        .inventory-title { font-family: 'Bebas Neue', sans-serif; font-size: 1.8rem; color: var(--inventory); }
+        .inv-card { background: #111; padding: 12px; border-radius: 12px; border-left: 4px solid var(--inventory); margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center; animation: slideIn 0.3s ease-out; }
+        .inv-info { font-size: 12px; }
+        .inv-profit { font-weight: 800; color: var(--accent); }
+
+        .loading { display: none; text-align: center; padding: 40px; color: var(--muted); font-size: 12px; }
+        .loading.active { display: block; }
+
+        .size-tabs { display: flex; gap: 6px; margin-bottom: 6px; }
+        .size-tab {
+            flex: 1; padding: 6px; border-radius: 8px; font-size: 9px; font-weight: 800;
+            text-transform: uppercase; letter-spacing: 1px; cursor: pointer; border: 1px solid var(--border);
+            background: var(--card); color: var(--muted); text-align: center; transition: 0.15s;
+        }
+        .size-tab.active { background: rgba(212,255,63,0.1); border-color: var(--accent); color: var(--accent); }
+
+        @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes slideIn { from { opacity: 0; transform: translateX(-10px); } to { opacity: 1; transform: translateX(0); } }
     </style>
 </head>
 <body>
 
-    <div class="header">
-        <div class="logo">FLIP<span>FINDER</span></div>
-        <i data-lucide="menu"></i>
-    </div>
+<div class="header">
+    <div class="logo">Flip<span>Finder</span></div>
+    <div class="badge">V4.5 BUSINESS EDITION</div>
+</div>
 
-    <div class="filter-box">
-        <label style="font-size: 0.7rem; color: var(--muted); text-transform: uppercase;">Marque Ciblée</label>
-        <select id="brand">
-            <option value="Carhartt">Carhartt WIP</option>
-            <option value="Nike">Nike Sportswear</option>
-            <option value="Stussy">Stüssy</option>
-            <option value="Ralph Lauren">Ralph Lauren</option>
+<div class="filters">
+    <div class="filter-group">
+        <label><i data-lucide="tag" size="12"></i> Marque</label>
+        <select id="marque-vetement">
+            <option value="ALL">✨ TOUTES LES MARQUES</option>
+            <optgroup label="── Streetwear ──">
+                <option value="Carhartt">Carhartt WIP</option>
+                <option value="Stussy">Stüssy</option>
+                <option value="Palace">Palace</option>
+                <option value="Supreme">Supreme</option>
+                <option value="Bape">Bape</option>
+            </optgroup>
+            <optgroup label="── Sportswear ──">
+                <option value="Nike">Nike</option>
+                <option value="Adidas">Adidas</option>
+                <option value="Jordan">Jordan</option>
+                <option value="New Balance">New Balance</option>
+            </optgroup>
+            <optgroup label="── Luxury ──">
+                <option value="Ralph Lauren">Ralph Lauren</option>
+                <option value="Lacoste">Lacoste</option>
+                <option value="Stone Island">Stone Island</option>
+            </optgroup>
         </select>
-        
-        <label style="font-size: 0.7rem; color: var(--muted); text-transform: uppercase;">Budget d'achat max</label>
-        <input type="number" id="budget" value="50">
-        
-        <button class="btn-scan" onclick="simulateScan()">ANALYSER LE MARCHÉ</button>
+        <select id="marque-chaussure" style="display:none;">
+            <option value="ALL">✨ TOUTES LES MARQUES</option>
+            <option value="Nike">Nike</option>
+            <option value="Jordan">Jordan</option>
+            <option value="Adidas">Adidas</option>
+            <option value="New Balance">New Balance</option>
+            <option value="Asics">Asics</option>
+            <option value="Salomon">Salomon</option>
+        </select>
     </div>
-
-    <div id="results"></div>
-
-    <div class="inventory-container" id="inventorySection" style="display: none;">
-        <div class="inv-title">MON INVENTAIRE <span id="invCount" style="font-size: 0.9rem; opacity: 0.7;">0 articles</span></div>
-        <div id="inventoryItems"></div>
-        <div class="inv-total">PROFIT TOTAL ESTIMÉ : <span id="totalProfit">0</span> €</div>
+    <div class="filter-group">
+        <label><i data-lucide="wallet" size="12"></i> Budget Max</label>
+        <input type="text" id="budget" value="65€">
     </div>
+    <div class="filter-group" style="grid-column: span 2;">
+        <label><i data-lucide="layers" size="12"></i> Catégorie Ciblée</label>
+        <select id="typeSelect">
+            <option value="outerwear">Vestes & Blousons</option>
+            <option value="tops">Hauts (Hoodies, Sweats...)</option>
+            <option value="bottoms">Pantalons (Double Knee...)</option>
+            <option value="sneakers">Sneakers</option>
+        </select>
+    </div>
+    <div class="filter-group" style="grid-column: span 2;">
+        <label><i data-lucide="maximize" size="12"></i> Taille</label>
+        <div class="size-tabs">
+            <div class="size-tab active" id="tab-vetement" onclick="switchSizeTab('vetement')">👕 Vêtement</div>
+            <div class="size-tab" id="tab-chaussure" onclick="switchSizeTab('chaussure')">👟 Chaussure</div>
+        </div>
+        <select id="taille-vetement">
+            <option value="S">S</option>
+            <option value="M">M</option>
+            <option value="L" selected>L</option>
+            <option value="XL">XL</option>
+        </select>
+        <select id="taille-chaussure" style="display:none;">
+            <option value="42">42</option>
+            <option value="43" selected>43</option>
+            <option value="44">44</option>
+            <option value="45">45</option>
+        </select>
+    </div>
+</div>
 
-    <script>
-        lucide.createIcons();
-        let myInventory = [];
+<button class="btn-scan" id="scanBtn" onclick="lancerScan()">
+    <i data-lucide="zap" size="18"></i> ANALYSER LE FLUX VISUEL
+</button>
 
-        function simulateScan() {
-            const brand = document.getElementById('brand').value;
-            const budget = document.getElementById('budget').value;
-            const results = document.getElementById('results');
-            
-            results.innerHTML = '<p style="text-align:center; color:var(--muted);">Recherche de pépites...</p>';
+<div class="loading" id="loading">Scan profond du marché et calcul de liquidité...</div>
 
-            setTimeout(() => {
-                results.innerHTML = '';
-                // Simulation de 2 articles
-                createCard(brand + " Detroit Jacket", budget, Math.floor(budget * 2.2), 95);
-                createCard(brand + " Vintage Hoodie", Math.floor(budget/2), Math.floor(budget * 1.5), 70);
-            }, 800);
-        }
+<div class="stats-bar" id="statsBar">
+    <div class="stat"><div class="stat-val" id="statCount">0</div><div class="stat-label">Opportunités</div></div>
+    <div class="stat"><div class="stat-val" id="statProfit">0€</div><div class="stat-label">Gain Moyen</div></div>
+</div>
 
-        function createCard(name, buy, sell, liqScore) {
-            const results = document.getElementById('results');
-            const profit = sell - buy;
-            const liqText = liqScore > 80 ? "🔥 TRÈS FORTE DEMANDE" : "⚡ DEMANDE MOYENNE";
-            
-            const card = document.createElement('div');
-            card.className = 'card';
-            card.innerHTML = `
-                <div class="card-content">
-                    <img src="https://loremflickr.com/200/250/clothes?lock=${Math.random()}" class="img-placeholder">
-                    <div class="info">
-                        <h3>${name}</h3>
-                        <div class="prices">
-                            <span class="price-buy">${buy}€</span>
-                            <span class="price-sell">${sell}€</span>
-                        </div>
-                        <div class="profit-badge">+${profit}€ PROFIT</div>
-                        <div class="liquidity"><i data-lucide="trending-up" size="12"></i> ${liqText}</div>
-                    </div>
-                </div>
-                <div class="actions">
-                    <a href="#" class="btn-vinted">VOIR SUR VINTED</a>
-                    <button class="btn-add" onclick="addToInventory('${name}', ${profit})">ACQUISITION</button>
-                </div>
-            `;
-            results.appendChild(card);
-            lucide.createIcons();
-        }
+<div id="results"></div>
 
-        function addToInventory(name, profit) {
-            myInventory.push({ name, profit });
-            document.getElementById('inventorySection').style.display = 'block';
-            updateInventoryUI();
-        }
+<div class="inventory-section">
+    <div class="inventory-header">
+        <div class="inventory-title">Mon Inventaire</div>
+        <div class="badge" style="border-color: var(--inventory); color: var(--inventory);" id="invCount">0 ARTICLES</div>
+    </div>
+    <div id="inventory-list"></div>
+    <div class="stat" style="background: var(--card); border-radius: 12px; margin-top: 15px; border: 1px solid var(--border);">
+        <div class="stat-label">Profit Total Théorique</div>
+        <div class="stat-val" id="totalInvProfit" style="color: var(--accent);">0€</div>
+    </div>
+</div>
 
-        function updateInventoryUI() {
-            const list = document.getElementById('inventoryItems');
-            const totalDisplay = document.getElementById('totalProfit');
-            const countDisplay = document.getElementById('invCount');
-            
-            list.innerHTML = '';
-            let total = 0;
+<script>
+const marketMatrix = {
+    "CARHARTT": {
+        "outerwear": [{ n:"Detroit Jacket", img:"carhartt+detroit", vinted:[30,50], sell:[75,95], liq:95 }, { n:"Active Jacket", img:"carhartt+active", vinted:[20,40], sell:[55,75], liq:80 }],
+        "tops": [{ n:"Hoodie Chase", img:"carhartt+chase", vinted:[12,22], sell:[32,45], liq:85 }],
+        "bottoms": [{ n:"Double Knee", img:"carhartt+double+knee", vinted:[30,45], sell:[65,85], liq:90 }]
+    },
+    "NIKE": {
+        "outerwear": [{ n:"Nocta Jacket", img:"nike+nocta", vinted:[60,90], sell:[120,150], liq:88 }],
+        "tops": [{ n:"Vintage Sweat", img:"nike+vintage+sweat", vinted:[10,20], sell:[30,45], liq:92 }],
+        "sneakers": [{ n:"Dunk Low", img:"nike+dunk", vinted:[35,55], sell:[75,95], liq:98 }, { n:"Air Force 1", img:"nike+af1", vinted:[25,40], sell:[55,70], liq:99 }]
+    },
+    "STUSSY": {
+        "outerwear": [{ n:"8-Ball Fleece", img:"stussy+fleece", vinted:[65,95], sell:[140,180], liq:96 }],
+        "tops": [{ n:"World Tour Tee", img:"stussy+tee", vinted:[12,25], sell:[40,55], liq:85 }]
+    },
+    "DEFAULT": {
+        "outerwear": [{ n:"Vintage Jacket", img:"vintage+jacket", vinted:[10,20], sell:[30,45], liq:60 }],
+        "tops": [{ n:"Hoodie Graphic", img:"graphic+hoodie", vinted:[8,15], sell:[22,35], liq:50 }],
+        "bottoms": [{ n:"Baggy Jeans", img:"baggy+jeans", vinted:[10,20], sell:[25,40], liq:55 }],
+        "sneakers": [{ n:"Sneakers Retro", img:"retro+sneakers", vinted:[15,30], sell:[40,60], liq:65 }]
+    }
+};
 
-            myInventory.forEach(item => {
-                total += item.profit;
-                list.innerHTML += `
-                    <div class="inv-item">
-                        <span>${item.name}</span>
-                        <span style="color:var(--accent); font-weight:bold;">+${item.profit}€</span>
-                    </div>
-                `;
+let inventory = [];
+
+function getImg(keywords, seed) { return `https://loremflickr.com/220/280/${keywords.replace(/\+/g,',')}?lock=${seed}`; }
+function pick(range) { return Math.floor(range[0] + Math.random() * (range[1] - range[0])); }
+
+function switchSizeTab(tab) {
+    document.getElementById('tab-vetement').classList.toggle('active', tab === 'vetement');
+    document.getElementById('tab-chaussure').classList.toggle('active', tab === 'chaussure');
+    document.getElementById('taille-vetement').style.display = tab === 'vetement' ? '' : 'none';
+    document.getElementById('taille-chaussure').style.display = tab === 'chaussure' ? '' : 'none';
+    document.getElementById('marque-vetement').style.display = tab === 'vetement' ? '' : 'none';
+    document.getElementById('marque-chaussure').style.display = tab === 'chaussure' ? '' : 'none';
+}
+
+function addToInventory(title, profit) {
+    inventory.push({ title, profit });
+    updateInventoryUI();
+}
+
+function updateInventoryUI() {
+    const list = document.getElementById('inventory-list');
+    const totalProfitDisplay = document.getElementById('totalInvProfit');
+    const invCount = document.getElementById('invCount');
+    
+    list.innerHTML = inventory.map(item => `
+        <div class="inv-card">
+            <div class="inv-info"><strong>${item.title}</strong></div>
+            <div class="inv-profit">+${item.profit}€</div>
+        </div>
+    `).join('');
+    
+    const total = inventory.reduce((sum, item) => sum + item.profit, 0);
+    totalProfitDisplay.textContent = total + "€";
+    invCount.textContent = inventory.length + " ARTICLES";
+}
+
+function lancerScan() {
+    const isCh = document.getElementById('tab-chaussure').classList.contains('active');
+    const marqueInput = isCh ? document.getElementById('marque-chaussure').value.toUpperCase() : document.getElementById('marque-vetement').value.toUpperCase();
+    const catKey = document.getElementById('typeSelect').value;
+    const budget = parseInt(document.getElementById('budget').value) || 65;
+
+    document.getElementById('results').innerHTML = '';
+    document.getElementById('loading').classList.add('active');
+    document.getElementById('scanBtn').disabled = true;
+
+    setTimeout(() => {
+        let items = [];
+        const sourceBrands = marqueInput === "ALL" ? Object.keys(marketMatrix).filter(b => b !== "DEFAULT") : [marqueInput];
+        
+        sourceBrands.forEach(b => {
+            const models = (marketMatrix[b] && marketMatrix[b][catKey]) ? marketMatrix[b][catKey] : marketMatrix["DEFAULT"][catKey];
+            models.forEach((m, i) => {
+                const buy = Math.min(pick(m.vinted), budget);
+                const sell = pick(m.sell);
+                const profit = Math.round(sell - (buy * 1.05) - 1);
+                items.push({
+                    title: `${b} ${m.n}`,
+                    tag: catKey.toUpperCase(),
+                    buy, sell, profit,
+                    grade: (sell/buy) > 2 ? 'A' : 'B',
+                    liq: m.liq || 50,
+                    photo: getImg(m.img, i + b.length)
+                });
             });
+        });
 
-            totalDisplay.innerText = total;
-            countDisplay.innerText = `${myInventory.length} articles`;
-            window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
-        }
-    </script>
+        render(items);
+        document.getElementById('loading').classList.remove('active');
+        document.getElementById('scanBtn').disabled = false;
+        document.getElementById('statsBar').style.display = 'flex';
+        document.getElementById('statCount').textContent = items.length;
+        document.getElementById('statProfit').textContent = Math.round(items.reduce((a, b) => a + b.profit, 0) / items.length) + "€";
+    }, 1000);
+}
+
+function render(items) {
+    const container = document.getElementById('results');
+    items.forEach((item, i) => {
+        const liqStatus = item.liq > 90 ? "Vente ultra-rapide (<24h)" : (item.liq > 75 ? "Vente rapide (2-4 jours)" : "Demande modérée");
+        container.innerHTML += `
+            <div class="card" style="animation-delay: ${i*0.1}s">
+                <div class="grade-badge grade-${item.grade.toLowerCase()}">${item.grade}</div>
+                <div class="card-top">
+                    <div class="card-photo"><img src="${item.photo}" onload="this.classList.add('loaded')"></div>
+                    <div class="card-info">
+                        <div class="card-tag">${item.tag}</div>
+                        <div class="card-title">${item.title}</div>
+                        <div class="price-box">
+                            <span class="buy-price">${item.buy}€</span> <span class="sell-price">${item.sell}€</span>
+                        </div>
+                        <div class="profit-tag">+${item.profit}€ PROFIT</div>
+                        <div class="liq-tag"><i data-lucide="flame" size="10"></i> ${liqStatus}</div>
+                    </div>
+                </div>
+                <div class="card-footer">
+                    <a href="https://www.vinted.fr/catalog?search_text=${encodeURIComponent(item.title)}" target="_blank" class="btn-action btn-vinted">VINTED</a>
+                    <button onclick="addToInventory('${item.title}', ${item.profit})" class="btn-action btn-inventory">🛒 ACQUISITION</button>
+                    <div class="compare-dropdown">
+                        <select class="select-compare" onchange="window.open('https://stockx.com/fr-fr/search?s='+this.value)">
+                            <option value="">COTE</option>
+                            <option value="${item.title}">STOCKX</option>
+                        </select>
+                    </div>
+                </div>
+            </div>`;
+    });
+    lucide.createIcons();
+}
+</script>
 </body>
 </html>
