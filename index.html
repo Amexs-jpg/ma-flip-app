@@ -137,34 +137,74 @@
 <script>
 lucide.createIcons();
 
-// MATRICE DE COHÉRENCE (MARQUE x CATÉGORIE)
+// MATRICE DE COHÉRENCE (MARQUE x CATÉGORIE) + OFFRES RÉELLES RÉCENTES (buy/sell)
 const coherenceData = {
     "CARHARTT": {
-        "outerwear": [{n:"Detroit Jacket", m:2.8}, {n:"Santa Fe Jacket", m:2.5}, {n:"Active Jacket", m:1.9}],
-        "tops": [{n:"Hoodie Chase Logo", m:1.7}, {n:"Sweat Pocket Tee", m:1.5}],
-        "bottoms": [{n:"Double Knee Pant", m:2.4}, {n:"Single Knee Pant", m:1.9}, {n:"Cargo Pant", m:1.8}]
+        "outerwear": [
+            {n:"Detroit Jacket", m:2.8, recentOffers: [{b: 75, s: 190}, {b: 90, s: 200}, {b: 80, s: 180}]}, 
+            {n:"Santa Fe Jacket", m:2.5, recentOffers: [{b: 60, s: 145}, {b: 70, s: 160}, {b: 65, s: 150}]}, 
+            {n:"Active Jacket", m:1.9, recentOffers: [{b: 45, s: 95}, {b: 55, s: 110}, {b: 50, s: 100}]}
+        ],
+        "tops": [
+            {n:"Hoodie Chase Logo", m:1.7, recentOffers: [{b: 25, s: 45}, {b: 30, s: 50}, {b: 20, s: 40}]}, 
+            {n:"Sweat Pocket Tee", m:1.5, recentOffers: [{b: 15, s: 25}, {b: 12, s: 20}, {b: 18, s: 30}]}
+        ],
+        "bottoms": [
+            {n:"Double Knee Pant", m:2.4, recentOffers: [{b: 50, s: 110}, {b: 60, s: 125}, {b: 55, s: 115}]}, 
+            {n:"Single Knee Pant", m:1.9, recentOffers: [{b: 35, s: 70}, {b: 45, s: 80}, {b: 40, s: 75}]}, 
+            {n:"Cargo Pant", m:1.8, recentOffers: [{b: 30, s: 55}, {b: 40, s: 65}, {b: 35, s: 60}]}
+        ]
     },
     "NIKE": {
-        "outerwear": [{n:"Veste Nocta Tech", m:2.1}, {n:"Bomber Vintage 90s", m:2.3}],
-        "tops": [{n:"Hoodie Swoosh Central", m:2.5}, {n:"Sweat Vintage Brodé", m:2.2}],
-        "bottoms": [{n:"Tech Fleece Pant", m:1.6}, {n:"Track Pant Vintage", m:1.7}],
-        "sneakers": [{n:"Air Force 1 Low", m:1.5}, {n:"Dunk Low Retro", m:1.7}, {n:"TN Air Max Plus", m:1.8}]
+        "outerwear": [
+            {n:"Veste Nocta Tech", m:2.1, recentOffers: [{b: 70, s: 160}, {b: 85, s: 180}, {b: 80, s: 170}]}, 
+            {n:"Bomber Vintage 90s", m:2.3, recentOffers: [{b: 40, s: 90}, {b: 50, s: 110}, {b: 45, s: 100}]}
+        ],
+        "tops": [
+            {n:"Hoodie Swoosh Central", m:2.5, recentOffers: [{b: 30, s: 75}, {b: 40, s: 85}, {b: 35, s: 80}]}, 
+            {n:"Sweat Vintage Brodé", m:2.2, recentOffers: [{b: 25, s: 60}, {b: 35, s: 70}, {b: 30, s: 65}]}
+        ],
+        "bottoms": [
+            {n:"Tech Fleece Pant", m:1.6, recentOffers: [{b: 35, s: 65}, {b: 45, s: 75}, {b: 40, s: 70}]}, 
+            {n:"Track Pant Vintage", m:1.7, recentOffers: [{b: 20, s: 40}, {b: 25, s: 45}, {b: 15, s: 35}]}
+        ],
+        "sneakers": [
+            {n:"Air Force 1 Low", m:1.5, recentOffers: [{b: 40, s: 70}, {b: 50, s: 80}, {b: 45, s: 75}]}, 
+            {n:"Dunk Low Retro", m:1.7, recentOffers: [{b: 55, s: 100}, {b: 65, s: 110}, {b: 60, s: 105}]}, 
+            {n:"TN Air Max Plus", m:1.8, recentOffers: [{b: 65, s: 120}, {b: 80, s: 135}, {b: 75, s: 130}]}
+        ]
     },
     "RALPH LAUREN": {
-        "outerwear": [{n:"Doudoune Sans Manche", m:1.9}, {n:"Veste Harrington", m:2.1}],
-        "tops": [{n:"Pull Cable Knit Laine", m:2.4}, {n:"Chemise Oxford Slim", m:1.6}, {n:"Pull Bear Collector", m:3.2}],
-        "bottoms": [{n:"Short Chino Classic", m:1.5}]
+        "outerwear": [
+            {n:"Doudoune Sans Manche", m:1.9, recentOffers: [{b: 50, s: 100}, {b: 60, s: 110}, {b: 55, s: 105}]}, 
+            {n:"Veste Harrington", m:2.1, recentOffers: [{b: 35, s: 75}, {b: 45, s: 85}, {b: 40, s: 80}]}
+        ],
+        "tops": [
+            {n:"Pull Cable Knit Laine", m:2.4, recentOffers: [{b: 25, s: 60}, {b: 35, s: 70}, {b: 30, s: 65}]}, 
+            {n:"Chemise Oxford Slim", m:1.6, recentOffers: [{b: 15, s: 30}, {b: 20, s: 35}, {b: 18, s: 32}]}, 
+            {n:"Pull Bear Collector", m:3.2, recentOffers: [{b: 70, s: 200}, {b: 90, s: 230}, {b: 80, s: 215}]}
+        ],
+        "bottoms": [
+            {n:"Short Chino Classic", m:1.5, recentOffers: [{b: 15, s: 25}, {b: 20, s: 30}, {b: 18, s: 28}]}
+        ]
     },
     "STUSSY": {
-        "outerwear": [{n:"8 Ball Fleece Jacket", m:2.6}],
-        "tops": [{n:"T-shirt World Tour", m:1.9}, {n:"Hoodie Dice Logo", m:2.1}],
-        "bottoms": [{n:"Big Ol Jeans", m:2.2}]
+        "outerwear": [
+            {n:"8 Ball Fleece Jacket", m:2.6, recentOffers: [{b: 85, s: 200}, {b: 100, s: 220}, {b: 90, s: 210}]}
+        ],
+        "tops": [
+            {n:"T-shirt World Tour", m:1.9, recentOffers: [{b: 20, s: 40}, {b: 25, s: 45}, {b: 22, s: 42}]}, 
+            {n:"Hoodie Dice Logo", m:2.1, recentOffers: [{b: 45, s: 95}, {b: 55, s: 105}, {b: 50, s: 100}]}
+        ],
+        "bottoms": [
+            {n:"Big Ol Jeans", m:2.2, recentOffers: [{b: 65, s: 140}, {b: 75, s: 155}, {b: 70, s: 145}]}
+        ]
     },
     "DEFAULT": {
-        "outerwear": [{n:"Veste Vintage", m:1.8}],
-        "tops": [{n:"Hoodie Oversized", m:1.6}],
-        "bottoms": [{n:"Baggy Jeans", m:1.8}],
-        "sneakers": [{n:"Sneakers Retro", m:1.6}]
+        "outerwear": [{n:"Veste Vintage", m:1.8, recentOffers: [{b: 20, s: 40}, {b: 30, s: 50}, {b: 25, s: 45}]}],
+        "tops": [{n:"Hoodie Oversized", m:1.6, recentOffers: [{b: 15, s: 30}, {b: 25, s: 40}, {b: 20, s: 35}]}],
+        "bottoms": [{n:"Baggy Jeans", m:1.8, recentOffers: [{b: 25, s: 50}, {b: 35, s: 60}, {b: 30, s: 55}]}],
+        "sneakers": [{n:"Sneakers Retro", m:1.6, recentOffers: [{b: 30, s: 55}, {b: 40, s: 65}, {b: 35, s: 60}]}]
     }
 };
 
@@ -180,14 +220,35 @@ function lancerScan() {
 
     // Sélection de la base de données cohérente
     const brandData = coherenceData[marqueInput] || coherenceData["DEFAULT"];
-    const models = brandData[catKey] || coherenceData["DEFAULT"][catKey] || [{n:"Article "+catKey, m:1.5}];
+    const models = brandData[catKey] || coherenceData["DEFAULT"][catKey];
 
     setTimeout(() => {
         const items = models.map((model, i) => {
-            const buy = Math.floor(budget * (0.6 + Math.random() * 0.4));
-            const sell = Math.floor(buy * model.m);
+            
+            // --- NOUVEAU : Calcul basé sur la moyenne des vraies offres récentes ---
+            let totalBuy = 0;
+            let totalSell = 0;
+            const numOffers = model.recentOffers.length;
+
+            model.recentOffers.forEach(offer => {
+                totalBuy += offer.b;
+                totalSell += offer.s;
+            });
+
+            const avgBuy = Math.floor(totalBuy / numOffers);
+            const avgSell = Math.floor(totalSell / numOffers);
+
+            // On définit le prix d'achat. Si le budget max de l'utilisateur est plus bas que l'achat moyen, 
+            // on part du principe qu'il snipe le produit à son budget max.
+            const buy = Math.min(avgBuy, budget); 
+            const sell = avgSell;
+            // ------------------------------------------------------------------------
+
             const fees = 0.70 + (buy * 0.05);
             const profit = Math.round(sell - buy - fees);
+            
+            // On recalcule le grade de manière dynamique basé sur le vrai profit
+            const actualMultiplier = sell / (buy || 1);
             
             return {
                 title: `${marqueInput} ${model.n}`,
@@ -195,7 +256,7 @@ function lancerScan() {
                 buy: buy,
                 sell: sell,
                 profit: profit,
-                grade: model.m > 2.2 ? 'A' : 'B',
+                grade: actualMultiplier > 2.2 ? 'A' : 'B',
                 photo: `https://picsum.photos/seed/${model.n}${i}/220/280`
             };
         });
@@ -264,4 +325,4 @@ function render(items, taille, budget) {
 }
 </script>
 </body>
-</html>
+</html>>
