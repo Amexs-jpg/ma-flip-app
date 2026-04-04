@@ -2,7 +2,7 @@
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>FlipFinder Pro - Visual Intelligence</title>
     <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/lucide@0.473.0/dist/umd/lucide.min.js"></script>
@@ -20,28 +20,33 @@
             --muted: #888; --score-a: #d4ff3f; --score-b: #f1a435; --score-c: #ff4d4d;
         }
         * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+        
+        /* AJUSTEMENT MOBILE : On utilise 100dvh et un padding réduit */
         body {
             background: var(--bg); color: var(--text);
-            font-family: 'DM Sans', sans-serif; min-height: 100vh;
-            padding: 24px 20px 80px; max-width: 600px; margin: auto;
+            font-family: 'DM Sans', sans-serif; min-height: 100dvh;
+            padding: 16px 12px 80px; max-width: 500px; margin: auto;
         }
-        .header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 24px; }
-        .logo { font-family: 'Bebas Neue', sans-serif; font-size: 2.4rem; letter-spacing: 2px; color: var(--accent); }
+
+        .header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; }
+        .logo { font-family: 'Bebas Neue', sans-serif; font-size: 2.2rem; letter-spacing: 1px; color: var(--accent); }
         .logo span { color: var(--text); }
         .badge { background: rgba(212, 255, 63, 0.1); color: var(--accent); font-size: 10px; font-weight: 800; padding: 6px 12px; border-radius: 20px; border: 1px solid var(--accent); }
 
         .inventory-panel {
             background: var(--surface); border: 1px solid var(--accent); border-radius: 16px;
-            padding: 15px; margin-bottom: 24px; display: flex; justify-content: space-between; align-items: center;
+            padding: 15px; margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center;
         }
         .inv-info { display: flex; flex-direction: column; }
         .inv-label { font-size: 10px; color: var(--muted); text-transform: uppercase; font-weight: 700; }
         .inv-amount { font-family: 'Bebas Neue', sans-serif; font-size: 1.8rem; color: var(--accent); }
         .btn-reset-inv { background: transparent; border: 1px solid #333; color: #555; padding: 4px 8px; border-radius: 6px; font-size: 9px; cursor: pointer; }
 
-        .filters { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 24px; }
+        /* GRILLE FILTRES : Optimisée pour pas prendre trop de place verticale */
+        .filters { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 20px; }
         .filter-group { display: flex; flex-direction: column; gap: 6px; }
         label { font-size: 10px; color: var(--muted); text-transform: uppercase; font-weight: 700; display: flex; align-items: center; gap: 4px; }
+        
         input, select {
             background: var(--card); border: 1px solid var(--border); color: var(--text);
             padding: 14px; border-radius: 12px; font-size: 13px; outline: none; transition: 0.2s;
@@ -55,25 +60,26 @@
             letter-spacing: 2px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 12px;
         }
 
-        .stats-bar { display: none; background: var(--surface); border: 1px solid var(--border); border-radius: 16px; margin: 24px 0; overflow: hidden; }
-        .stat { flex: 1; padding: 16px; border-right: 1px solid var(--border); text-align: center; }
+        .stats-bar { display: none; background: var(--surface); border: 1px solid var(--border); border-radius: 16px; margin: 20px 0; overflow: hidden; }
+        .stat { flex: 1; padding: 14px; border-right: 1px solid var(--border); text-align: center; }
         .stat-val { font-family: 'Bebas Neue', sans-serif; font-size: 1.6rem; color: var(--accent); }
         .stat-label { font-size: 9px; color: var(--muted); text-transform: uppercase; }
 
+        /* CARTES : Plus compactes pour mobile */
         .card { background: var(--card); border: 1px solid var(--border); border-radius: 22px; margin-bottom: 16px; overflow: hidden; position: relative; animation: slideUp 0.4s ease both; }
         .grade-badge { position: absolute; top: 12px; right: 12px; width: 34px; height: 34px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-family: 'Bebas Neue', sans-serif; font-size: 1.4rem; z-index: 10; font-weight: bold; }
         .grade-a { background: var(--score-a); color: #000; box-shadow: 0 0 20px rgba(212,255,63,0.2); }
         .grade-b { background: var(--score-b); color: #000; }
         .grade-c { background: var(--score-c); color: #fff; }
 
-        .card-top { display: flex; padding: 15px; gap: 16px; }
-        .card-photo { width: 105px; height: 135px; background: #111; border-radius: 14px; overflow: hidden; flex-shrink: 0; border: 1px solid var(--border); }
+        .card-top { display: flex; padding: 15px; gap: 14px; }
+        .card-photo { width: 95px; height: 125px; background: #111; border-radius: 14px; overflow: hidden; flex-shrink: 0; border: 1px solid var(--border); }
         .card-photo img { width: 100%; height: 100%; object-fit: cover; opacity: 0; transition: 0.5s; }
         .card-photo img.loaded { opacity: 1; }
         
-        .card-info { flex: 1; display: flex; flex-direction: column; justify-content: center; }
+        .card-info { flex: 1; min-width: 0; display: flex; flex-direction: column; justify-content: center; }
         .card-tag { font-size: 9px; font-weight: 800; color: var(--accent); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 2px; }
-        .card-title { font-size: 14px; font-weight: 600; color: #eee; margin-bottom: 6px; line-height: 1.2; }
+        .card-title { font-size: 14px; font-weight: 600; color: #eee; margin-bottom: 6px; line-height: 1.2; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
         
         .price-box { display: flex; align-items: baseline; gap: 8px; }
         .buy-price { font-family: 'Bebas Neue', sans-serif; color: #666; text-decoration: line-through; font-size: 1.1rem; }
@@ -82,7 +88,7 @@
         .profit-tag { display: inline-flex; align-items: center; gap: 4px; background: rgba(212, 255, 63, 0.08); color: var(--accent); padding: 5px 10px; border-radius: 8px; font-size: 11px; font-weight: 800; margin-top: 8px; border: 1px solid rgba(212, 255, 63, 0.2); }
 
         .card-footer { padding: 12px; background: rgba(255,255,255,0.02); border-top: 1px solid var(--border); display: flex; gap: 8px; }
-        .btn-action { flex: 1; padding: 12px; border-radius: 12px; font-size: 11px; font-weight: 800; text-decoration: none; text-align: center; display: flex; align-items: center; justify-content: center; gap: 6px; cursor: pointer; border: none; }
+        .btn-action { flex: 1.5; padding: 12px; border-radius: 12px; font-size: 11px; font-weight: 800; text-decoration: none; text-align: center; display: flex; align-items: center; justify-content: center; gap: 6px; cursor: pointer; border: none; }
         .btn-vinted { background: var(--vinted); color: white; }
         .btn-acquire { background: var(--accent); color: #000; }
 
@@ -393,6 +399,10 @@ const marketMatrix = {
             { n:"Campus 00s", img:"adidas+campus+sneakers", vinted:[28,42], sell:[52,70] }
         ]
     },
+    "STONE ISLAND": {
+        "outerwear": [{ n:"Soft Shell-R Jacket", img:"stone+island+jacket", vinted:[80,120], sell:[180,240] }],
+        "tops": [{ n:"Sweatshirt Patch Logo", img:"stone+island+sweat", vinted:[50,80], sell:[110,145] }]
+    },
     "DEFAULT": {
         "outerwear": [{ n:"Veste Vintage", img:"vintage+jacket+thrift", vinted:[8,18], sell:[28,42] }],
         "tops": [{ n:"Hoodie Graphic", img:"graphic+hoodie+streetwear", vinted:[5,12], sell:[18,28] }],
@@ -418,7 +428,6 @@ function switchSizeTab(tab) {
     document.getElementById('marque-vetement').style.display  = tab === 'vetement' ? '' : 'none';
     document.getElementById('marque-chaussure').style.display = tab === 'chaussure' ? '' : 'none';
     
-    // AJUSTEMENT DEMANDÉ : Passage auto de catégorie
     if (tab === 'chaussure') {
         document.getElementById('typeSelect').value = 'sneakers';
     } else {
@@ -533,7 +542,7 @@ function render(items, taille, budget) {
                         <i data-lucide="shopping-bag" size="14"></i> SNIPER
                     </a>
                     <button class="btn-action btn-acquire" onclick="addToInventory(${item.profit}, this)">
-                        <i data-lucide="plus-circle" size="14"></i> AQUÉRIR
+                        <i data-lucide="plus-circle" size="14"></i> ACQUÉRIR
                     </button>
                     <div class="compare-dropdown">
                         <select class="select-compare" onchange="openCompare(this.value, '${item.title}'); this.value='';">
