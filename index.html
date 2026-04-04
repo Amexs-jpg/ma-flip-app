@@ -30,6 +30,16 @@
         .logo span { color: var(--text); }
         .badge { background: rgba(212, 255, 63, 0.1); color: var(--accent); font-size: 10px; font-weight: 800; padding: 6px 12px; border-radius: 20px; border: 1px solid var(--accent); }
 
+        /* --- STYLE INVENTAIRE --- */
+        .inventory-panel {
+            background: var(--surface); border: 1px solid var(--accent); border-radius: 16px;
+            padding: 15px; margin-bottom: 24px; display: flex; justify-content: space-between; align-items: center;
+        }
+        .inv-info { display: flex; flex-direction: column; }
+        .inv-label { font-size: 10px; color: var(--muted); text-transform: uppercase; font-weight: 700; }
+        .inv-amount { font-family: 'Bebas Neue', sans-serif; font-size: 1.8rem; color: var(--accent); }
+        .btn-reset-inv { background: transparent; border: 1px solid #333; color: #555; padding: 4px 8px; border-radius: 6px; font-size: 9px; cursor: pointer; }
+
         .filters { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 24px; }
         .filter-group { display: flex; flex-direction: column; gap: 6px; }
         label { font-size: 10px; color: var(--muted); text-transform: uppercase; font-weight: 700; display: flex; align-items: center; gap: 4px; }
@@ -73,8 +83,9 @@
         .profit-tag { display: inline-flex; align-items: center; gap: 4px; background: rgba(212, 255, 63, 0.08); color: var(--accent); padding: 5px 10px; border-radius: 8px; font-size: 11px; font-weight: 800; margin-top: 8px; border: 1px solid rgba(212, 255, 63, 0.2); }
 
         .card-footer { padding: 12px; background: rgba(255,255,255,0.02); border-top: 1px solid var(--border); display: flex; gap: 8px; }
-        .btn-action { flex: 1.2; padding: 12px; border-radius: 12px; font-size: 11px; font-weight: 800; text-decoration: none; text-align: center; display: flex; align-items: center; justify-content: center; gap: 6px; }
+        .btn-action { flex: 1; padding: 12px; border-radius: 12px; font-size: 11px; font-weight: 800; text-decoration: none; text-align: center; display: flex; align-items: center; justify-content: center; gap: 6px; cursor: pointer; border: none; }
         .btn-vinted { background: var(--vinted); color: white; }
+        .btn-acquire { background: var(--accent); color: #000; }
 
         .compare-dropdown { flex: 1; position: relative; }
         .select-compare {
@@ -103,6 +114,17 @@
 <div class="header">
     <div class="logo">Flip<span>Finder</span></div>
     <div class="badge">V4.0 HD-VISUAL SCAN</div>
+</div>
+
+<div class="inventory-panel">
+    <div class="inv-info">
+        <span class="inv-label">Profit Cumulé</span>
+        <span class="inv-amount" id="totalProfit">0€</span>
+    </div>
+    <div style="text-align: right;">
+        <span class="inv-label" id="itemsCount">0 Items acquis</span><br>
+        <button class="btn-reset-inv" onclick="resetInventory()">Effacer</button>
+    </div>
 </div>
 
 <div class="filters">
@@ -258,6 +280,38 @@
 <div id="results"></div>
 
 <script>
+// --- LOGIQUE INVENTAIRE ---
+let inventory = JSON.parse(localStorage.getItem('ff_inventory')) || { profit: 0, count: 0 };
+
+function updateInvUI() {
+    document.getElementById('totalProfit').textContent = inventory.profit + '€';
+    document.getElementById('itemsCount').textContent = inventory.count + ' Items acquis';
+    localStorage.setItem('ff_inventory', JSON.stringify(inventory));
+}
+
+function addToInventory(profit, btn) {
+    inventory.profit += profit;
+    inventory.count += 1;
+    updateInvUI();
+    
+    // Effet visuel sur le bouton
+    btn.innerHTML = '<i data-lucide="check" size="14"></i> ACQUIS';
+    btn.style.opacity = "0.5";
+    btn.style.pointerEvents = "none";
+    if (typeof lucide !== 'undefined') lucide.createIcons();
+}
+
+function resetInventory() {
+    if(confirm("Réinitialiser l'inventaire ?")) {
+        inventory = { profit: 0, count: 0 };
+        updateInvUI();
+    }
+}
+
+// Initialisation au chargement
+document.addEventListener('DOMContentLoaded', updateInvUI);
+
+
 const marketMatrix = {
     "CARHARTT": {
         "outerwear": [
@@ -400,7 +454,6 @@ function lancerScan() {
 
     let items = [];
 
-    // Logique pour "TOUTES LES MARQUES"
     if (marqueInput === "ALL") {
         const brands = Object.keys(marketMatrix).filter(b => b !== "DEFAULT");
         brands.forEach(brandName => {
@@ -420,7 +473,6 @@ function lancerScan() {
                 });
             });
         });
-        // Mélanger les résultats
         items.sort(() => Math.random() - 0.5);
     } else {
         const brandSource = marketMatrix[marqueInput] || marketMatrix["DEFAULT"];
@@ -477,12 +529,15 @@ function render(items, taille, budget) {
                 </div>
                 <div class="card-footer">
                     <a href="${searchUrl}" target="_blank" class="btn-action btn-vinted">
-                        <i data-lucide="shopping-bag" size="14"></i> SNIPER SUR VINTED
+                        <i data-lucide="shopping-bag" size="14"></i> SNIPER
                     </a>
+                    <button class="btn-action btn-acquire" onclick="addToInventory(${item.profit}, this)">
+                        <i data-lucide="plus-circle" size="14"></i> AQUÉRIR
+                    </button>
                     <div class="compare-dropdown">
                         <select class="select-compare" onchange="openCompare(this.value, '${item.title}'); this.value='';">
-                            <option value="" disabled selected>VÉRIFIER COTE</option>
-                            <option value="lbc">LEBONCOIN</option>
+                            <option value="" disabled selected>VÉRIFIER</option>
+                            <option value="lbc">LBC</option>
                             <option value="ebay">EBAY</option>
                             <option value="stockx">STOCKX</option>
                         </select>
