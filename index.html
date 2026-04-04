@@ -102,59 +102,94 @@
 
 <div class="header">
     <div class="logo">Flip<span>Finder</span></div>
-    <div class="badge">V4.0 TRENDING SCAN</div>
+    <div class="badge">V4.0 HD-VISUAL SCAN</div>
 </div>
 
 <div class="filters">
     <div class="filter-group">
         <label><i data-lucide="tag" size="12"></i> Marque</label>
         <select id="marque-vetement">
-            <optgroup label="── High Demand ──">
-                <option value="Arc'teryx">Arc'teryx</option>
-                <option value="Corteiz">Corteiz (RTW)</option>
-                <option value="Stone Island">Stone Island</option>
-                <option value="Stussy">Stüssy</option>
-                <option value="Carhartt">Carhartt WIP</option>
-            </optgroup>
             <optgroup label="── Streetwear ──">
-                <option value="Supreme">Supreme</option>
+                <option value="Carhartt">Carhartt WIP</option>
+                <option value="Stussy">Stüssy</option>
                 <option value="Palace">Palace</option>
-                <option value="Nocta">Nike Nocta</option>
+                <option value="Supreme">Supreme</option>
+                <option value="Bape">Bape</option>
                 <option value="Kith">Kith</option>
+                <option value="Aimé Leon Dore">Aimé Leon Dore</option>
+                <option value="Noah">Noah</option>
             </optgroup>
-            <optgroup label="── Classics ──">
+            <optgroup label="── Sportswear ──">
                 <option value="Nike">Nike</option>
+                <option value="Adidas">Adidas</option>
+                <option value="Jordan">Jordan</option>
+                <option value="New Balance">New Balance</option>
+                <option value="Puma">Puma</option>
+                <option value="Asics">Asics</option>
+                <option value="Reebok">Reebok</option>
+                <option value="Under Armour">Under Armour</option>
+            </optgroup>
+            <optgroup label="── Luxury / Preppy ──">
                 <option value="Ralph Lauren">Ralph Lauren</option>
+                <option value="Tommy Hilfiger">Tommy Hilfiger</option>
                 <option value="Lacoste">Lacoste</option>
+                <option value="Fred Perry">Fred Perry</option>
+                <option value="Burberry">Burberry</option>
+                <option value="Stone Island">Stone Island</option>
+                <option value="CP Company">CP Company</option>
+            </optgroup>
+            <optgroup label="── Vintage / Workwear ──">
                 <option value="Levi's">Levi's</option>
+                <option value="Wrangler">Wrangler</option>
+                <option value="Lee">Lee</option>
+                <option value="Dickies">Dickies</option>
+                <option value="Timberland">Timberland</option>
+                <option value="Patagonia">Patagonia</option>
+                <option value="Arc'teryx">Arc'teryx</option>
                 <option value="The North Face">The North Face</option>
             </optgroup>
         </select>
         <select id="marque-chaussure" style="display:none;">
-            <optgroup label="── Hype ──">
-                <option value="Adidas">Adidas (Samba/Campus)</option>
-                <option value="Asics">Asics (Gel-1130/2160)</option>
-                <option value="Salomon">Salomon (XT-6)</option>
-                <option value="New Balance">New Balance (2002R/1906)</option>
-                <option value="UGG">UGG (Tasman)</option>
-            </optgroup>
-            <optgroup label="── Sneakers ──">
+            <optgroup label="── Sneakers Hype ──">
                 <option value="Nike">Nike</option>
                 <option value="Jordan">Jordan</option>
+                <option value="Adidas">Adidas</option>
+                <option value="New Balance">New Balance</option>
+                <option value="Asics">Asics</option>
+                <option value="Reebok">Reebok</option>
+                <option value="Puma">Puma</option>
+                <option value="Vans">Vans</option>
+                <option value="Converse">Converse</option>
+            </optgroup>
+            <optgroup label="── Running / Trail ──">
+                <option value="Salomon">Salomon</option>
+                <option value="On Running">On Running</option>
+                <option value="Hoka">Hoka</option>
+                <option value="Saucony">Saucony</option>
+                <option value="Brooks">Brooks</option>
+                <option value="Mizuno">Mizuno</option>
+            </optgroup>
+            <optgroup label="── Boots / Casual ──">
+                <option value="Timberland">Timberland</option>
+                <option value="Dr. Martens">Dr. Martens</option>
+                <option value="Birkenstock">Birkenstock</option>
+                <option value="UGG">UGG</option>
+                <option value="Clarks">Clarks</option>
+                <option value="Crocs">Crocs</option>
             </optgroup>
         </select>
     </div>
     <div class="filter-group">
         <label><i data-lucide="wallet" size="12"></i> Budget Max</label>
-        <input type="text" id="budget" value="80€">
+        <input type="text" id="budget" value="65€">
     </div>
     <div class="filter-group" style="grid-column: span 2;">
         <label><i data-lucide="layers" size="12"></i> Catégorie Ciblée</label>
         <select id="typeSelect">
             <option value="outerwear">Vestes & Blousons</option>
             <option value="tops">Hauts (Hoodies, Sweats...)</option>
-            <option value="bottoms">Pantalons & Bas</option>
-            <option value="sneakers">Chaussures / Sneakers</option>
+            <option value="bottoms">Pantalons (Double Knee...)</option>
+            <option value="sneakers">Sneakers</option>
         </select>
     </div>
     <div class="filter-group" style="grid-column: span 2;">
@@ -164,12 +199,29 @@
             <div class="size-tab" id="tab-chaussure" onclick="switchSizeTab('chaussure')">👟 Chaussure</div>
         </div>
         <select id="taille-vetement">
+            <option value="XXS">XXS</option>
+            <option value="XS">XS</option>
             <option value="S">S</option>
             <option value="M">M</option>
             <option value="L" selected>L</option>
             <option value="XL">XL</option>
+            <option value="XXL">XXL</option>
+            <option value="3XL">3XL</option>
+            <option value="4XL">4XL</option>
+            <option value="W28">W28 / Jeans</option>
+            <option value="W29">W29 / Jeans</option>
+            <option value="W30">W30 / Jeans</option>
+            <option value="W31">W31 / Jeans</option>
+            <option value="W32">W32 / Jeans</option>
+            <option value="W33">W33 / Jeans</option>
+            <option value="W34">W34 / Jeans</option>
+            <option value="W36">W36 / Jeans</option>
+            <option value="W38">W38 / Jeans</option>
         </select>
         <select id="taille-chaussure" style="display:none;">
+            <option value="35">35</option>
+            <option value="36">36</option>
+            <option value="37">37</option>
             <option value="38">38</option>
             <option value="39">39</option>
             <option value="40">40</option>
@@ -177,15 +229,24 @@
             <option value="42">42</option>
             <option value="43" selected>43</option>
             <option value="44">44</option>
+            <option value="45">45</option>
+            <option value="46">46</option>
+        </select>
+    </div>
+    <div class="filter-group" style="grid-column: span 2;">
+        <label><i data-lucide="sparkles" size="12"></i> État</label>
+        <select id="condition">
+            <option value="very_good">Très bon état</option>
+            <option value="new">Neuf avec étiquette</option>
         </select>
     </div>
 </div>
 
 <button class="btn-scan" id="scanBtn" onclick="lancerScan()">
-    <i data-lucide="zap" size="18"></i> ANALYSER LE FLUX TRENDING
+    <i data-lucide="zap" size="18"></i> ANALYSER LE FLUX VISUEL
 </button>
 
-<div class="loading" id="loading">Analyse des algorithmes Vinted et calcul des marges...</div>
+<div class="loading" id="loading">Récupération des visuels produits et calcul des marges...</div>
 
 <div class="stats-bar" id="statsBar">
     <div class="stat"><div class="stat-val" id="statCount">0</div><div class="stat-label">Opportunités</div></div>
@@ -196,76 +257,96 @@
 
 <script>
 const marketMatrix = {
-    "ARC'TERYX": {
+    "CARHARTT": {
         "outerwear": [
-            { n:"Beta LT Jacket", img:"arcteryx+beta+jacket", vinted:[120,180], sell:[280,350] },
-            { n:"Atom LT Hoody", img:"arcteryx+atom+hoodie", vinted:[80,110], sell:[160,195] }
-        ]
-    },
-    "CORTEIZ": {
+            { n:"Detroit Jacket", img:"carhartt+work+jacket", vinted:[30,50], sell:[75,95] },
+            { n:"Santa Fe Jacket", img:"carhartt+canvas+jacket", vinted:[25,40], sell:[60,80] },
+            { n:"Active Jacket Hooded", img:"carhartt+hooded+jacket", vinted:[18,32], sell:[45,62] },
+            { n:"Og Active Jacket", img:"carhartt+vintage+workwear", vinted:[22,38], sell:[52,70] }
+        ],
         "tops": [
-            { n:"Alcatraz Hoodie", img:"corteiz+hoodie+black", vinted:[50,85], sell:[120,155] },
-            { n:"T-Shirt Alcatraz", img:"corteiz+tshirt", vinted:[25,40], sell:[55,75] }
+            { n:"Hoodie Chase Logo", img:"carhartt+hoodie+logo", vinted:[10,18], sell:[28,38] },
+            { n:"Sweat American Script", img:"carhartt+sweatshirt", vinted:[12,22], sell:[32,44] },
+            { n:"Hoodie Pocket Logo", img:"carhartt+pocket+hoodie", vinted:[10,20], sell:[28,40] },
+            { n:"T-shirt Pocket", img:"carhartt+pocket+tshirt", vinted:[5,10], sell:[14,20] }
         ],
         "bottoms": [
-            { n:"Cargos Guerillaz", img:"corteiz+cargos", vinted:[60,95], sell:[140,185] },
-            { n:"Tracksuit Joggers", img:"corteiz+joggers", vinted:[45,70], sell:[95,125] }
+            { n:"Double Knee Pant", img:"carhartt+double+knee+pants", vinted:[28,45], sell:[60,80] },
+            { n:"Single Knee Pant", img:"carhartt+work+pants", vinted:[18,32], sell:[42,58] },
+            { n:"Cargo Pant Relaxed", img:"carhartt+cargo+pants", vinted:[20,35], sell:[48,65] }
         ]
     },
-    "STONE ISLAND": {
+    "NIKE": {
+        "outerwear": [
+            { n:"Veste Nocta Tech", img:"nike+nocta+jacket", vinted:[50,75], sell:[105,135] },
+            { n:"Bomber Vintage 90s", img:"nike+vintage+bomber", vinted:[15,28], sell:[40,58] },
+            { n:"Coupe-Vent ACG", img:"nike+acg+windbreaker", vinted:[12,22], sell:[32,48] }
+        ],
         "tops": [
-            { n:"Sweat Crewneck Badge", img:"stone+island+crewneck", vinted:[85,130], sell:[180,240] },
-            { n:"Hoodie Ghost Piece", img:"stone+island+hoodie", vinted:[110,160], sell:[250,320] }
+            { n:"Hoodie Swoosh Vintage", img:"nike+hoodie+swoosh", vinted:[10,18], sell:[28,40] },
+            { n:"Sweat Vintage Brodé", img:"nike+embroidered+sweat", vinted:[8,15], sell:[22,32] },
+            { n:"Hoodie Club Fleece", img:"nike+club+fleece", vinted:[10,18], sell:[28,38] }
+        ],
+        "bottoms": [
+            { n:"Tech Fleece Pant", img:"nike+tech+fleece+pants", vinted:[20,35], sell:[48,65] },
+            { n:"Track Pant Vintage", img:"nike+vintage+trackpants", vinted:[6,14], sell:[18,28] }
+        ],
+        "sneakers": [
+            { n:"Air Force 1 White", img:"nike+air+force+1+white", vinted:[25,40], sell:[52,68] },
+            { n:"Dunk Low Retro", img:"nike+dunk+low+sneakers", vinted:[38,58], sell:[72,95] },
+            { n:"TN Air Max Plus", img:"nike+air+max+tn", vinted:[30,50], sell:[62,82] },
+            { n:"Air Max 90", img:"nike+air+max+90+retro", vinted:[25,42], sell:[52,72] }
+        ]
+    },
+    "RALPH LAUREN": {
+        "outerwear": [
+            { n:"Doudoune Vest Quilted", img:"ralph+lauren+vest+puffer", vinted:[15,28], sell:[40,58] },
+            { n:"Veste Harrington", img:"ralph+lauren+harrington", vinted:[20,35], sell:[50,68] }
+        ],
+        "tops": [
+            { n:"Pull Cable Knit Laine", img:"ralph+lauren+cable+knit", vinted:[15,28], sell:[45,65] },
+            { n:"Pull Bear Collector", img:"ralph+lauren+bear+sweater", vinted:[25,45], sell:[80,115] },
+            { n:"Chemise Oxford Slim", img:"ralph+lauren+oxford+shirt", vinted:[6,12], sell:[18,28] }
+        ],
+        "bottoms": [{ n:"Short Chino Classic", img:"ralph+lauren+chino+shorts", vinted:[5,12], sell:[18,28] }]
+    },
+    "STUSSY": {
+        "outerwear": [
+            { n:"8 Ball Fleece Jacket", img:"stussy+fleece+jacket", vinted:[60,90], sell:[130,165] },
+            { n:"Zip Fleece Jacket", img:"stussy+zip+fleece", vinted:[45,70], sell:[95,125] }
+        ],
+        "tops": [
+            { n:"T-Shirt World Tour", img:"stussy+graphic+tshirt", vinted:[12,22], sell:[35,50] },
+            { n:"Hoodie Dice Logo", img:"stussy+hoodie", vinted:[22,38], sell:[55,75] }
+        ],
+        "bottoms": [{ n:"Big Ol Jeans", img:"stussy+wide+jeans", vinted:[35,55], sell:[75,100] }]
+    },
+    "JORDAN": {
+        "sneakers": [
+            { n:"Jordan 1 Retro High", img:"air+jordan+1+high+sneakers",vinted:[55,85], sell:[105,138] },
+            { n:"Jordan 1 Mid", img:"air+jordan+1+mid", vinted:[35,55], sell:[65,88] },
+            { n:"Jordan 4 Retro", img:"air+jordan+4+retro", vinted:[95,135], sell:[170,215] }
+        ]
+    },
+    "NEW BALANCE": {
+        "sneakers": [
+            { n:"992 Made in USA", img:"new+balance+992+sneakers", vinted:[70,100], sell:[138,172] },
+            { n:"2002R", img:"new+balance+2002r", vinted:[35,55], sell:[68,92] },
+            { n:"550 White Navy", img:"new+balance+550+white", vinted:[30,48], sell:[58,78] }
         ]
     },
     "ADIDAS": {
         "sneakers": [
-            { n:"Campus 00s Grey/Black", img:"adidas+campus+00s", vinted:[45,65], sell:[95,120] },
-            { n:"Samba OG White", img:"adidas+samba+white", vinted:[40,65], sell:[90,115] },
-            { n:"Gazelle Indoor Blue", img:"adidas+gazelle+indoor", vinted:[50,75], sell:[110,140] }
-        ]
-    },
-    "ASICS": {
-        "sneakers": [
-            { n:"Gel-1130 Silver", img:"asics+gel+1130", vinted:[45,70], sell:[105,135] },
-            { n:"Gel-Kayano 14", img:"asics+kayano+14", vinted:[70,110], sell:[160,210] }
-        ]
-    },
-    "SALOMON": {
-        "sneakers": [
-            { n:"XT-6 Black/Gorpcore", img:"salomon+xt6", vinted:[75,110], sell:[165,195] },
-            { n:"ACS Pro Advanced", img:"salomon+acs+pro", vinted:[90,130], sell:[185,230] }
-        ]
-    },
-    "UGG": {
-        "sneakers": [
-            { n:"Tasman Slippers", img:"ugg+tasman+chestnut", vinted:[60,85], sell:[120,150] },
-            { n:"Ultra Mini Platform", img:"ugg+ultra+mini", vinted:[75,110], sell:[160,195] }
-        ]
-    },
-    "CARHARTT": {
-        "outerwear": [
-            { n:"Detroit Jacket (Vintage)", img:"carhartt+detroit+jacket", vinted:[45,85], sell:[140,220] },
-            { n:"Santa Fe Jacket", img:"carhartt+santa+fe", vinted:[40,75], sell:[120,180] }
-        ],
-        "bottoms": [
-            { n:"Double Knee Black", img:"carhartt+double+knee+black", vinted:[35,60], sell:[85,115] }
-        ]
-    },
-    "NIKE": {
-        "sneakers": [
-            { n:"Air Force 1 White", img:"nike+af1+white", vinted:[25,45], sell:[65,85] },
-            { n:"Dunk Low Panda", img:"nike+dunk+panda", vinted:[40,65], sell:[90,115] }
-        ],
-        "tops": [
-            { n:"Hoodie Solo Swoosh", img:"nike+solo+swoosh", vinted:[35,55], sell:[75,100] }
+            { n:"Samba OG", img:"adidas+samba+og+sneakers", vinted:[38,58], sell:[72,95] },
+            { n:"Gazelle Indoor", img:"adidas+gazelle+sneakers", vinted:[28,45], sell:[55,75] },
+            { n:"Campus 00s", img:"adidas+campus+sneakers", vinted:[28,42], sell:[52,70] }
         ]
     },
     "DEFAULT": {
-        "outerwear": [{ n:"Veste Vintage", img:"vintage+jacket", vinted:[10,25], sell:[45,75] }],
-        "tops": [{ n:"Hoodie Graphique", img:"graphic+hoodie", vinted:[12,25], sell:[40,65] }],
-        "bottoms": [{ n:"Pantalon Baggy", img:"baggy+pants", vinted:[15,30], sell:[45,80] }],
-        "sneakers": [{ n:"Sneakers Y2K", img:"y2k+sneakers", vinted:[20,45], sell:[65,110] }]
+        "outerwear": [{ n:"Veste Vintage", img:"vintage+jacket+thrift", vinted:[8,18], sell:[28,42] }],
+        "tops": [{ n:"Hoodie Graphic", img:"graphic+hoodie+streetwear", vinted:[5,12], sell:[18,28] }],
+        "bottoms": [{ n:"Baggy Jeans", img:"baggy+jeans+vintage", vinted:[6,14], sell:[22,35] }],
+        "sneakers": [{ n:"Sneakers Retro", img:"retro+sneakers+vintage", vinted:[12,25], sell:[35,52] }]
     }
 };
 
@@ -307,7 +388,7 @@ function openCompare(platform, query) {
 function lancerScan() {
     const marqueInput = getMarque();
     const catKey = document.getElementById('typeSelect').value;
-    const budget = parseInt(document.getElementById('budget').value.replace(/[^\d]/g, '')) || 80;
+    const budget = parseInt(document.getElementById('budget').value.replace(/[^\d]/g, '')) || 65;
     const isCh = document.getElementById('tab-chaussure').classList.contains('active');
     const taille = isCh ? document.getElementById('taille-chaussure').value : document.getElementById('taille-vetement').value;
 
@@ -327,7 +408,7 @@ function lancerScan() {
             const ratio = sell / buy;
 
             return {
-                title: `${marqueInput.split(' ')[0]} ${model.n}`,
+                title: `${marqueInput.charAt(0) + marqueInput.slice(1).toLowerCase()} ${model.n}`,
                 tag: catKey.toUpperCase(),
                 buy, sell, profit,
                 grade: ratio > 2.2 ? 'A' : (ratio > 1.7 ? 'B' : 'C'),
@@ -365,7 +446,7 @@ function render(items, taille, budget) {
                             <i data-lucide="arrow-right" size="14" style="color:#444"></i>
                             <span class="sell-price">${item.sell}€</span>
                         </div>
-                        <div class="profit-tag"><i data-lucide="zap" size="12"></i> ESTIM : +${item.profit}€</div>
+                        <div class="profit-tag"><i data-lucide="zap" size="12"></i> PROFIT : +${item.profit}€</div>
                     </div>
                 </div>
                 <div class="card-footer">
