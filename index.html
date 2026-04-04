@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>FlipFinder Pro - Coherence Engine</title>
+    <title>FlipFinder Pro - Fast Liquidity</title>
     <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/lucide@latest"></script>
     <style>
@@ -87,7 +87,7 @@
 
 <div class="header">
     <div class="logo">Flip<span>Finder</span></div>
-    <div class="badge">V3.4 COHERENCE-PLUS</div>
+    <div class="badge">V3.4 FAST-FLIP MODE</div>
 </div>
 
 <div class="filters">
@@ -122,14 +122,14 @@
 </div>
 
 <button class="btn-scan" id="scanBtn" onclick="lancerScan()">
-    <i data-lucide="zap" size="18"></i> SNIPER LES OFFRES COHÉRENTES
+    <i data-lucide="zap" size="18"></i> SNIPER LES OFFRES À LIQUIDATION RAPIDE
 </button>
 
-<div class="loading" id="loading">Analyse croisée Vinted vs Plateformes Premium...</div>
+<div class="loading" id="loading">Calcul des prix pour vente sous 48h...</div>
 
 <div class="stats-bar" id="statsBar">
     <div class="stat"><div class="stat-val" id="statCount">0</div><div class="stat-label">Pépites</div></div>
-    <div class="stat"><div class="stat-val" id="statProfit">0€</div><div class="stat-label">Gain Moyen</div></div>
+    <div class="stat"><div class="stat-val" id="statProfit">0€</div><div class="stat-label">Gain Rapide</div></div>
 </div>
 
 <div id="results"></div>
@@ -137,42 +137,38 @@
 <script>
 lucide.createIcons();
 
-// MARCHÉ RÉEL : Vinted (Achat) vs Sites de Cote (eBay, StockX, Grailed - Revente)
+// MATRICE "FAST FLIP" : Prix Vinted (Achat) vs Prix de Vente Rapide (Liquidation)
 const marketMatrix = {
     "CARHARTT": {
         "outerwear": [
-            {n:"Detroit Jacket", vinted: [65, 85, 95], external: [180, 220, 260]},
-            {n:"Santa Fe Jacket", vinted: [50, 70, 80], external: [140, 165, 190]},
-            {n:"Active Jacket", vinted: [40, 55, 65], external: [95, 120, 145]}
+            {n:"Detroit Jacket", vinted: [65, 75, 85], fast_sell: [135, 145, 155]},
+            {n:"Santa Fe Jacket", vinted: [45, 55, 65], fast_sell: [110, 125, 130]},
+            {n:"Active Jacket", vinted: [35, 45, 50], fast_sell: [80, 90, 95]}
         ],
         "tops": [
-            {n:"Hoodie Chase Logo", vinted: [20, 28, 35], external: [45, 55, 65]},
-            {n:"Sweat Pocket Tee", vinted: [12, 18, 22], external: [28, 35, 42]}
+            {n:"Hoodie Chase Logo", vinted: [15, 22, 25], fast_sell: [40, 45, 50]},
+            {n:"Sweat Pocket Tee", vinted: [10, 12, 15], fast_sell: [22, 25, 28]}
         ],
         "bottoms": [
-            {n:"Double Knee Pant", vinted: [45, 60, 75], external: [110, 135, 160]},
-            {n:"Cargo Pant", vinted: [30, 40, 50], external: [65, 80, 95]}
+            {n:"Double Knee Pant", vinted: [40, 50, 60], fast_sell: [85, 95, 105]},
+            {n:"Cargo Pant", vinted: [25, 30, 35], fast_sell: [50, 55, 60]}
         ]
     },
     "NIKE": {
         "sneakers": [
-            {n:"Air Force 1 Low", vinted: [35, 45, 55], external: [80, 100, 110]},
-            {n:"Dunk Low Retro", vinted: [50, 65, 75], external: [115, 140, 160]},
-            {n:"Jordan 4 Retro", vinted: [120, 180, 220], external: [350, 450, 550]}
+            {n:"Air Force 1 Low", vinted: [30, 40, 45], fast_sell: [65, 75, 80]},
+            {n:"Dunk Low Retro", vinted: [45, 55, 65], fast_sell: [90, 100, 105]},
+            {n:"Jordan 1 Mid", vinted: [60, 75, 85], fast_sell: [120, 135, 145]}
         ]
     },
     "STUSSY": {
-        "outerwear": [
-            {n:"8 Ball Fleece Jacket", vinted: [70, 95, 120], external: [210, 245, 280]}
-        ],
-        "tops": [
-            {n:"Hoodie Dice Logo", vinted: [45, 60, 75], external: [120, 155, 180]}
-        ]
+        "outerwear": [{n:"8 Ball Fleece Jacket", vinted: [70, 85, 100], fast_sell: [170, 185, 195]}],
+        "tops": [{n:"Hoodie Dice Logo", vinted: [40, 50, 60], fast_sell: [95, 110, 120]}]
     },
     "DEFAULT": {
-        "outerwear": [{n:"Veste Vintage", vinted: [20, 30], external: [55, 75]}],
-        "tops": [{n:"Hoodie Graphic", vinted: [15, 25], external: [40, 60]}],
-        "bottoms": [{n:"Baggy Jeans", vinted: [20, 35], external: [50, 80]}]
+        "outerwear": [{n:"Veste Vintage", vinted: [15, 25], fast_sell: [45, 55]}],
+        "tops": [{n:"Hoodie Graphic", vinted: [10, 20], fast_sell: [35, 45]}],
+        "bottoms": [{n:"Baggy Jeans", vinted: [15, 25], fast_sell: [40, 50]}]
     }
 };
 
@@ -192,18 +188,16 @@ function lancerScan() {
     setTimeout(() => {
         const items = models.map((model, i) => {
             
-            // --- LOGIQUE DE REVENTE EXTERNE ---
-            // Achat : On pioche une offre basse sur Vinted (limitée par ton budget)
+            // --- LOGIQUE DE VENTE ÉCLAIR ---
             const buyOffer = model.vinted[Math.floor(Math.random() * model.vinted.length)];
             const buy = Math.min(buyOffer, budget);
 
-            // Revente : On pioche dans la moyenne des prix eBay/StockX/Grailed
-            const sell = model.external[Math.floor(Math.random() * model.external.length)];
+            // On prend le prix de vente "Fast Liquidity" (bas du marché)
+            const sell = model.fast_sell[Math.floor(Math.random() * model.fast_sell.length)];
             
-            // Calcul du profit net (Frais Vinted + estimation frais revente plateforme 10%)
-            const platformFees = sell * 0.10;
+            // Profit net estimé (Achat + Frais Vinted vs Vente rapide avec marge de négo)
             const vintedFees = 0.70 + (buy * 0.05);
-            const profit = Math.round(sell - buy - vintedFees - platformFees);
+            const profit = Math.round(sell - buy - vintedFees);
             
             const multiplier = sell / (buy || 1);
 
@@ -213,7 +207,8 @@ function lancerScan() {
                 buy: buy,
                 sell: sell,
                 profit: profit,
-                grade: multiplier > 2.8 ? 'A' : (multiplier > 2.0 ? 'B' : 'C'),
+                // Grade A si le produit se revend hyper vite (marge x2+)
+                grade: multiplier > 2.0 ? 'A' : (multiplier > 1.5 ? 'B' : 'C'),
                 photo: `https://picsum.photos/seed/${model.n}${Math.random()}/220/280`
             };
         });
@@ -225,7 +220,7 @@ function lancerScan() {
         document.getElementById('statCount').textContent = items.length;
         const avgProfit = Math.round(items.reduce((acc, i) => acc + i.profit, 0) / items.length);
         document.getElementById('statProfit').textContent = avgProfit + "€";
-    }, 1200);
+    }, 1000);
 }
 
 function openCompare(platform, query) {
@@ -254,22 +249,22 @@ function render(items, taille, budget) {
                         <div class="card-tag">${item.tag}</div>
                         <div class="card-title">${item.title}</div>
                         <div class="price-box">
-                            <span class="buy-price">${item.buy}€ (Vinted)</span>
+                            <span class="buy-price">${item.buy}€ (Achat)</span>
                             <i data-lucide="arrow-right" size="14" style="color:#444"></i>
-                            <span class="sell-price">${item.sell}€ (Cote)</span>
+                            <span class="sell-price">${item.sell}€ (Revente Fast)</span>
                         </div>
                         <div class="profit-tag">
-                            <i data-lucide="trending-up" size="12"></i> MARGE ESTIMÉE : +${item.profit}€ NET
+                            <i data-lucide="zap" size="12"></i> MARGE RAPIDE : +${item.profit}€
                         </div>
                     </div>
                 </div>
                 <div class="card-footer">
                     <a href="${searchUrl}" target="_blank" class="btn-action btn-vinted">
-                        <i data-lucide="shopping-bag" size="14"></i> VOIR SUR VINTED
+                        <i data-lucide="shopping-bag" size="14"></i> SNIPER SUR VINTED
                     </a>
                     <div class="compare-dropdown">
                         <select class="select-compare" onchange="openCompare(this.value, '${exactSearch}'); this.value='';">
-                            <option value="" disabled selected>VÉRIFIER COTE</option>
+                            <option value="" disabled selected>COTE RÉELLE</option>
                             <option value="lbc">LEBONCOIN</option>
                             <option value="ebay">EBAY</option>
                             <option value="stockx">STOCKX</option>
