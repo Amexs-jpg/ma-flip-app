@@ -18,7 +18,6 @@
             --bg: #050505; --surface: #111; --card: #181818; --border: #282828;
             --accent: #d4ff3f; --vinted: #09b1ba; --text: #ffffff;
             --muted: #888; --score-a: #d4ff3f; --score-b: #f1a435; --score-c: #ff4d4d;
-            --inventory: #a855f7;
         }
         * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
         body {
@@ -52,7 +51,6 @@
         .stat-val { font-family: 'Bebas Neue', sans-serif; font-size: 1.6rem; color: var(--accent); }
         .stat-label { font-size: 9px; color: var(--muted); text-transform: uppercase; }
 
-        /* Card styles */
         .card { background: var(--card); border: 1px solid var(--border); border-radius: 22px; margin-bottom: 16px; overflow: hidden; position: relative; animation: slideUp 0.4s ease both; }
         .grade-badge { position: absolute; top: 12px; right: 12px; width: 34px; height: 34px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-family: 'Bebas Neue', sans-serif; font-size: 1.4rem; z-index: 10; font-weight: bold; }
         .grade-a { background: var(--score-a); color: #000; box-shadow: 0 0 20px rgba(212,255,63,0.2); }
@@ -73,31 +71,18 @@
         .sell-price { font-family: 'Bebas Neue', sans-serif; color: #fff; font-size: 1.8rem; }
 
         .profit-tag { display: inline-flex; align-items: center; gap: 4px; background: rgba(212, 255, 63, 0.08); color: var(--accent); padding: 5px 10px; border-radius: 8px; font-size: 11px; font-weight: 800; margin-top: 8px; border: 1px solid rgba(212, 255, 63, 0.2); }
-        
-        /* New: Liquidity Tag */
-        .liq-tag { font-size: 9px; font-weight: 700; color: #f1a435; display: flex; align-items: center; gap: 3px; margin-top: 4px; }
 
-        .card-footer { padding: 12px; background: rgba(255,255,255,0.02); border-top: 1px solid var(--border); display: flex; flex-wrap: wrap; gap: 8px; }
-        .btn-action { flex: 1; padding: 12px; border-radius: 12px; font-size: 10px; font-weight: 800; text-decoration: none; text-align: center; display: flex; align-items: center; justify-content: center; gap: 6px; transition: 0.2s; }
-        .btn-vinted { background: var(--vinted); color: white; flex: 1.5; }
-        .btn-inventory { background: transparent; color: var(--inventory); border: 1px solid var(--inventory); }
-        .btn-inventory:active { background: var(--inventory); color: white; }
+        .card-footer { padding: 12px; background: rgba(255,255,255,0.02); border-top: 1px solid var(--border); display: flex; gap: 8px; }
+        .btn-action { flex: 1.2; padding: 12px; border-radius: 12px; font-size: 11px; font-weight: 800; text-decoration: none; text-align: center; display: flex; align-items: center; justify-content: center; gap: 6px; }
+        .btn-vinted { background: var(--vinted); color: white; }
 
-        .compare-dropdown { flex: 1; position: relative; min-width: 100px; }
+        .compare-dropdown { flex: 1; position: relative; }
         .select-compare {
             width: 100%; height: 100%; padding: 12px; border-radius: 12px;
             background: rgba(255,255,255,0.05); border: 1px solid var(--border); color: #ccc;
             font-size: 10px; font-weight: 700; cursor: pointer; appearance: none;
             text-align: center; outline: none;
         }
-
-        /* Inventory Section */
-        .inventory-section { margin-top: 40px; border-top: 2px dashed var(--border); padding-top: 24px; }
-        .inventory-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
-        .inventory-title { font-family: 'Bebas Neue', sans-serif; font-size: 1.8rem; color: var(--inventory); }
-        .inv-card { background: #111; padding: 12px; border-radius: 12px; border-left: 4px solid var(--inventory); margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center; animation: slideIn 0.3s ease-out; }
-        .inv-info { font-size: 12px; }
-        .inv-profit { font-weight: 800; color: var(--accent); }
 
         .loading { display: none; text-align: center; padding: 40px; color: var(--muted); font-size: 12px; }
         .loading.active { display: block; }
@@ -111,14 +96,13 @@
         .size-tab.active { background: rgba(212,255,63,0.1); border-color: var(--accent); color: var(--accent); }
 
         @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
-        @keyframes slideIn { from { opacity: 0; transform: translateX(-10px); } to { opacity: 1; transform: translateX(0); } }
     </style>
 </head>
 <body>
 
 <div class="header">
     <div class="logo">Flip<span>Finder</span></div>
-    <div class="badge">V4.5 BUSINESS EDITION</div>
+    <div class="badge">V4.0 HD-VISUAL SCAN</div>
 </div>
 
 <div class="filters">
@@ -132,27 +116,69 @@
                 <option value="Palace">Palace</option>
                 <option value="Supreme">Supreme</option>
                 <option value="Bape">Bape</option>
+                <option value="Kith">Kith</option>
+                <option value="Aimé Leon Dore">Aimé Leon Dore</option>
+                <option value="Noah">Noah</option>
             </optgroup>
             <optgroup label="── Sportswear ──">
                 <option value="Nike">Nike</option>
                 <option value="Adidas">Adidas</option>
                 <option value="Jordan">Jordan</option>
                 <option value="New Balance">New Balance</option>
+                <option value="Puma">Puma</option>
+                <option value="Asics">Asics</option>
+                <option value="Reebok">Reebok</option>
+                <option value="Under Armour">Under Armour</option>
             </optgroup>
-            <optgroup label="── Luxury ──">
+            <optgroup label="── Luxury / Preppy ──">
                 <option value="Ralph Lauren">Ralph Lauren</option>
+                <option value="Tommy Hilfiger">Tommy Hilfiger</option>
                 <option value="Lacoste">Lacoste</option>
+                <option value="Fred Perry">Fred Perry</option>
+                <option value="Burberry">Burberry</option>
                 <option value="Stone Island">Stone Island</option>
+                <option value="CP Company">CP Company</option>
+            </optgroup>
+            <optgroup label="── Vintage / Workwear ──">
+                <option value="Levi's">Levi's</option>
+                <option value="Wrangler">Wrangler</option>
+                <option value="Lee">Lee</option>
+                <option value="Dickies">Dickies</option>
+                <option value="Timberland">Timberland</option>
+                <option value="Patagonia">Patagonia</option>
+                <option value="Arc'teryx">Arc'teryx</option>
+                <option value="The North Face">The North Face</option>
             </optgroup>
         </select>
         <select id="marque-chaussure" style="display:none;">
             <option value="ALL">✨ TOUTES LES MARQUES</option>
-            <option value="Nike">Nike</option>
-            <option value="Jordan">Jordan</option>
-            <option value="Adidas">Adidas</option>
-            <option value="New Balance">New Balance</option>
-            <option value="Asics">Asics</option>
-            <option value="Salomon">Salomon</option>
+            <optgroup label="── Sneakers Hype ──">
+                <option value="Nike">Nike</option>
+                <option value="Jordan">Jordan</option>
+                <option value="Adidas">Adidas</option>
+                <option value="New Balance">New Balance</option>
+                <option value="Asics">Asics</option>
+                <option value="Reebok">Reebok</option>
+                <option value="Puma">Puma</option>
+                <option value="Vans">Vans</option>
+                <option value="Converse">Converse</option>
+            </optgroup>
+            <optgroup label="── Running / Trail ──">
+                <option value="Salomon">Salomon</option>
+                <option value="On Running">On Running</option>
+                <option value="Hoka">Hoka</option>
+                <option value="Saucony">Saucony</option>
+                <option value="Brooks">Brooks</option>
+                <option value="Mizuno">Mizuno</option>
+            </optgroup>
+            <optgroup label="── Boots / Casual ──">
+                <option value="Timberland">Timberland</option>
+                <option value="Dr. Martens">Dr. Martens</option>
+                <option value="Birkenstock">Birkenstock</option>
+                <option value="UGG">UGG</option>
+                <option value="Clarks">Clarks</option>
+                <option value="Crocs">Crocs</option>
+            </optgroup>
         </select>
     </div>
     <div class="filter-group">
@@ -175,16 +201,45 @@
             <div class="size-tab" id="tab-chaussure" onclick="switchSizeTab('chaussure')">👟 Chaussure</div>
         </div>
         <select id="taille-vetement">
+            <option value="XXS">XXS</option>
+            <option value="XS">XS</option>
             <option value="S">S</option>
             <option value="M">M</option>
             <option value="L" selected>L</option>
             <option value="XL">XL</option>
+            <option value="XXL">XXL</option>
+            <option value="3XL">3XL</option>
+            <option value="4XL">4XL</option>
+            <option value="W28">W28 / Jeans</option>
+            <option value="W29">W29 / Jeans</option>
+            <option value="W30">W30 / Jeans</option>
+            <option value="W31">W31 / Jeans</option>
+            <option value="W32">W32 / Jeans</option>
+            <option value="W33">W33 / Jeans</option>
+            <option value="W34">W34 / Jeans</option>
+            <option value="W36">W36 / Jeans</option>
+            <option value="W38">W38 / Jeans</option>
         </select>
         <select id="taille-chaussure" style="display:none;">
+            <option value="35">35</option>
+            <option value="36">36</option>
+            <option value="37">37</option>
+            <option value="38">38</option>
+            <option value="39">39</option>
+            <option value="40">40</option>
+            <option value="41">41</option>
             <option value="42">42</option>
             <option value="43" selected>43</option>
             <option value="44">44</option>
             <option value="45">45</option>
+            <option value="46">46</option>
+        </select>
+    </div>
+    <div class="filter-group" style="grid-column: span 2;">
+        <label><i data-lucide="sparkles" size="12"></i> État</label>
+        <select id="condition">
+            <option value="very_good">Très bon état</option>
+            <option value="new">Neuf avec étiquette</option>
         </select>
     </div>
 </div>
@@ -193,7 +248,7 @@
     <i data-lucide="zap" size="18"></i> ANALYSER LE FLUX VISUEL
 </button>
 
-<div class="loading" id="loading">Scan profond du marché et calcul de liquidité...</div>
+<div class="loading" id="loading">Récupération des visuels produits et calcul des marges...</div>
 
 <div class="stats-bar" id="statsBar">
     <div class="stat"><div class="stat-val" id="statCount">0</div><div class="stat-label">Opportunités</div></div>
@@ -202,150 +257,240 @@
 
 <div id="results"></div>
 
-<div class="inventory-section">
-    <div class="inventory-header">
-        <div class="inventory-title">Mon Inventaire</div>
-        <div class="badge" style="border-color: var(--inventory); color: var(--inventory);" id="invCount">0 ARTICLES</div>
-    </div>
-    <div id="inventory-list"></div>
-    <div class="stat" style="background: var(--card); border-radius: 12px; margin-top: 15px; border: 1px solid var(--border);">
-        <div class="stat-label">Profit Total Théorique</div>
-        <div class="stat-val" id="totalInvProfit" style="color: var(--accent);">0€</div>
-    </div>
-</div>
-
 <script>
 const marketMatrix = {
     "CARHARTT": {
-        "outerwear": [{ n:"Detroit Jacket", img:"carhartt+detroit", vinted:[30,50], sell:[75,95], liq:95 }, { n:"Active Jacket", img:"carhartt+active", vinted:[20,40], sell:[55,75], liq:80 }],
-        "tops": [{ n:"Hoodie Chase", img:"carhartt+chase", vinted:[12,22], sell:[32,45], liq:85 }],
-        "bottoms": [{ n:"Double Knee", img:"carhartt+double+knee", vinted:[30,45], sell:[65,85], liq:90 }]
+        "outerwear": [
+            { n:"Detroit Jacket", img:"carhartt+work+jacket", vinted:[30,50], sell:[75,95] },
+            { n:"Santa Fe Jacket", img:"carhartt+canvas+jacket", vinted:[25,40], sell:[60,80] },
+            { n:"Active Jacket Hooded", img:"carhartt+hooded+jacket", vinted:[18,32], sell:[45,62] },
+            { n:"Og Active Jacket", img:"carhartt+vintage+workwear", vinted:[22,38], sell:[52,70] }
+        ],
+        "tops": [
+            { n:"Hoodie Chase Logo", img:"carhartt+hoodie+logo", vinted:[10,18], sell:[28,38] },
+            { n:"Sweat American Script", img:"carhartt+sweatshirt", vinted:[12,22], sell:[32,44] },
+            { n:"Hoodie Pocket Logo", img:"carhartt+pocket+hoodie", vinted:[10,20], sell:[28,40] },
+            { n:"T-shirt Pocket", img:"carhartt+pocket+tshirt", vinted:[5,10], sell:[14,20] }
+        ],
+        "bottoms": [
+            { n:"Double Knee Pant", img:"carhartt+double+knee+pants", vinted:[28,45], sell:[60,80] },
+            { n:"Single Knee Pant", img:"carhartt+work+pants", vinted:[18,32], sell:[42,58] },
+            { n:"Cargo Pant Relaxed", img:"carhartt+cargo+pants", vinted:[20,35], sell:[48,65] }
+        ]
     },
     "NIKE": {
-        "outerwear": [{ n:"Nocta Jacket", img:"nike+nocta", vinted:[60,90], sell:[120,150], liq:88 }],
-        "tops": [{ n:"Vintage Sweat", img:"nike+vintage+sweat", vinted:[10,20], sell:[30,45], liq:92 }],
-        "sneakers": [{ n:"Dunk Low", img:"nike+dunk", vinted:[35,55], sell:[75,95], liq:98 }, { n:"Air Force 1", img:"nike+af1", vinted:[25,40], sell:[55,70], liq:99 }]
+        "outerwear": [
+            { n:"Veste Nocta Tech", img:"nike+nocta+jacket", vinted:[50,75], sell:[105,135] },
+            { n:"Bomber Vintage 90s", img:"nike+vintage+bomber", vinted:[15,28], sell:[40,58] },
+            { n:"Coupe-Vent ACG", img:"nike+acg+windbreaker", vinted:[12,22], sell:[32,48] }
+        ],
+        "tops": [
+            { n:"Hoodie Swoosh Vintage", img:"nike+hoodie+swoosh", vinted:[10,18], sell:[28,40] },
+            { n:"Sweat Vintage Brodé", img:"nike+embroidered+sweat", vinted:[8,15], sell:[22,32] },
+            { n:"Hoodie Club Fleece", img:"nike+club+fleece", vinted:[10,18], sell:[28,38] }
+        ],
+        "bottoms": [
+            { n:"Tech Fleece Pant", img:"nike+tech+fleece+pants", vinted:[20,35], sell:[48,65] },
+            { n:"Track Pant Vintage", img:"nike+vintage+trackpants", vinted:[6,14], sell:[18,28] }
+        ],
+        "sneakers": [
+            { n:"Air Force 1 White", img:"nike+air+force+1+white", vinted:[25,40], sell:[52,68] },
+            { n:"Dunk Low Retro", img:"nike+dunk+low+sneakers", vinted:[38,58], sell:[72,95] },
+            { n:"TN Air Max Plus", img:"nike+air+max+tn", vinted:[30,50], sell:[62,82] },
+            { n:"Air Max 90", img:"nike+air+max+90+retro", vinted:[25,42], sell:[52,72] }
+        ]
+    },
+    "RALPH LAUREN": {
+        "outerwear": [
+            { n:"Doudoune Vest Quilted", img:"ralph+lauren+vest+puffer", vinted:[15,28], sell:[40,58] },
+            { n:"Veste Harrington", img:"ralph+lauren+harrington", vinted:[20,35], sell:[50,68] }
+        ],
+        "tops": [
+            { n:"Pull Cable Knit Laine", img:"ralph+lauren+cable+knit", vinted:[15,28], sell:[45,65] },
+            { n:"Pull Bear Collector", img:"ralph+lauren+bear+sweater", vinted:[25,45], sell:[80,115] },
+            { n:"Chemise Oxford Slim", img:"ralph+lauren+oxford+shirt", vinted:[6,12], sell:[18,28] }
+        ],
+        "bottoms": [{ n:"Short Chino Classic", img:"ralph+lauren+chino+shorts", vinted:[5,12], sell:[18,28] }]
     },
     "STUSSY": {
-        "outerwear": [{ n:"8-Ball Fleece", img:"stussy+fleece", vinted:[65,95], sell:[140,180], liq:96 }],
-        "tops": [{ n:"World Tour Tee", img:"stussy+tee", vinted:[12,25], sell:[40,55], liq:85 }]
+        "outerwear": [
+            { n:"8 Ball Fleece Jacket", img:"stussy+fleece+jacket", vinted:[60,90], sell:[130,165] },
+            { n:"Zip Fleece Jacket", img:"stussy+zip+fleece", vinted:[45,70], sell:[95,125] }
+        ],
+        "tops": [
+            { n:"T-Shirt World Tour", img:"stussy+graphic+tshirt", vinted:[12,22], sell:[35,50] },
+            { n:"Hoodie Dice Logo", img:"stussy+hoodie", vinted:[22,38], sell:[55,75] }
+        ],
+        "bottoms": [{ n:"Big Ol Jeans", img:"stussy+wide+jeans", vinted:[35,55], sell:[75,100] }]
+    },
+    "JORDAN": {
+        "sneakers": [
+            { n:"Jordan 1 Retro High", img:"air+jordan+1+high+sneakers",vinted:[55,85], sell:[105,138] },
+            { n:"Jordan 1 Mid", img:"air+jordan+1+mid", vinted:[35,55], sell:[65,88] },
+            { n:"Jordan 4 Retro", img:"air+jordan+4+retro", vinted:[95,135], sell:[170,215] }
+        ]
+    },
+    "NEW BALANCE": {
+        "sneakers": [
+            { n:"992 Made in USA", img:"new+balance+992+sneakers", vinted:[70,100], sell:[138,172] },
+            { n:"2002R", img:"new+balance+2002r", vinted:[35,55], sell:[68,92] },
+            { n:"550 White Navy", img:"new+balance+550+white", vinted:[30,48], sell:[58,78] }
+        ]
+    },
+    "ADIDAS": {
+        "sneakers": [
+            { n:"Samba OG", img:"adidas+samba+og+sneakers", vinted:[38,58], sell:[72,95] },
+            { n:"Gazelle Indoor", img:"adidas+gazelle+sneakers", vinted:[28,45], sell:[55,75] },
+            { n:"Campus 00s", img:"adidas+campus+sneakers", vinted:[28,42], sell:[52,70] }
+        ]
     },
     "DEFAULT": {
-        "outerwear": [{ n:"Vintage Jacket", img:"vintage+jacket", vinted:[10,20], sell:[30,45], liq:60 }],
-        "tops": [{ n:"Hoodie Graphic", img:"graphic+hoodie", vinted:[8,15], sell:[22,35], liq:50 }],
-        "bottoms": [{ n:"Baggy Jeans", img:"baggy+jeans", vinted:[10,20], sell:[25,40], liq:55 }],
-        "sneakers": [{ n:"Sneakers Retro", img:"retro+sneakers", vinted:[15,30], sell:[40,60], liq:65 }]
+        "outerwear": [{ n:"Veste Vintage", img:"vintage+jacket+thrift", vinted:[8,18], sell:[28,42] }],
+        "tops": [{ n:"Hoodie Graphic", img:"graphic+hoodie+streetwear", vinted:[5,12], sell:[18,28] }],
+        "bottoms": [{ n:"Baggy Jeans", img:"baggy+jeans+vintage", vinted:[6,14], sell:[22,35] }],
+        "sneakers": [{ n:"Sneakers Retro", img:"retro+sneakers+vintage", vinted:[12,25], sell:[35,52] }]
     }
 };
 
-let inventory = [];
+function getImg(keywords, seed) {
+    const kw = keywords.replace(/\+/g, ',');
+    return `https://loremflickr.com/220/280/${kw}?lock=${seed}`;
+}
 
-function getImg(keywords, seed) { return `https://loremflickr.com/220/280/${keywords.replace(/\+/g,',')}?lock=${seed}`; }
-function pick(range) { return Math.floor(range[0] + Math.random() * (range[1] - range[0])); }
+function pick(range) {
+    return Math.floor(range[0] + Math.random() * (range[1] - range[0]));
+}
 
 function switchSizeTab(tab) {
     document.getElementById('tab-vetement').classList.toggle('active', tab === 'vetement');
     document.getElementById('tab-chaussure').classList.toggle('active', tab === 'chaussure');
-    document.getElementById('taille-vetement').style.display = tab === 'vetement' ? '' : 'none';
+    document.getElementById('taille-vetement').style.display  = tab === 'vetement' ? '' : 'none';
     document.getElementById('taille-chaussure').style.display = tab === 'chaussure' ? '' : 'none';
-    document.getElementById('marque-vetement').style.display = tab === 'vetement' ? '' : 'none';
+    document.getElementById('marque-vetement').style.display  = tab === 'vetement' ? '' : 'none';
     document.getElementById('marque-chaussure').style.display = tab === 'chaussure' ? '' : 'none';
+    if (tab === 'chaussure') document.getElementById('typeSelect').value = 'sneakers';
 }
 
-function addToInventory(title, profit) {
-    inventory.push({ title, profit });
-    updateInventoryUI();
+function getMarque() {
+    const isCh = document.getElementById('tab-chaussure').classList.contains('active');
+    return isCh ? document.getElementById('marque-chaussure').value.toUpperCase() : document.getElementById('marque-vetement').value.toUpperCase();
 }
 
-function updateInventoryUI() {
-    const list = document.getElementById('inventory-list');
-    const totalProfitDisplay = document.getElementById('totalInvProfit');
-    const invCount = document.getElementById('invCount');
-    
-    list.innerHTML = inventory.map(item => `
-        <div class="inv-card">
-            <div class="inv-info"><strong>${item.title}</strong></div>
-            <div class="inv-profit">+${item.profit}€</div>
-        </div>
-    `).join('');
-    
-    const total = inventory.reduce((sum, item) => sum + item.profit, 0);
-    totalProfitDisplay.textContent = total + "€";
-    invCount.textContent = inventory.length + " ARTICLES";
+function openCompare(platform, query) {
+    const q = encodeURIComponent(query);
+    let url = "";
+    switch(platform) {
+        case 'lbc': url = `https://www.leboncoin.fr/recherche?text=${q}`; break;
+        case 'ebay': url = `https://www.ebay.fr/sch/i.html?_nkw=${q}`; break;
+        case 'stockx': url = `https://stockx.com/fr-fr/search?s=${q}`; break;
+    }
+    if(url) window.open(url, '_blank');
 }
 
 function lancerScan() {
-    const isCh = document.getElementById('tab-chaussure').classList.contains('active');
-    const marqueInput = isCh ? document.getElementById('marque-chaussure').value.toUpperCase() : document.getElementById('marque-vetement').value.toUpperCase();
+    const marqueInput = getMarque();
     const catKey = document.getElementById('typeSelect').value;
-    const budget = parseInt(document.getElementById('budget').value) || 65;
+    const budget = parseInt(document.getElementById('budget').value.replace(/[^\d]/g, '')) || 65;
+    const isCh = document.getElementById('tab-chaussure').classList.contains('active');
+    const taille = isCh ? document.getElementById('taille-chaussure').value : document.getElementById('taille-vetement').value;
 
     document.getElementById('results').innerHTML = '';
     document.getElementById('loading').classList.add('active');
     document.getElementById('scanBtn').disabled = true;
 
-    setTimeout(() => {
-        let items = [];
-        const sourceBrands = marqueInput === "ALL" ? Object.keys(marketMatrix).filter(b => b !== "DEFAULT") : [marqueInput];
-        
-        sourceBrands.forEach(b => {
-            const models = (marketMatrix[b] && marketMatrix[b][catKey]) ? marketMatrix[b][catKey] : marketMatrix["DEFAULT"][catKey];
-            models.forEach((m, i) => {
-                const buy = Math.min(pick(m.vinted), budget);
-                const sell = pick(m.sell);
-                const profit = Math.round(sell - (buy * 1.05) - 1);
+    let items = [];
+
+    // Logique pour "TOUTES LES MARQUES"
+    if (marqueInput === "ALL") {
+        const brands = Object.keys(marketMatrix).filter(b => b !== "DEFAULT");
+        brands.forEach(brandName => {
+            const models = marketMatrix[brandName][catKey] || [];
+            models.forEach((model, i) => {
+                const buy = Math.min(pick(model.vinted), budget);
+                const sell = pick(model.sell);
+                const fees = 0.70 + (buy * 0.05);
+                const profit = Math.round(sell - buy - fees);
+                const ratio = sell / buy;
                 items.push({
-                    title: `${b} ${m.n}`,
+                    title: `${brandName.charAt(0) + brandName.slice(1).toLowerCase()} ${model.n}`,
                     tag: catKey.toUpperCase(),
                     buy, sell, profit,
-                    grade: (sell/buy) > 2 ? 'A' : 'B',
-                    liq: m.liq || 50,
-                    photo: getImg(m.img, i + b.length)
+                    grade: ratio > 2.2 ? 'A' : (ratio > 1.7 ? 'B' : 'C'),
+                    photo: getImg(model.img, i + brandName.length)
                 });
             });
         });
+        // Mélanger les résultats
+        items.sort(() => Math.random() - 0.5);
+    } else {
+        const brandSource = marketMatrix[marqueInput] || marketMatrix["DEFAULT"];
+        const models = brandSource[catKey] || marketMatrix["DEFAULT"][catKey] || marketMatrix["DEFAULT"]["outerwear"];
+        items = models.map((model, i) => {
+            const buy = Math.min(pick(model.vinted), budget);
+            const sell = pick(model.sell);
+            const fees = 0.70 + (buy * 0.05);
+            const profit = Math.round(sell - buy - fees);
+            const ratio = sell / buy;
+            return {
+                title: `${marqueInput.charAt(0) + marqueInput.slice(1).toLowerCase()} ${model.n}`,
+                tag: catKey.toUpperCase(),
+                buy, sell, profit,
+                grade: ratio > 2.2 ? 'A' : (ratio > 1.7 ? 'B' : 'C'),
+                photo: getImg(model.img, i + marqueInput.length)
+            };
+        });
+    }
 
-        render(items);
+    setTimeout(() => {
+        render(items, taille, budget);
         document.getElementById('loading').classList.remove('active');
         document.getElementById('scanBtn').disabled = false;
         document.getElementById('statsBar').style.display = 'flex';
         document.getElementById('statCount').textContent = items.length;
-        document.getElementById('statProfit').textContent = Math.round(items.reduce((a, b) => a + b.profit, 0) / items.length) + "€";
-    }, 1000);
+        document.getElementById('statProfit').textContent = items.length > 0 ? Math.round(items.reduce((acc, it) => acc + it.profit, 0) / items.length) + "€" : "0€";
+    }, 1200);
 }
 
-function render(items) {
+function render(items, taille, budget) {
     const container = document.getElementById('results');
     items.forEach((item, i) => {
-        const liqStatus = item.liq > 90 ? "Vente ultra-rapide (<24h)" : (item.liq > 75 ? "Vente rapide (2-4 jours)" : "Demande modérée");
+        const query = `${item.title} ${taille}`;
+        const searchUrl = `https://www.vinted.fr/catalog?search_text=${encodeURIComponent(query)}&price_to=${budget}&order=newest_first`;
+
         container.innerHTML += `
-            <div class="card" style="animation-delay: ${i*0.1}s">
+            <div class="card" style="animation-delay: ${i * 0.1}s">
                 <div class="grade-badge grade-${item.grade.toLowerCase()}">${item.grade}</div>
                 <div class="card-top">
-                    <div class="card-photo"><img src="${item.photo}" onload="this.classList.add('loaded')"></div>
+                    <div class="card-photo">
+                        <img src="${item.photo}" onload="this.classList.add('loaded')">
+                    </div>
                     <div class="card-info">
                         <div class="card-tag">${item.tag}</div>
                         <div class="card-title">${item.title}</div>
                         <div class="price-box">
-                            <span class="buy-price">${item.buy}€</span> <span class="sell-price">${item.sell}€</span>
+                            <span class="buy-price">${item.buy}€</span>
+                            <i data-lucide="arrow-right" size="14" style="color:#444"></i>
+                            <span class="sell-price">${item.sell}€</span>
                         </div>
-                        <div class="profit-tag">+${item.profit}€ PROFIT</div>
-                        <div class="liq-tag"><i data-lucide="flame" size="10"></i> ${liqStatus}</div>
+                        <div class="profit-tag"><i data-lucide="zap" size="12"></i> PROFIT : +${item.profit}€</div>
                     </div>
                 </div>
                 <div class="card-footer">
-                    <a href="https://www.vinted.fr/catalog?search_text=${encodeURIComponent(item.title)}" target="_blank" class="btn-action btn-vinted">VINTED</a>
-                    <button onclick="addToInventory('${item.title}', ${item.profit})" class="btn-action btn-inventory">🛒 ACQUISITION</button>
+                    <a href="${searchUrl}" target="_blank" class="btn-action btn-vinted">
+                        <i data-lucide="shopping-bag" size="14"></i> SNIPER SUR VINTED
+                    </a>
                     <div class="compare-dropdown">
-                        <select class="select-compare" onchange="window.open('https://stockx.com/fr-fr/search?s='+this.value)">
-                            <option value="">COTE</option>
-                            <option value="${item.title}">STOCKX</option>
+                        <select class="select-compare" onchange="openCompare(this.value, '${item.title}'); this.value='';">
+                            <option value="" disabled selected>VÉRIFIER COTE</option>
+                            <option value="lbc">LEBONCOIN</option>
+                            <option value="ebay">EBAY</option>
+                            <option value="stockx">STOCKX</option>
                         </select>
                     </div>
                 </div>
             </div>`;
     });
-    lucide.createIcons();
+    if (typeof lucide !== 'undefined') lucide.createIcons();
 }
 </script>
 </body>
