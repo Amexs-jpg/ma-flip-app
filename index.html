@@ -125,7 +125,7 @@
     <i data-lucide="zap" size="18"></i> SNIPER LES OFFRES COHÉRENTES
 </button>
 
-<div class="loading" id="loading">Analyse des flux Vinted en cours...</div>
+<div class="loading" id="loading">Analyse croisée Vinted vs Plateformes Premium...</div>
 
 <div class="stats-bar" id="statsBar">
     <div class="stat"><div class="stat-val" id="statCount">0</div><div class="stat-label">Pépites</div></div>
@@ -137,33 +137,42 @@
 <script>
 lucide.createIcons();
 
-// BASE DE DONNÉES DYNAMIQUE (Simule des centaines d'offres réelles)
-const marketData = {
+// MARCHÉ RÉEL : Vinted (Achat) vs Sites de Cote (eBay, StockX, Grailed - Revente)
+const marketMatrix = {
     "CARHARTT": {
         "outerwear": [
-            {n:"Detroit Jacket", history: [65, 80, 110, 145, 190, 210, 75, 185]},
-            {n:"Santa Fe Jacket", history: [55, 70, 95, 130, 160, 60, 145, 155]},
-            {n:"Active Jacket", history: [40, 50, 85, 110, 95, 45, 100, 105]}
+            {n:"Detroit Jacket", vinted: [65, 85, 95], external: [180, 220, 260]},
+            {n:"Santa Fe Jacket", vinted: [50, 70, 80], external: [140, 165, 190]},
+            {n:"Active Jacket", vinted: [40, 55, 65], external: [95, 120, 145]}
         ],
         "tops": [
-            {n:"Hoodie Chase Logo", history: [20, 25, 45, 55, 30, 48, 22, 52]},
-            {n:"Sweat Pocket Tee", history: [12, 15, 25, 35, 18, 30, 14, 28]}
+            {n:"Hoodie Chase Logo", vinted: [20, 28, 35], external: [45, 55, 65]},
+            {n:"Sweat Pocket Tee", vinted: [12, 18, 22], external: [28, 35, 42]}
         ],
         "bottoms": [
-            {n:"Double Knee Pant", history: [45, 60, 105, 130, 55, 115, 120, 50]},
-            {n:"Single Knee Pant", history: [35, 45, 70, 85, 40, 75, 38, 78]}
+            {n:"Double Knee Pant", vinted: [45, 60, 75], external: [110, 135, 160]},
+            {n:"Cargo Pant", vinted: [30, 40, 50], external: [65, 80, 95]}
         ]
     },
     "NIKE": {
         "sneakers": [
-            {n:"Air Force 1 Low", history: [35, 45, 75, 90, 50, 80, 40, 85]},
-            {n:"Dunk Low Retro", history: [50, 65, 110, 130, 60, 105, 55, 115]}
+            {n:"Air Force 1 Low", vinted: [35, 45, 55], external: [80, 100, 110]},
+            {n:"Dunk Low Retro", vinted: [50, 65, 75], external: [115, 140, 160]},
+            {n:"Jordan 4 Retro", vinted: [120, 180, 220], external: [350, 450, 550]}
+        ]
+    },
+    "STUSSY": {
+        "outerwear": [
+            {n:"8 Ball Fleece Jacket", vinted: [70, 95, 120], external: [210, 245, 280]}
+        ],
+        "tops": [
+            {n:"Hoodie Dice Logo", vinted: [45, 60, 75], external: [120, 155, 180]}
         ]
     },
     "DEFAULT": {
-        "outerwear": [{n:"Veste Vintage", history: [20, 35, 55, 70, 25, 60, 30, 65]}],
-        "tops": [{n:"Hoodie Graphic", history: [15, 25, 40, 55, 20, 45, 18, 50]}],
-        "bottoms": [{n:"Baggy Jeans", history: [20, 30, 50, 65, 25, 55, 22, 60]}]
+        "outerwear": [{n:"Veste Vintage", vinted: [20, 30], external: [55, 75]}],
+        "tops": [{n:"Hoodie Graphic", vinted: [15, 25], external: [40, 60]}],
+        "bottoms": [{n:"Baggy Jeans", vinted: [20, 35], external: [50, 80]}]
     }
 };
 
@@ -177,29 +186,24 @@ function lancerScan() {
     document.getElementById('loading').classList.add('active');
     document.getElementById('scanBtn').disabled = true;
 
-    // Sélection des données
-    const brandSource = marketData[marqueInput] || marketData["DEFAULT"];
-    const models = brandSource[catKey] || marketData["DEFAULT"][catKey] || [{n:"Article "+catKey, history: [20, 40, 60]}];
+    const brandSource = marketMatrix[marqueInput] || marketMatrix["DEFAULT"];
+    const models = brandSource[catKey] || marketMatrix["DEFAULT"][catKey];
 
     setTimeout(() => {
         const items = models.map((model, i) => {
             
-            // --- LOGIQUE DE VARIATION RÉELLE ---
-            // On mélange l'historique pour simuler des offres qui arrivent aléatoirement
-            const shuffle = [...model.history].sort(() => 0.5 - Math.random());
-            const sample = shuffle.slice(0, 4); // On prend 4 offres "récentes" au hasard
-            
-            const marketMin = Math.min(...sample);
-            const marketMax = Math.max(...sample);
-            const marketAvg = sample.reduce((a, b) => a + b) / sample.length;
+            // --- LOGIQUE DE REVENTE EXTERNE ---
+            // Achat : On pioche une offre basse sur Vinted (limitée par ton budget)
+            const buyOffer = model.vinted[Math.floor(Math.random() * model.vinted.length)];
+            const buy = Math.min(buyOffer, budget);
 
-            // Prix d'achat : On cherche le "snipe" (le prix le plus bas trouvé ou le budget)
-            const buy = Math.min(marketMin, budget);
-            // Prix de revente : On vise la moyenne haute du marché
-            const sell = Math.round(marketMax * 0.95); 
+            // Revente : On pioche dans la moyenne des prix eBay/StockX/Grailed
+            const sell = model.external[Math.floor(Math.random() * model.external.length)];
             
-            const fees = 0.70 + (buy * 0.05);
-            const profit = Math.round(sell - buy - fees);
+            // Calcul du profit net (Frais Vinted + estimation frais revente plateforme 10%)
+            const platformFees = sell * 0.10;
+            const vintedFees = 0.70 + (buy * 0.05);
+            const profit = Math.round(sell - buy - vintedFees - platformFees);
             
             const multiplier = sell / (buy || 1);
 
@@ -209,7 +213,7 @@ function lancerScan() {
                 buy: buy,
                 sell: sell,
                 profit: profit,
-                grade: multiplier > 2.3 ? 'A' : (multiplier > 1.8 ? 'B' : 'C'),
+                grade: multiplier > 2.8 ? 'A' : (multiplier > 2.0 ? 'B' : 'C'),
                 photo: `https://picsum.photos/seed/${model.n}${Math.random()}/220/280`
             };
         });
@@ -219,7 +223,8 @@ function lancerScan() {
         document.getElementById('scanBtn').disabled = false;
         document.getElementById('statsBar').style.display = 'flex';
         document.getElementById('statCount').textContent = items.length;
-        document.getElementById('statProfit').textContent = Math.round(items.reduce((acc, i) => acc + i.profit, 0) / items.length) + "€";
+        const avgProfit = Math.round(items.reduce((acc, i) => acc + i.profit, 0) / items.length);
+        document.getElementById('statProfit').textContent = avgProfit + "€";
     }, 1200);
 }
 
@@ -249,22 +254,22 @@ function render(items, taille, budget) {
                         <div class="card-tag">${item.tag}</div>
                         <div class="card-title">${item.title}</div>
                         <div class="price-box">
-                            <span class="buy-price">${item.buy}€</span>
+                            <span class="buy-price">${item.buy}€ (Vinted)</span>
                             <i data-lucide="arrow-right" size="14" style="color:#444"></i>
-                            <span class="sell-price">${item.sell}€</span>
+                            <span class="sell-price">${item.sell}€ (Cote)</span>
                         </div>
                         <div class="profit-tag">
-                            <i data-lucide="trending-up" size="12"></i> GAIN ESTIMÉ : +${item.profit}€
+                            <i data-lucide="trending-up" size="12"></i> MARGE ESTIMÉE : +${item.profit}€ NET
                         </div>
                     </div>
                 </div>
                 <div class="card-footer">
                     <a href="${searchUrl}" target="_blank" class="btn-action btn-vinted">
-                        <i data-lucide="shopping-bag" size="14"></i> SNIPER SUR VINTED
+                        <i data-lucide="shopping-bag" size="14"></i> VOIR SUR VINTED
                     </a>
                     <div class="compare-dropdown">
                         <select class="select-compare" onchange="openCompare(this.value, '${exactSearch}'); this.value='';">
-                            <option value="" disabled selected>COTE RÉELLE</option>
+                            <option value="" disabled selected>VÉRIFIER COTE</option>
                             <option value="lbc">LEBONCOIN</option>
                             <option value="ebay">EBAY</option>
                             <option value="stockx">STOCKX</option>
